@@ -204,22 +204,22 @@ Returns the HTTP status code of the response.
 This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning an instance of Remote. You can then interact as you would with Remote, eg ```getBody()```
 
 The DataApi Constructor can handle either 3 arguments;
-* @param url
-* @param securityPacket
-* @param secret
+* url
+* securityPacket
+* secret
 
 or 4 arguments:
-* @param url
-* @param securityPacket
-* @param secret
-* @param action
+* url
+* securityPacket
+* secret
+* action
 
 or 5 arguments:
-* @param url
-* @param securityPacket
-* @param secret
-* @param requestPacket
-* @param action
+* url
+* securityPacket
+* secret
+* requestPacket
+* action
 
 ```
 Map<String,String> sec = new HashMap<String, String>();
