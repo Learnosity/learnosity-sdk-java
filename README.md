@@ -109,6 +109,38 @@ String questionJson = Init.generate();
 
 // Pass the object to the initialisation of any Learnosity API
 LearnosityApp.init(questionsJson);
+
+// Let's initialise with JSON Strings
+ String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
+         + "\"domain\": \"assess.vg.learnosity.com\""
+         +   "\"user_id\": \"12345678\"}";
+ 
+ String reqString = "{\"state\":\"initial\","
+         +  "\"type\":\"local_practice\","
+         +  "\"timestamp\":\"20140617-0533\","
+         +  "\"response_id\":\"60005\","
+         +  "\"questions\":"
+         +   "[{\"stimulus_list\":"
+         +     "[\"London\","
+         +        "\"Dublin\","
+         +        "\"Paris\","
+         +      "\"Sydney\"],"
+         + "\"stimulus\":\"Match the cities to the parent nation\","
+         +   "\"type\":\"association\","
+         +   "\"possible_responses\":"
+         +   "[\"Australia\","
+         +     "\"France\","
+         +     "\"Ireland\","
+         +       "\"England\"],"
+         +   "\"validation\":"
+         +   "{\"valid_responses\":"
+         +       "[\"England\","
+         +             "\"Ireland\","
+         +       "\"France\","
+         +       "\"Australia\"]}}]
+ init = new Init("questions", sec, consumerSecret, req, "");
+ questionJson = init.generate();
+
 ```
 
 #### Arguments
