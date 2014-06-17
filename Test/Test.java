@@ -98,6 +98,15 @@ public class Test {
 				System.out.println("Error in your code.");
 			}
 			
+			System.out.println("Testing data api call without request data, but with action");
+			dataApi = new DataApi("https://data.vg.learnosity.com/latest/itembank/items", sec, consumerSecret, "get");
+			remote = dataApi.request();
+			res = new JSONObject(remote.getBody());
+			if ((remote.getStatusCode() == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
+					(remote.getStatusCode() != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
+				System.out.println("Error in your code.");
+			}
+			
 			/*
 			*********************************************
 			Testing assess initialisation
@@ -174,6 +183,43 @@ public class Test {
 			req.put("questions", questions);
 
 			System.out.println("Testing question initialisation");
+			init = new Init("questions", sec, consumerSecret, req, "");
+			test = new JSONObject(init.generate());
+
+			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
+				throw new Exception("Errors in the questions api initialisation");
+			}
+			
+			System.out.println("Testing question initialisation with JSON strings");
+
+			String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
+							+	"\"domain\": \"assess.vg.learnosity.com\""
+							+   "\"user_id\": \"12345678\"}";
+			
+			String reqString = "{\"state\":\"initial\","
+							+  "\"type\":\"local_practice\","
+							+  "\"timestamp\":\"20140617-0533\","
+							+  "\"response_id\":\"60005\","
+							+  "\"questions\":"
+							+		"[{\"stimulus_list\":"
+							+			"[\"London\","
+							+ 			 "\"Dublin\","
+							+ 			 "\"Paris\","
+							+			 "\"Sydney\"],"
+							+	"\"stimulus\":\"Match the cities to the parent nation\","
+							+   "\"type\":\"association\","
+							+   "\"possible_responses\":"
+							+		"[\"Australia\","
+							+		  "\"France\","
+							+		  "\"Ireland\","
+							+ 		  "\"England\"],"
+							+   "\"validation\":"
+							+		"{\"valid_responses\":"
+							+  			"[\"England\","
+							+             "\"Ireland\","
+							+			  "\"France\","
+							+			  "\"Australia\"]}}]}";
+
 			init = new Init("questions", sec, consumerSecret, req, "");
 			test = new JSONObject(init.generate());
 
