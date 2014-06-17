@@ -76,12 +76,12 @@ public class Test {
 			*/	
 			Map<String,String> sec = new HashMap<String, String>();
 			sec.put("consumer_key", consumerKey);
-			sec.put("domain","assess.vg.learnosity.com");
+			sec.put("domain","assess.learnosity.com");
 
 			System.out.println("Testing data api call with request data");
 			reqData = new HashMap<String,String>();
 			reqData.put("limit", "10");
-			DataApi dataApi = new DataApi("https://data.vg.learnosity.com/latest/itembank/items", sec, consumerSecret, reqData, "get");
+			DataApi dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, reqData, "get");
 			remote = dataApi.request();
 			JSONObject res = new JSONObject(remote.getBody());
 			if ((remote.getStatusCode() == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
@@ -90,7 +90,7 @@ public class Test {
 			}
 
 			System.out.println("Testing data api call without request data");
-			dataApi = new DataApi("https://data.vg.learnosity.com/latest/itembank/items", sec, consumerSecret);
+			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret);
 			remote = dataApi.request();
 			res = new JSONObject(remote.getBody());
 			if ((remote.getStatusCode() == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
@@ -99,7 +99,7 @@ public class Test {
 			}
 			
 			System.out.println("Testing data api call without request data, but with action");
-			dataApi = new DataApi("https://data.vg.learnosity.com/latest/itembank/items", sec, consumerSecret, "get");
+			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, "get");
 			remote = dataApi.request();
 			res = new JSONObject(remote.getBody());
 			if ((remote.getStatusCode() == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
@@ -193,7 +193,7 @@ public class Test {
 			System.out.println("Testing question initialisation with JSON strings");
 
 			String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
-							+	"\"domain\": \"assess.vg.learnosity.com\""
+							+	"\"domain\": \"localhost\""
 							+   "\"user_id\": \"12345678\"}";
 			
 			String reqString = "{\"state\":\"initial\","
