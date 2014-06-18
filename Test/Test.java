@@ -183,6 +183,7 @@ public class Test {
 			req.put("questions", questions);
 
 			System.out.println("Testing question initialisation");
+			sec.put("user_id", "12345678");
 			init = new Init("questions", sec, consumerSecret, req, "");
 			test = new JSONObject(init.generate());
 
@@ -226,6 +227,7 @@ public class Test {
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
 				throw new Exception("Errors in the questions api initialisation");
 			}
+			
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 		}

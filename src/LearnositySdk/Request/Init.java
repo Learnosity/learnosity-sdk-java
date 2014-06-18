@@ -421,6 +421,10 @@ public class Init {
         	}
         }
         
+        if (this.service.equals("questions") && !this.securityPacket.has("user_id")) {
+        	throw new Exception("If using the questions api, a user id needs to be specified");
+        }
+
 		if (this.securityPacket.length() == 0) {
 			throw new Exception("The security packet argument cannot be empty");
 		}
