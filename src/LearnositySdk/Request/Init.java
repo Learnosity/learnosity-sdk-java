@@ -107,14 +107,14 @@ public class Init {
      */
     public Init (String service, Object securityPacket, String secret) throws Exception
     {
-    	// First validate and set the arguments
-    	this.validateRequiredArgs(service, securityPacket, secret);
+        // First validate and set the arguments
+        this.validateRequiredArgs(service, securityPacket, secret);
 
-    	// Set any service specific options
-    	this.setServiceOptions();
+        // Set any service specific options
+        this.setServiceOptions();
 
-    	// Generate the signature based on the arguments provided
-    	this.securityPacket.put("signature", this.generateSignature());
+        // Generate the signature based on the arguments provided
+        this.securityPacket.put("signature", this.generateSignature());
     }
    
     /**
@@ -129,18 +129,18 @@ public class Init {
      */
     public Init (String service, Object securityPacket, String secret, String action) throws Exception
     {
-    	// First validate and set the arguments
-    	this.validateRequiredArgs(service, securityPacket, secret);
+        // First validate and set the arguments
+        this.validateRequiredArgs(service, securityPacket, secret);
 
-    	// Set any service specific options
-    	this.setServiceOptions();
+        // Set any service specific options
+        this.setServiceOptions();
 
-    	// Generate the signature based on the arguments provided
-    	this.securityPacket.put("signature", this.generateSignature());
-    	
-      	if (!action.isEmpty()) {
-    		this.action = action;
-    	}
+        // Generate the signature based on the arguments provided
+        this.securityPacket.put("signature", this.generateSignature());
+        
+        if (!action.isEmpty()) {
+            this.action = action;
+        }
     }
     
     
@@ -159,20 +159,20 @@ public class Init {
     public Init (String service, Object securityPacket, String secret, Object requestPacket, String action) throws Exception
     {
  
-    	// First validate and set the arguments
-    	this.validateRequiredArgs(service, securityPacket, secret);
-    	
-   		this.validateRequestPacket(requestPacket);
-
-    	if (!action.isEmpty()) {
-    		this.action = action;
-    	}
+        // First validate and set the arguments
+        this.validateRequiredArgs(service, securityPacket, secret);
         
-    	// Set any service specific options
-    	this.setServiceOptions();
+        this.validateRequestPacket(requestPacket);
 
-    	// Generate the signature based on the arguments provided
-     	this.securityPacket.put("signature", this.generateSignature());
+        if (!action.isEmpty()) {
+            this.action = action;
+        }
+        
+        // Set any service specific options
+        this.setServiceOptions();
+
+        // Generate the signature based on the arguments provided
+        this.securityPacket.put("signature", this.generateSignature());
     }
     
     
@@ -184,7 +184,8 @@ public class Init {
      */
     public String generate() throws Exception
     {
-        JSONObject output = new JSONObject();;
+        JSONObject output = new JSONObject();
+        String outputString = "";
 
         switch (this.service) {
             case "assess":
@@ -192,14 +193,9 @@ public class Init {
             case "data":
             case "items":
             case "reports":
-            	
+                
                 // Add the security packet (with signature) to the output
                 output.put("security", this.securityPacket);
-
-                // Add the request packet if available
-                if (this.requestPacket != null && this.requestPacket.length() != 0) {
-                    output.put("request", this.requestPacket);
-                }
                 
                 // Add the action if necessary (Data API)
                 if (!this.action.isEmpty()) {
@@ -207,10 +203,18 @@ public class Init {
                 }
 
                if (this.service.equals("data")) {
-            	   return output.getJSONObject("security").toString();
+                   return output.getJSONObject("security").toString();
                 } else if (this.service.equals("assess")) {
-                	output = output.getJSONObject("request");
+                    return this.requestString;
                 }
+
+               outputString = output.toString();
+               // Add the request packet if available
+               if (this.requestString != "") {
+                   outputString = outputString.substring(0, outputString.length() - 1) + ",";
+                   outputString = outputString + "\"request\":" + this.requestString + "}";
+               }
+
                 break;
             case "questions":
                 // Make a copy of security packet (with signature) to the root of output
@@ -219,11 +223,13 @@ public class Init {
                 // Remove the `domain` key from the security packet
                 output.remove("domain");
                 
-                // Merge the request packet if necessary
-                if (this.requestPacket != null && this.requestPacket.length() != 0) {
-                	for(String key : JSONObject.getNames(this.requestPacket)) {
-                		output.put(key, this.requestPacket.get(key));
-                	}
+                outputString = output.toString();
+                // Merge the request packet if necessary. Note: to make sure we don't change the
+                // order of key/value pairs in the json, we manipulate the json string instead of
+                // the json object and then parsing into a string
+                if (this.requestString != "") {
+                    outputString = outputString.substring(0, outputString.length() - 1) + ",";
+                    outputString = outputString + this.requestString.substring(1);
                 }
                 break;
             default:
@@ -231,7 +237,7 @@ public class Init {
                 break;
         }
 
-        return output.toString();
+        return outputString;
     }
 
     /**
@@ -250,14 +256,13 @@ public class Init {
         // The order is important
         for (String key : this.validSecurityKeys) {
             if (this.securityPacket.has(key)) {
-            	signatureArray.add(this.securityPacket.getString(key));
+                signatureArray.add(this.securityPacket.getString(key));
             }
         }
 
         
         // Add the secret
         signatureArray.add(this.secret);
-
         // Add the requestPacket if necessary
         if (this.signRequestData && !this.requestString.isEmpty()) {
             signatureArray.add(this.requestString);
@@ -280,15 +285,15 @@ public class Init {
      */
     private String hashValue(ArrayList<String> value)
     {
-    	String valueString = "";
-    	for (String entry : value) {
-    		if (valueString.equals("")) {
-    			valueString = entry;
-    		} else {
-    			valueString += "_" + entry;
-    		}
-    	}
-    	return DigestUtils.sha256Hex(valueString);
+        String valueString = "";
+        for (String entry : value) {
+            if (valueString.equals("")) {
+                valueString = entry;
+            } else {
+                valueString += "_" + entry;
+            }
+        }
+        return DigestUtils.sha256Hex(valueString);
     }
 
     /**
@@ -321,7 +326,7 @@ public class Init {
                     
                     
                     for (String key : new String[] {"consumer_key" , "timestamp" , "user_id"}) {
-                    	questionsApi.put(key, this.securityPacket.getString(key));
+                        questionsApi.put(key, this.securityPacket.getString(key));
                     }
                     signatureArray.add(this.securityPacket.getString("consumer_key"));
                     signatureArray.add(domain);
@@ -335,8 +340,8 @@ public class Init {
                 // The Events API requires a user_id, so we make sure it's a part
                 // of the security packet as we share the signature in some cases
                 if (
-                	!this.securityPacket.has("user_id") &&
-                	this.requestPacket.has("user_id")
+                    !this.securityPacket.has("user_id") &&
+                    this.requestPacket.has("user_id")
                 ) {
                     this.securityPacket.put("user_id", this.requestPacket.getString("user_id"));
                 }
@@ -357,7 +362,7 @@ public class Init {
      */
     private void validateRequiredArgs(String service, Object securityPacket, String secret) throws Exception
     {
-    	
+        
         if (service.isEmpty()) {
             throw new Exception("The `service` argument wasn't found or was empty");
         } else if (!Arrays.asList(this.validServices).contains(service.toLowerCase())) {
@@ -381,67 +386,70 @@ public class Init {
      * @param requestPacket
      * @throws Exception
      */
-	private void validateRequestPacket(Object requestPacket) throws Exception
-	{
+    private void validateRequestPacket(Object requestPacket) throws Exception
+    {
         if (requestPacket instanceof JSONObject) {
-        	this.requestPacket = new JSONObject(requestPacket.toString());
+            this.requestPacket = new JSONObject(requestPacket.toString());
+            this.requestString = requestPacket.toString();
         } else {
-        	if (requestPacket instanceof String) {
-        		this.requestPacket = new JSONObject((String)requestPacket);
-        	} else if (requestPacket instanceof Map) {
-        		this.requestPacket = new JSONObject((Map)requestPacket);      		
-        	} else {
-        		// Try to make a JSONObject out of a hopefully valid java bean
-        		this.requestPacket = new JSONObject(requestPacket);
-        	}
+            if (requestPacket instanceof String) {
+                this.requestPacket = new JSONObject((String)requestPacket);
+                this.requestString = (String)requestPacket;
+            } else if (requestPacket instanceof Map) {
+                this.requestPacket = new JSONObject((Map)requestPacket);
+                this.requestString = this.requestPacket.toString();
+            } else {
+                // Try to make a JSONObject out of a hopefully valid java bean
+                this.requestPacket = new JSONObject(requestPacket);
+                this.requestString = this.requestPacket.toString();
+            }
         }
-		if (this.requestPacket.length() == 0) {
-			throw new Exception("The requestPacket cannot be empty.");
+        if (this.requestPacket.length() == 0) {
+            throw new Exception("The requestPacket cannot be empty.");
         }
-		this.requestString = this.requestPacket.toString();
-	}
+    }
 
-	/**
-	 * Validate the security packet argument
-	 * @param securityPacket
-	 * @throws Exception
-	 */
-	private void validateSecurityPacket (Object securityPacket) throws Exception
-	{
+    /**
+     * Validate the security packet argument
+     * @param securityPacket
+     * @throws Exception
+     */
+    private void validateSecurityPacket (Object securityPacket) throws Exception
+    {
         if (securityPacket instanceof JSONObject) {
-        	this.securityPacket = new JSONObject(securityPacket.toString());
+            this.securityPacket = new JSONObject(securityPacket.toString());
         } else {
-        	if (securityPacket instanceof String) {
-        		this.securityPacket = new JSONObject((String)securityPacket);
-        	} else if (securityPacket instanceof Map) {
-        		this.securityPacket = new JSONObject((Map)securityPacket);
-        	} else {
-        		// Try to make a JSONObject out of a hopefully valid java bean
-        		this.securityPacket = new JSONObject(securityPacket);
-        	}
+            if (securityPacket instanceof String) {
+                this.securityPacket = new JSONObject((String)securityPacket);
+            } else if (securityPacket instanceof Map) {
+                this.securityPacket = new JSONObject((Map)securityPacket);
+            } else {
+                // Try to make a JSONObject out of a hopefully valid java bean
+                this.securityPacket = new JSONObject(securityPacket);
+            }
         }
         
         if (this.service.equals("questions") && !this.securityPacket.has("user_id")) {
-        	throw new Exception("If using the questions api, a user id needs to be specified");
+            throw new Exception("If using the questions api, a user id needs to be specified");
         }
 
-		if (this.securityPacket.length() == 0) {
-			throw new Exception("The security packet argument cannot be empty");
-		}
-		
-		Iterator<String> keyIter = this.securityPacket.keys();
-		while (keyIter.hasNext()) {
-			String key = keyIter.next();
-			if (!Arrays.asList(this.validSecurityKeys).contains(key)) {
+        if (this.securityPacket.length() == 0) {
+            throw new Exception("The security packet argument cannot be empty");
+        }
+        
+        Iterator<String> keyIter = this.securityPacket.keys();
+        while (keyIter.hasNext()) {
+            String key = keyIter.next();
+            if (!Arrays.asList(this.validSecurityKeys).contains(key)) {
                 throw new Exception("Invalid key found in the security packet: " + key);
-			}	
-		}
+            }   
+        }
 
         if (!this.securityPacket.has("timestamp")) {
-        	DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm");
-    		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        	Date date = new Date();
-        	this.securityPacket.put("timestamp", dateFormat.format(date));
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            Date date = new Date();
+            this.securityPacket.put("timestamp", dateFormat.format(date));
         }
-	}   
+    }   
 }

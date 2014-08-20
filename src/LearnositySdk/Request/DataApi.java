@@ -47,6 +47,11 @@ public class DataApi
 	private JSONObject requestPacket;
 	
 	/**
+	 * String for storing json string
+	 */
+	private String requestString = "";
+
+	/**
 	 * Constructor
 	 * @param url
 	 * @param securityPacket
@@ -96,26 +101,30 @@ public class DataApi
 	public DataApi(String url, Object securityPacket, String secret , Object requestPacket, String action) throws Exception
 	{
 		this.remote = new Remote();
-	    if (requestPacket instanceof JSONObject) {
-        	this.requestPacket = new JSONObject(requestPacket.toString());
-        } else {
-        	if (requestPacket instanceof String) {
-        		this.requestPacket = new JSONObject((String)requestPacket);
-        	} else if (requestPacket instanceof Map) {
-        		this.requestPacket = new JSONObject((Map)requestPacket);      		
-        	} else {
-        		// Try to make a JSONObject out of a hopefully valid java bean
-        		this.requestPacket = new JSONObject(requestPacket);
-        	}
-        }
-		this.init = new Init("data", securityPacket, secret, this.requestPacket, action);
+		if (requestPacket instanceof JSONObject) {
+			this.requestPacket = new JSONObject(requestPacket.toString());
+			this.requestString = requestPacket.toString();
+		} else {
+			if (requestPacket instanceof String) {
+				this.requestPacket = new JSONObject((String)requestPacket);
+				this.requestString = (String)requestPacket;
+			} else if (requestPacket instanceof Map) {
+				this.requestPacket = new JSONObject((Map)requestPacket);
+				this.requestString = this.requestPacket.toString();
+			} else {
+				// Try to make a JSONObject out of a hopefully valid java bean
+				this.requestPacket = new JSONObject(requestPacket);
+				this.requestString = this.requestPacket.toString();
+			}
+		}
+		this.init = new Init("data", securityPacket, secret, this.requestString, action);
 	
 		this.options = new HashMap<String,Object>();
 		this.secJson = new JSONObject(init.generate());
 		this.secJson.put("consumer_secret", secret);
 		this.options.put("security", this.secJson.toString());
 		this.options.put("action", action);
-		this.options.put("request", this.requestPacket.toString());
+		this.options.put("request", this.requestString);
 		this.url = url;
 	}
 	
