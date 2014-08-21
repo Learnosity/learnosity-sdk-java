@@ -1,6 +1,6 @@
 # Learnosity SDK - Java
 
-Include this library into your own codebase to ease integration with any of the Learnosity APIs.
+Include this library into your own codebase to ease integration with any of the Learnosity APIs. Requires Java 7 or higher.
 
 ## Installation
 Installation can be done in three ways:
