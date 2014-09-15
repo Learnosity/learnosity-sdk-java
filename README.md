@@ -44,7 +44,7 @@ or 4 arguments:
  * Object  request details
  * String  action
 
-The action String can be the empty String. The security and request Object can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples)
+The action String can be the empty String. The security and request Object can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples). Learnosity recommends that you pass the request details as a JSONObject, or a String generated from a JSONObject to the constructor. This way, issues arising from adding/removing whitespace can be avoided.
 
 
 ```
@@ -138,7 +138,7 @@ LearnosityApp.init(questionsJson);
          +             "\"Ireland\","
          +       "\"France\","
          +       "\"Australia\"]}}]
- init = new Init("questions", sec, consumerSecret, req, "");
+ init = new Init("questions", sec, consumerSecret, new(JSONObject(reqString)), "");
  questionJson = init.generate();
 
 ```
