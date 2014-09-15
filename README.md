@@ -138,7 +138,7 @@ LearnosityApp.init(questionsJson);
          +             "\"Ireland\","
          +       "\"France\","
          +       "\"Australia\"]}}]
- init = new Init("questions", sec, consumerSecret, new(JSONObject(reqString)), "");
+ init = new Init("questions", sec, consumerSecret, new JSONObject(reqString), "");
  questionJson = init.generate();
 
 ```
