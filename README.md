@@ -13,7 +13,7 @@ Installation can be done in three ways:
 
 ## Test
 
-In order to check that you've added the required code correctly, you can download Test/Test.java and try to run it. If it runs successfully, all should be fine.
+In order to check that you've added the required code correctly, you can download src/LearnositySdk/Test and try to run the test file. If it runs successfully, all should be fine.
 
 The Test.java class also gives some examples on how to use the sdk.
 
@@ -233,7 +233,7 @@ Returns the HTTP status code of the response.
 
 ### DataApi
 
-This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning an instance of Remote. You can then interact as you would with Remote, eg ```getBody()```
+This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive function which can be called with a class implementing RequestCallback.java. THe execute() function will be called for each response. 
 
 The DataApi Constructor can handle either 3 arguments;
 * url
@@ -262,6 +262,6 @@ reqData = new HashMap<String,String>();
 reqData.put("limit", "10");
 
 DataApi dataApi = new DataApi("https://data.vg.learnosity.com/latest/itembank/items", sec, consumerSecret, reqData, "get");
-remote = dataApi.request();
-JSONObject res = new JSONObject(remote.getBody());
+JSONObject response = dataApi.request();
+JSONObject res = new JSONObject(response.getString("body"));
 ```
