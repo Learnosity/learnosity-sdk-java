@@ -3,6 +3,7 @@ package learnositysdk.request;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -45,12 +46,27 @@ public class DataApi
 	 * JSONObject for storing request data
 	 */
 	private JSONObject requestPacket;
-	
+
 	/**
 	 * String for storing json string
 	 */
 	private String requestString = "";
 
+	/**
+	 * Object for storing the security settings
+	 */
+	private Object securityPacket;
+
+	/**
+	 * String to save the action
+	 */
+	private String action = "";
+
+	/**
+	 * String to save the consumer secret
+	 */
+	private String secret;
+	
 	/**
 	 * Constructor
 	 * @param url
@@ -61,13 +77,9 @@ public class DataApi
 	public DataApi(String url, Object securityPacket, String secret) throws Exception
 	{
 		this.remote = new Remote();
-		this.init = new Init("data", securityPacket, secret);
-	
-		this.options = new HashMap<String,Object>();
-		this.secJson = new JSONObject(init.generate());
-		this.secJson.put("consumer_secret", secret);
-		this.options.put("security", this.secJson.toString());
 		this.url = url;
+		this.securityPacket = securityPacket;
+		this.secret = secret;
 	}
 	
 	/**
@@ -80,13 +92,10 @@ public class DataApi
 	public DataApi(String url, Object securityPacket, String secret, String action) throws Exception
 	{
 		this.remote = new Remote();
-		this.init = new Init("data", securityPacket, secret, action);
-	
-		this.options = new HashMap<String,Object>();
-		this.secJson = new JSONObject(init.generate());
-		this.secJson.put("consumer_secret", secret);
-		this.options.put("security", this.secJson.toString());
 		this.url = url;
+		this.securityPacket = securityPacket;
+		this.secret = secret;
+		this.action = action;
 	}
 	
 	/**
@@ -101,41 +110,92 @@ public class DataApi
 	public DataApi(String url, Object securityPacket, String secret , Object requestPacket, String action) throws Exception
 	{
 		this.remote = new Remote();
-		if (requestPacket instanceof JSONObject) {
-			this.requestPacket = new JSONObject(requestPacket.toString());
-			this.requestString = requestPacket.toString();
-		} else {
-			if (requestPacket instanceof String) {
-				this.requestPacket = new JSONObject((String)requestPacket);
-				this.requestString = (String)requestPacket;
-			} else if (requestPacket instanceof Map) {
-				this.requestPacket = new JSONObject((Map)requestPacket);
-				this.requestString = this.requestPacket.toString();
-			} else {
-				// Try to make a JSONObject out of a hopefully valid java bean
-				this.requestPacket = new JSONObject(requestPacket);
-				this.requestString = this.requestPacket.toString();
-			}
-		}
-		this.init = new Init("data", securityPacket, secret, this.requestString, action);
-	
-		this.options = new HashMap<String,Object>();
-		this.secJson = new JSONObject(init.generate());
-		this.secJson.put("consumer_secret", secret);
-		this.options.put("security", this.secJson.toString());
-		this.options.put("action", action);
-		this.options.put("request", this.requestString);
+	    if (requestPacket instanceof JSONObject) {
+        	this.requestPacket = new JSONObject(requestPacket.toString());
+        	this.requestString = requestPacket.toString();
+        } else {
+        	if (requestPacket instanceof String) {
+        		this.requestPacket = new JSONObject((String)requestPacket);
+        		this.requestString = (String)requestPacket;
+        	} else if (requestPacket instanceof Map) {
+        		this.requestPacket = new JSONObject((Map)requestPacket);
+        		this.requestString = this.requestPacket.toString();
+        	} else {
+        		// Try to make a JSONObject out of a hopefully valid java bean
+        		this.requestPacket = new JSONObject(requestPacket);
+        		this.requestString = this.requestPacket.toString();
+        	}
+        }
 		this.url = url;
+		this.securityPacket = securityPacket;
+		this.secret = secret;
+		this.action = action;
 	}
 	
 	/**
 	 * Function to make the post request
-	 * @return instance of Remote which can be queried about information of the request
+	 * @return JSONObject containing the information of the request
 	 * @throws Exception
 	 */
-	public Remote request() throws Exception
+	public JSONObject request() throws Exception
 	{
+		this.options = new HashMap<String,Object>();
+		if (this.action.equals("")) {
+			this.init = new Init("data", this.securityPacket, this.secret);
+			this.secJson = new JSONObject(init.generate());
+		}
+		if (!this.action.equals("") && this.requestString.equals("")) {
+			this.init = new Init("data", securityPacket, this.secret, this.action);
+			this.secJson = new JSONObject(init.generate());
+		}
+		if (!this.action.equals("") && !this.requestString.equals("")) {
+			this.init = new Init("data", securityPacket, this.secret, this.requestString, this.action);
+			this.secJson = new JSONObject(init.generate());
+			this.options.put("action", action);
+			this.options.put("request", this.requestString);
+		}
+		this.options.put("security", this.secJson.toString());
 		this.remote.post(this.url, this.options);
-		return this.remote;
+		return this.createResponseObject(remote);
 	}
+
+    /**
+     * Makes a recursive request to the data api, dependent on
+     * whether 'next' and some data is returned in the meta object.
+     * Executes the callback function for every response.
+     * 
+     */
+	public void requestRecursive(RequestCallback callback) throws Exception {
+		JSONObject response;
+		JSONObject body;
+		JSONObject meta;
+		JSONArray data;
+		boolean makeNextRequest;
+
+		do {
+			makeNextRequest = false;
+			response = this.request();
+			body = new JSONObject(response.getString("body"));
+			meta = body.getJSONObject("meta");
+			data = body.getJSONArray("data");
+			if (meta.getBoolean("status") == true) {
+				callback.execute(response);
+			}
+			if (meta.has("next") && data.length() > 0) {
+				this.requestPacket.put("next", meta.get("next"));
+				this.requestString = this.requestPacket.toString();
+				makeNextRequest = true;
+			}
+		} while (makeNextRequest);
+	}
+    
+    private JSONObject createResponseObject(Remote remote) throws Exception {
+    	JSONObject response = new JSONObject();
+    	response.put("body", remote.getBody());
+    	response.put("contentType",  remote.getContentType());
+    	response.put("statusCode", remote.getStatusCode());
+    	response.put("error", remote.getError());
+    	response.put("timeTaken", remote.getTimeTaken());
+    	return response;
+    }
 }
