@@ -5,7 +5,6 @@ import learnositysdk.request.Init;
 import learnositysdk.request.Remote;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -21,10 +20,11 @@ public class Test {
 	public static void main (String[] args)
 	{
 		try {
+			Remote remote = new Remote();
 			Map reqData;
 			Init init;
 			String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
-			JSONObject response;
+			
 			/*
 			*********************************************
 			Creating the security setting with a HashMap
@@ -33,7 +33,7 @@ public class Test {
 			HashMap securityMap = new HashMap();
 			securityMap.put("consumer_key", consumerKey);
 			securityMap.put("user_id", "12345678");
-			securityMap.put("timestamp", "20140915-0948");
+			securityMap.put("timestamp", "20140612-0438");
 
 			String secret = consumerSecret;
 			String service = "questions";
@@ -41,7 +41,7 @@ public class Test {
 			System.out.println("HashMap security test");
 
 			init = new Init(service, securityMap, secret);
-			//checkSecuritySettings(init.generate());
+			checkSecuritySettings(init.generate());
 			checkSignature(init.generateSignature());
 
 			/*
@@ -82,35 +82,31 @@ public class Test {
 			reqData = new HashMap<String,String>();
 			reqData.put("limit", "10");
 			DataApi dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, reqData, "get");
-			response = dataApi.request();
-			JSONObject res = new JSONObject(response.getString("body"));
-			if ((response.getInt("statusCode") == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
-					(response.getInt("statusCode") != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
+			remote = dataApi.request();
+			JSONObject res = new JSONObject(remote.getBody());
+			if ((remote.getStatusCode() == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
+					(remote.getStatusCode() != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
 				System.out.println("Error in your code.");
 			}
 
 			System.out.println("Testing data api call without request data");
 			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret);
-			response = dataApi.request();
-			res = new JSONObject(response.getString("body"));
-			if ((response.getInt("statusCode") == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
-					(response.getInt("statusCode") != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
+			remote = dataApi.request();
+			res = new JSONObject(remote.getBody());
+			if ((remote.getStatusCode() == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
+					(remote.getStatusCode() != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
 				System.out.println("Error in your code.");
 			}
 			
 			System.out.println("Testing data api call without request data, but with action");
 			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, "get");
-			response = dataApi.request();
-			res = new JSONObject(response.getString("body"));
-			if ((response.getInt("statusCode") == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
-					(response.getInt("statusCode") != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
+			remote = dataApi.request();
+			res = new JSONObject(remote.getBody());
+			if ((remote.getStatusCode() == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
+					(remote.getStatusCode() != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
 				System.out.println("Error in your code.");
 			}
 			
-			System.out.println("Testing recursive request");
-			reqData.put("limit", "100");
-			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, reqData, "get");
-			dataApi.requestRecursive(new TestCallback());
 			/*
 			*********************************************
 			Testing assess initialisation
@@ -133,96 +129,6 @@ public class Test {
 			if (!test.getJSONArray("items").getJSONObject(0).get("reference").equals("Demo3")) {
 				throw new Exception("Errors in the assess initialisation");
 			}
-
-			/*
-			*********************************************
-			Testing items initialisation
-			*********************************************
-			*/
-			String itemSecString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
-					+	"\"domain\": \"demos.vg.learnosity.com\","
-					+   "\"user_id\": \"demo_student\"}";
-	
-			String itemsString = "{\"activity_id\": \"itemsassessdemo\","
-				    + "\"name\": \"Items API demo - assess activity\","
-				    + "\"rendering_type\" : \"assess\","
-				    + "\"state\"          : \"initial\","
-				    + "\"type\"           : \"submit_practice\","
-				    + "\"course_id\"      : \"demo_yis0TYCu7U9V4o7M\","
-				    + "\"session_id\"     : \"041f48c9-cb80-42e8-9d06-467d92013b00\","
-				    + "\"user_id\"        : \"demo_student\","
-				    + "\"items\": [\"Demo3\", \"Demo4\", \"Demo5\", \"Demo6\", \"Demo7\", \"Demo8\", \"Demo9\",\"Demo10\"],"
-				    + "\"assess_inline\": true,"
-				    + "\"config\": {"
-				    + "\"title\": \"Demo activity - showcasing question types and assess options\","
-				    + "    \"subtitle\"       : \"Walter White\","
-				    + "    \"administration\" : {"
-				    + "        \"pwd\" : \"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8\","
-				    + "        \"options\" : {"
-				    + "            \"show_save\" : true,"
-				    + "            \"show_exit\" : true,"
-				    + "            \"show_extend\" : true"
-				    + "        }"
-				    + "    },"
-				    + "    \"navigation\" : {"
-				    + "        \"scroll_to_top\"            : false,"
-				    + "        \"scroll_to_test\"           : false,"
-				    + "        \"show_intro\"               : true,"
-				    + "        \"show_outro\"               : false,"
-				    + "        \"show_next\"                : true,"
-				    + "        \"show_prev\"                : true,"
-				    + "        \"show_accessibility\"       : true,"
-				    + "        \"show_fullscreencontrol\"   : true,"
-				    + "        \"show_progress\"            : true,"
-				    + "        \"show_submit\"              : true,"
-				    + "        \"show_title\"               : true,"
-				    + "        \"show_save\"                : false,"
-				    + "        \"show_calculator\"          : false,"
-				    + "        \"show_itemcount\"           : true,"
-				    + "        \"skip_submit_confirmation\" : false,"
-				    + "        \"swipe\"                    : true,"
-				    + "        \"toc\"                      : true,"
-				    + "        \"transition\"               : \"slide\","
-				    + "        \"transition_speed\"         : 400,"
-				    + "        \"warning_on_change\"        : false,"
-				    + "        \"scrolling_indicator\"      : false,"
-				    + "        \"show_answermasking\"       : true,"
-				    + "        \"auto_save\" : {"
-				    + "            \"ui\" : false,"
-				    + "            \"saveIntervalDuration\" : 500"
-				    + "        }"
-				    + "    },"
-				    + "    \"time\" : {"
-				    + "        \"max_time\"     : 1500,"
-				    + "        \"limit_type\"   : \"soft\","
-				    + "        \"show_pause\"   : true,"
-				    + "        \"warning_time\" : 120,"
-				    + "        \"show_time\"    : true"
-				    + "    },"
-				    + "    \"labelBundle\" : {"
-				    + "        \"item\" : \"Question\""
-				    + "    },"
-				    + "    \"ui_style\"            : \"main\","
-				    + "    \"ignore_validation\"   : false,"
-				    + "    \"configuration\"       : {"
-				    + "        \"fontsize\"               : \"normal\","
-				    + "        \"stylesheet\"             : \"\","
-				    + "        \"onsubmit_redirect_url\"  : \"itemsapi_assess.php\","
-				    + "        \"onsave_redirect_url\"    : \"itemsapi_assess.php\","
-				    + "        \"ondiscard_redirect_url\" : \"itemsapi_assess.php\","
-				    + "        \"idle_timeout\"           : {"
-				    + "            \"interval\"       : 300,"
-				    + "            \"countdown_time\" : 60"
-				    + "        }"
-				    + "    }"
-				    + "}}";
-			
-			JSONObject itemsObj = new JSONObject(itemsString);
-			//itemsString = itemsObj.toString();
-			init = new Init("items", itemSecString, consumerSecret, itemsObj.toString(), "");
-			String itemsTest = init.generate();
-			//System.out.println("In order to test this in the actual items api, set signedRequest in demo site, itemsapi_assess.php to the following value:");
-			//System.out.println(itemsTest);
 
 			/*
 			*********************************************
@@ -280,6 +186,7 @@ public class Test {
 			sec.put("user_id", "12345678");
 			init = new Init("questions", sec, consumerSecret, req, "");
 			test = new JSONObject(init.generate());
+
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
 				throw new Exception("Errors in the questions api initialisation");
 			}
@@ -314,8 +221,6 @@ public class Test {
 							+			  "\"France\","
 							+			  "\"Australia\"]}}]}";
 
-			
-			
 			init = new Init("questions", sec, consumerSecret, req, "");
 			test = new JSONObject(init.generate());
 
@@ -344,8 +249,8 @@ public class Test {
 	
 	private static void checkSignature (String signature) throws Exception
 	{
-		//if (!signature.equals(expectedSignature)) {
-			//throw new Exception("Again check your code");
-		//}
+		if (!signature.equals(expectedSignature)) {
+			throw new Exception("Again check your code");
+		}
 	}
 }
