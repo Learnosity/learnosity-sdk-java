@@ -5,11 +5,11 @@ Include this library into your own codebase to ease integration with any of the 
 ## Installation
 Installation can be done in three ways:
 
-1.) Download the source code and integrate into your project. This requires the external libraries which can be found in Dist/Light/RequiredJars
+1.) Download LearnositySdkJavaAll.jar and add to your build path. All the required libraries are included in this jar.
 
 2.) Download LearnositySdkJavaLight.jar and add to your build path. This requires the external libraries which can be found in Dist/Light/RequiredJars
 
-3.) Download LearnositySdkJavaAll.jar and add to your build path. All the required libraries are included in this jar.
+3.) Download the source code and integrate into your project. This requires the external libraries which can be found in Dist/Light/RequiredJars
 
 ## Test
 
