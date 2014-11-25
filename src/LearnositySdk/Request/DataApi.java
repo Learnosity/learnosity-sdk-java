@@ -137,7 +137,7 @@ public class DataApi
 	 * @return JSONObject containing the information of the request
 	 * @throws Exception
 	 */
-	public JSONObject request() throws Exception
+	public Remote request() throws Exception
 	{
 		this.options = new HashMap<String,Object>();
 		if (this.action.equals("")) {
@@ -156,7 +156,18 @@ public class DataApi
 		}
 		this.options.put("security", this.secJson.toString());
 		this.remote.post(this.url, this.options);
-		return this.createResponseObject(remote);
+		return remote;
+	}
+	
+	/**
+	 * Function to make the post request
+	 * @return JSONObject containing the information of the request
+	 * @throws Exception
+	 */
+	public JSONObject requestJSONObject() throws Exception
+	{
+		this.request();
+		return this.createResponseObject(this.remote);
 	}
 
     /**
@@ -174,7 +185,7 @@ public class DataApi
 
 		do {
 			makeNextRequest = false;
-			response = this.request();
+			response = this.requestJSONObject();
 			body = new JSONObject(response.getString("body"));
 			meta = body.getJSONObject("meta");
 			data = body.getJSONArray("data");

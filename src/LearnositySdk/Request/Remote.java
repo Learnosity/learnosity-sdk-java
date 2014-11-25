@@ -122,7 +122,7 @@ public class Remote {
 		try {
 			if (post) {
 				HttpPost httpPost = new HttpPost(url);
-				httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData)));
+				httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData), "UTF-8"));
 				resp = this.httpclient.execute(httpPost);
 			} else {
 				HttpGet httpGet = new HttpGet(url);

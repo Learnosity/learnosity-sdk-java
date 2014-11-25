@@ -3,6 +3,7 @@ package learnositysdk.test;
 import learnositysdk.request.DataApi;
 import learnositysdk.request.Init;
 import learnositysdk.request.Remote;
+import java.util.UUID;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,12 +26,43 @@ public class Test {
 			Init init;
 			String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
 			JSONObject response;
+			
+			String endpoint = "https://data.vg.learnosity.com/stable/itembank/activities";
+
+			Map<String,String> securityMap = new HashMap<String, String>();
+			securityMap.put("consumer_key", consumerKey);
+			securityMap.put("domain","localhost");
+			JSONArray items = new JSONArray();
+			items.put("bbf1380c-c75c-487c-90e3-18c7a36005d1");
+			items.put("7bd193b1-3dc7-4c4d-913d-0278accffd67");
+			items.put("99edf31b-8a7a-424b-8cba-f41795f55c19");
+			JSONObject data = new JSONObject();
+			data.put("items", items);
+		    
+			JSONObject activity = new JSONObject();
+			activity.put("status","published");
+			activity.put("description","My test description Title √");
+			activity.put("data", data);
+			activity.put("reference", UUID.randomUUID().toString());
+
+			JSONArray activities = new JSONArray();
+			activities.put(activity);
+			
+			JSONObject req = new JSONObject();
+			req.put("activities", activities);
+			
+			DataApi dataApi = new DataApi(endpoint, securityMap, consumerSecret, req, "set");
+			Remote remote = dataApi.request();
+			String body = remote.getBody();
+			System.out.println(body);
+			
+			
 			/*
 			*********************************************
 			Creating the security setting with a HashMap
 			*********************************************
 			*/
-			HashMap securityMap = new HashMap();
+			securityMap = new HashMap();
 			securityMap.put("consumer_key", consumerKey);
 			securityMap.put("user_id", "12345678");
 			securityMap.put("timestamp", "20140915-0948");
@@ -81,8 +113,8 @@ public class Test {
 			System.out.println("Testing data api call with request data");
 			reqData = new HashMap<String,String>();
 			reqData.put("limit", "10");
-			DataApi dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, reqData, "get");
-			response = dataApi.request();
+			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, reqData, "get");
+			response = dataApi.requestJSONObject();
 			JSONObject res = new JSONObject(response.getString("body"));
 			if ((response.getInt("statusCode") == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
 					(response.getInt("statusCode") != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
@@ -91,7 +123,7 @@ public class Test {
 
 			System.out.println("Testing data api call without request data");
 			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret);
-			response = dataApi.request();
+			response = dataApi.requestJSONObject();
 			res = new JSONObject(response.getString("body"));
 			if ((response.getInt("statusCode") == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
 					(response.getInt("statusCode") != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
@@ -100,7 +132,7 @@ public class Test {
 			
 			System.out.println("Testing data api call without request data, but with action");
 			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, "get");
-			response = dataApi.request();
+			response = dataApi.requestJSONObject();
 			res = new JSONObject(response.getString("body"));
 			if ((response.getInt("statusCode") == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
 					(response.getInt("statusCode") != 200 && res.getJSONObject("meta").getBoolean("status") != false)) {
@@ -116,8 +148,8 @@ public class Test {
 			Testing assess initialisation
 			*********************************************
 			*/
-			JSONObject req = new JSONObject ();
-			JSONArray items = new JSONArray();
+			req = new JSONObject ();
+			items = new JSONArray();
 			JSONObject item = new JSONObject();
 			item.put("reference", "Demo3");
 			item.put("content", "<p>HI</p>");

@@ -262,6 +262,9 @@ reqData = new HashMap<String,String>();
 reqData.put("limit", "10");
 
 DataApi dataApi = new DataApi("https://data.vg.learnosity.com/latest/itembank/items", sec, consumerSecret, reqData, "get");
-JSONObject response = dataApi.request();
+JSONObject response = dataApi.requestJSONObject();
 JSONObject res = new JSONObject(response.getString("body"));
-```
+
+// You can also get a Remote object like this:
+Remote remote = dataApi.request();
+String body = remote.getBody();
