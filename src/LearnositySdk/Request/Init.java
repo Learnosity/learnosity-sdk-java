@@ -1,7 +1,5 @@
 package learnositysdk.request;
 
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -187,56 +185,48 @@ public class Init {
         JSONObject output = new JSONObject();
         String outputString = "";
 
-        switch (this.service) {
-            case "assess":
-            case "author":
-            case "data":
-            case "items":
-            case "reports":
+        if (this.service.equals("assess") ||
+            this.service.equals("author") ||
+            this.service.equals("data") ||
+            this.service.equals("items") ||
+            this.service.equals("reports")) {
+
+            // Add the security packet (with signature) to the output
+            output.put("security", this.securityPacket);
+
+            // Add the action if necessary (Data API)
+            if (!this.action.isEmpty()) {
+                output.put("action", this.action);
+            }
+
+            if (this.service.equals("data")) {
+                return output.getJSONObject("security").toString();
+            } else if (this.service.equals("assess")) {
+                return this.requestString;
+            }
+
+            outputString = output.toString();
+            // Add the request packet if available
+            if (this.requestString != "") {
+                outputString = outputString.substring(0, outputString.length() - 1) + ",";
+                outputString = outputString + "\"request\":" + this.requestString + "}";
+            }
+        } else if (this.service.equals("questions")) {
+            // Make a copy of security packet (with signature) to the root of output
+            output = new JSONObject(this.securityPacket, JSONObject.getNames(this.securityPacket));
+
+            // Remove the `domain` key from the security packet
+            output.remove("domain");
                 
-                // Add the security packet (with signature) to the output
-                output.put("security", this.securityPacket);
-                
-                // Add the action if necessary (Data API)
-                if (!this.action.isEmpty()) {
-                    output.put("action", this.action);
-                }
-
-               if (this.service.equals("data")) {
-                   return output.getJSONObject("security").toString();
-                } else if (this.service.equals("assess")) {
-                    return this.requestString;
-                }
-
-               outputString = output.toString();
-               // Add the request packet if available
-               if (this.requestString != "") {
-                   outputString = outputString.substring(0, outputString.length() - 1) + ",";
-                   outputString = outputString + "\"request\":" + this.requestString + "}";
-               }
-
-                break;
-            case "questions":
-                // Make a copy of security packet (with signature) to the root of output
-                output = new JSONObject(this.securityPacket, JSONObject.getNames(this.securityPacket));
-
-                // Remove the `domain` key from the security packet
-                output.remove("domain");
-                
-                outputString = output.toString();
-                // Merge the request packet if necessary. Note: to make sure we don't change the
-                // order of key/value pairs in the json, we manipulate the json string instead of
-                // the json object and then parsing into a string
-                if (this.requestString != "") {
-                    outputString = outputString.substring(0, outputString.length() - 1) + ",";
-                    outputString = outputString + this.requestString.substring(1);
-                }
-                break;
-            default:
-                // no default
-                break;
+            outputString = output.toString();
+            // Merge the request packet if necessary. Note: to make sure we don't change the
+            // order of key/value pairs in the json, we manipulate the json string instead of
+            // the json object and then parsing into a string
+            if (this.requestString != "") {
+                outputString = outputString.substring(0, outputString.length() - 1) + ",";
+                outputString = outputString + this.requestString.substring(1);
+            }
         }
-
         return outputString;
     }
 
@@ -301,54 +291,44 @@ public class Init {
      */
     private void setServiceOptions() throws Exception
     {
-        switch (this.service) {
-            case "assess":
-            case "author":
-            case "questions":
-                this.signRequestData = false;
-                // The Assess API holds data for the Questions API that includes
-                // security information and a signature. Retrieve the security
-                // information from $this and generate a signature for the
-                // Questions API
-                if (
-                    this.service.equals("assess") &&
+        if (this.service.equals("assess") ||
+                this.service.equals("author") ||
+                this.service.equals("questions")) {
+
+            this.signRequestData = false;
+            // The Assess API holds data for the Questions API that includes
+            // security information and a signature. Retrieve the security
+            // information from $this and generate a signature for the
+            // Questions API
+            if (this.service.equals("assess") &&
                     this.requestPacket != null &&
-                    this.requestPacket.has("questionsApiActivity")
-                ) {
-                    JSONObject questionsApi = this.requestPacket.getJSONObject("questionsApiActivity");
-                    String domain = "assess.learnosity.com";
-                    ArrayList<String> signatureArray = new ArrayList<String>();
-                    if (this.securityPacket.has("domain")) {
-                        domain = this.securityPacket.getString("domain");
-                    } else if (questionsApi.has("domain")) {
-                        domain = questionsApi.getString("domain");
-                    }
-                    
-                    
-                    for (String key : new String[] {"consumer_key" , "timestamp" , "user_id"}) {
-                        questionsApi.put(key, this.securityPacket.getString(key));
-                    }
-                    signatureArray.add(this.securityPacket.getString("consumer_key"));
-                    signatureArray.add(domain);
-                    signatureArray.add(this.securityPacket.getString("timestamp"));
-                    signatureArray.add(this.securityPacket.getString("user_id"));
-                    signatureArray.add(this.secret);
-                    questionsApi.put("signature", this.hashValue(signatureArray));
+                    this.requestPacket.has("questionsApiActivity")) {
+                JSONObject questionsApi = this.requestPacket.getJSONObject("questionsApiActivity");
+                String domain = "assess.learnosity.com";
+                ArrayList<String> signatureArray = new ArrayList<String>();
+                if (this.securityPacket.has("domain")) {
+                    domain = this.securityPacket.getString("domain");
+                } else if (questionsApi.has("domain")) {
+                    domain = questionsApi.getString("domain");
                 }
-                break;
-            case "items": {
-                // The Events API requires a user_id, so we make sure it's a part
-                // of the security packet as we share the signature in some cases
-                if (
-                    !this.securityPacket.has("user_id") &&
-                    this.requestPacket.has("user_id")
-                ) {
-                    this.securityPacket.put("user_id", this.requestPacket.getString("user_id"));
+
+                for (String key : new String[] {"consumer_key" , "timestamp" , "user_id"}) {
+                    questionsApi.put(key, this.securityPacket.getString(key));
                 }
+                signatureArray.add(this.securityPacket.getString("consumer_key"));
+                signatureArray.add(domain);
+                signatureArray.add(this.securityPacket.getString("timestamp"));
+                signatureArray.add(this.securityPacket.getString("user_id"));
+                signatureArray.add(this.secret);
+                questionsApi.put("signature", this.hashValue(signatureArray));
             }
-            default:
-                // do nothing
-                break;
+        } else if (this.service.equals("items")) {
+            // The Events API requires a user_id, so we make sure it's a part
+            // of the security packet as we share the signature in some cases
+            if (!this.securityPacket.has("user_id") &&
+                 this.requestPacket.has("user_id")) {
+                this.securityPacket.put("user_id", this.requestPacket.getString("user_id"));
+            }
         }
     }
 
