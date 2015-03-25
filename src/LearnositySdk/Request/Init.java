@@ -292,8 +292,7 @@ public class Init {
     private void setServiceOptions() throws Exception
     {
         if (this.service.equals("assess") ||
-                this.service.equals("author") ||
-                this.service.equals("questions")) {
+            this.service.equals("questions")) {
 
             this.signRequestData = false;
             // The Assess API holds data for the Questions API that includes
