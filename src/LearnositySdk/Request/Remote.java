@@ -7,6 +7,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
@@ -116,28 +116,27 @@ public class Remote {
 	 */
 	private void request(String url, boolean post) throws Exception
 	{
-		CloseableHttpResponse resp = null;
-	    long startTime = System.currentTimeMillis();
+	        long startTime = System.currentTimeMillis();
 
+		HttpUriRequest httpRequest;
 		if (post) {
 			HttpPost httpPost = new HttpPost(url);
 			httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData), "UTF-8"));
-			resp = this.httpclient.execute(httpPost);
+			httpRequest = httpPost;
 		} else {
-			HttpGet httpGet = new HttpGet(url);
-			resp = this.httpclient.execute(httpGet);
+			httpRequest = new HttpGet(url);
 		}
 
-		InputStream is = resp.getEntity().getContent();
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(is, writer);
-		this.result.put("body", writer.toString());
+                try (CloseableHttpResponse resp = this.httpclient.execute(httpRequest)) {
+		    InputStream is = resp.getEntity().getContent();
+		    StringWriter writer = new StringWriter();
+		    IOUtils.copy(is, writer);
+		    this.result.put("body", writer.toString());
 
-		this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
-		this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
-		this.headers = resp.getAllHeaders();
-
-		resp.close();
+		    this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
+		    this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
+		    this.headers = resp.getAllHeaders();
+                }
 	}
 
 	/**
