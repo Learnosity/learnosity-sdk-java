@@ -73,7 +73,7 @@ public class Remote {
 	 * 
 	 * @param url the url of the request
 	 */
-	public void get(String url)
+	public void get(String url) throws Exception
 	{
 		this.request(url, false);
 	}
@@ -84,7 +84,7 @@ public class Remote {
 	 * @param  url      Full URL of where to GET the request
 	 * @param  data     optional get arguments
 	 */
-	public void get(String url, Map<String,Object> data)
+	public void get(String url, Map<String,Object> data) throws Exception
 	{
 		sb.append(url);
 		sb.append("?");
@@ -100,7 +100,7 @@ public class Remote {
 	 * @param  url      Full URL of where to POST the request
 	 * @param  data     post arguments
 	 */
-	public void post(String url, Map<String, Object> data)
+	public void post(String url, Map<String, Object> data) throws Exception
 	{
 		this.postData = data;
 		this.request(url, true);
@@ -114,41 +114,30 @@ public class Remote {
 	 * @param  post     Flag to indicate if this is a post request
 	 * @return void
 	 */
-	private void request(String url, boolean post)
+	private void request(String url, boolean post) throws Exception
 	{
 		CloseableHttpResponse resp = null;
 	    long startTime = System.currentTimeMillis();
 
-		try {
-			if (post) {
-				HttpPost httpPost = new HttpPost(url);
-				httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData), "UTF-8"));
-				resp = this.httpclient.execute(httpPost);
-			} else {
-				HttpGet httpGet = new HttpGet(url);
-				resp = this.httpclient.execute(httpGet);
-			}
-			
-			InputStream is = resp.getEntity().getContent();
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(is, writer);
-			this.result.put("body", writer.toString());
-			
-			this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
-			this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
-			this.headers = resp.getAllHeaders();
-
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			this.result.put("error", e.getMessage());
-		} finally {
-			try {
-				resp.close();
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-			}
+		if (post) {
+			HttpPost httpPost = new HttpPost(url);
+			httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData), "UTF-8"));
+			resp = this.httpclient.execute(httpPost);
+		} else {
+			HttpGet httpGet = new HttpGet(url);
+			resp = this.httpclient.execute(httpGet);
 		}
+
+		InputStream is = resp.getEntity().getContent();
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(is, writer);
+		this.result.put("body", writer.toString());
+
+		this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
+		this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
+		this.headers = resp.getAllHeaders();
+
+		resp.close();
 	}
 
 	/**
