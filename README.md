@@ -261,7 +261,7 @@ sec.put("domain","localhost");
 reqData = new HashMap<String,String>();
 reqData.put("limit", "10");
 
-DataApi dataApi = new DataApi("https://data.vg.learnosity.com/latest/itembank/items", sec, consumerSecret, reqData, "get");
+DataApi dataApi = new DataApi("https://data.learnosity.com/latest/itembank/items", sec, consumerSecret, reqData, "get");
 JSONObject response = dataApi.requestJSONObject();
 JSONObject res = new JSONObject(response.getString("body"));
 
