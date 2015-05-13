@@ -34,17 +34,11 @@ or 4 arguments:
  * String  service type
  * Object  security details (**no secret**)
  * String  secret
- * String  action
-
- or 5 arguments:
-
- * String  service type
- * Object  security details (**no secret**)
- * String  secret
  * Object  request details
- * String  action
+ 
+The security and request Object can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples). Learnosity recommends that you pass the request details as a JSONObject, or a String generated from a JSONObject to the constructor. This way, issues arising from adding/removing whitespace can be avoided.
 
-The action String can be the empty String. The security and request Object can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples). Learnosity recommends that you pass the request details as a JSONObject, or a String generated from a JSONObject to the constructor. This way, issues arising from adding/removing whitespace can be avoided.
+If you have to set an action attribute (for calls to data api, if not using the DatApi class), you can use the setAction method of class Init.
 
 
 ```
@@ -102,7 +96,7 @@ req.put("questions", questions);
 
 
 // Instantiate the SDK Init class with your security and request data:
-init = new Init("questions", sec, consumerSecret, req, "");
+init = new Init("questions", sec, consumerSecret, req);
 
 // Call the generate() method to retrieve a JavaScript object
 String questionJson = Init.generate();
@@ -138,7 +132,7 @@ LearnosityApp.init(questionsJson);
          +             "\"Ireland\","
          +       "\"France\","
          +       "\"Australia\"]}}]
- init = new Init("questions", sec, consumerSecret, new JSONObject(reqString), "");
+ init = new Init("questions", sec, consumerSecret, new JSONObject(reqString));
  questionJson = init.generate();
 
 ```

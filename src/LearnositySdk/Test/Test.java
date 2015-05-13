@@ -160,7 +160,7 @@ public class Test {
 			req.put("items", items);
 
 			System.out.println("Testing assess initialisation");
-			init = new Init("assess", sec, consumerSecret, req, "");
+			init = new Init("assess", sec, consumerSecret, req);
 			JSONObject test = new JSONObject(init.generate());
 			if (!test.getJSONArray("items").getJSONObject(0).get("reference").equals("Demo3")) {
 				throw new Exception("Errors in the assess initialisation");
@@ -251,7 +251,7 @@ public class Test {
 			
 			JSONObject itemsObj = new JSONObject(itemsString);
 			//itemsString = itemsObj.toString();
-			init = new Init("items", itemSecString, consumerSecret, itemsObj.toString(), "");
+			init = new Init("items", itemSecString, consumerSecret, itemsObj.toString());
 			String itemsTest = init.generate();
 			//System.out.println("In order to test this in the actual items api, set signedRequest in demo site, itemsapi_assess.php to the following value:");
 			//System.out.println(itemsTest);
@@ -310,7 +310,7 @@ public class Test {
 
 			System.out.println("Testing question initialisation");
 			sec.put("user_id", "12345678");
-			init = new Init("questions", sec, consumerSecret, req, "");
+			init = new Init("questions", sec, consumerSecret, req);
 			test = new JSONObject(init.generate());
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
 				throw new Exception("Errors in the questions api initialisation");
@@ -348,7 +348,7 @@ public class Test {
 
 			
 			
-			init = new Init("questions", sec, consumerSecret, req, "");
+			init = new Init("questions", sec, consumerSecret, req);
 			test = new JSONObject(init.generate());
 
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {

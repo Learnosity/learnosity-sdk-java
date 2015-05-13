@@ -145,11 +145,12 @@ public class DataApi
 			this.secJson = new JSONObject(init.generate());
 		}
 		if (!this.action.equals("") && this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret, this.action);
+			this.init = new Init("data", securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
 		if (!this.action.equals("") && !this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret, this.requestString, this.action);
+			this.init = new Init("data", securityPacket, this.secret, this.requestString);
+			this.init.setAction(this.action);
 			this.secJson = new JSONObject(init.generate());
 			this.options.put("action", action);
 			this.options.put("request", this.requestString);

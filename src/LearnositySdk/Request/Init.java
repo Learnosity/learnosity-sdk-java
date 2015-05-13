@@ -114,33 +114,7 @@ public class Init {
         // Generate the signature based on the arguments provided
         this.securityPacket.put("signature", this.generateSignature());
     }
-   
-    /**
-     * Instantiate this class with all security and request data. It
-     * will be used to create a signature.
-     *
-     * @param service        the service to be used
-     * @param securityPacket any object which can be used to instantiate a json.org.JSONObject or a json.org.JSONObject
-     * @param secret         the private key
-     * @param action         the action to be performed, can be empty
-     * @throws Exception     if any of the passed arguments are invalid
-     */
-    public Init (String service, Object securityPacket, String secret, String action) throws Exception
-    {
-        // First validate and set the arguments
-        this.validateRequiredArgs(service, securityPacket, secret);
-
-        // Set any service specific options
-        this.setServiceOptions();
-
-        // Generate the signature based on the arguments provided
-        this.securityPacket.put("signature", this.generateSignature());
-        
-        if (!action.isEmpty()) {
-            this.action = action;
-        }
-    }
-    
+       
     
     /**
      * Instantiate this class with all security and request data. It
@@ -151,20 +125,15 @@ public class Init {
      *                       a json.org.JSONObject
      * @param secret         the private key
      * @param requestPacket  an object which can be parsed into a JSONObject
-     * @param action         the action to be performed, can be empty
      * @throws Exception     if any of the passed arguments are invalid
      */
-    public Init (String service, Object securityPacket, String secret, Object requestPacket, String action) throws Exception
+    public Init (String service, Object securityPacket, String secret, Object requestPacket) throws Exception
     {
  
         // First validate and set the arguments
         this.validateRequiredArgs(service, securityPacket, secret);
         
         this.validateRequestPacket(requestPacket);
-
-        if (!action.isEmpty()) {
-            this.action = action;
-        }
         
         // Set any service specific options
         this.setServiceOptions();
@@ -173,6 +142,17 @@ public class Init {
         this.securityPacket.put("signature", this.generateSignature());
     }
     
+    /**
+     * Setter method for action. If an action is required, it should be set before generate() is called
+     * @param action the required action (e.g. get or post)
+     */
+    public void setAction(String action) throws Exception
+    {
+    	this.action = action;
+    	
+    	// Re-generate the signature, as an action is now set
+        this.securityPacket.put("signature", this.generateSignature());
+    }
     
     /**
      * Generate the data necessary to make a request to one of the
