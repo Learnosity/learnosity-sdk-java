@@ -263,3 +263,7 @@ JSONObject res = new JSONObject(response.getString("body"));
 Remote remote = dataApi.request();
 String body = remote.getBody();
 ```
+
+## Troubleshooting
+
+We recommend that you use the Java JSON implementation which comes packaged in the sdk. In the past, we had several issues which were due to incompatible JSON implementations.
