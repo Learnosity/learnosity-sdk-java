@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 
@@ -92,7 +93,7 @@ public class Init {
     /**
      * Valid strings for service
      */
-    private String[] validServices = new String[] {"assess", "author", "data", "items", "questions", "reports"};
+    private String[] validServices = new String[] {"assess", "author", "data", "items", "questions", "reports", "events"};
     
     /**
      * Instantiate this class with all security and request data. It
@@ -206,6 +207,16 @@ public class Init {
                 outputString = outputString.substring(0, outputString.length() - 1) + ",";
                 outputString = outputString + this.requestString.substring(1);
             }
+        } else if (this.service.equals("events")) {
+        	// Add the security packet (with signature) to the output
+        	output.put("security", this.securityPacket);
+        	outputString = output.toString();
+
+            // Add the request packet as key 'config' if available
+            if (this.requestString != "") {
+                outputString = outputString.substring(0, outputString.length() - 1) + ",";
+                outputString = outputString + "\"config\":" + this.requestString + "}";
+            }
         }
         return outputString;
     }
@@ -302,12 +313,26 @@ public class Init {
                 questionsApi.put("signature", this.hashValue(signatureArray));
             }
         } else if (this.service.equals("items")) {
-            // The Events API requires a user_id, so we make sure it's a part
+            // The Items API requires a user_id, so we make sure it's a part
             // of the security packet as we share the signature in some cases
             if (!this.securityPacket.has("user_id") &&
                  this.requestPacket.has("user_id")) {
                 this.securityPacket.put("user_id", this.requestPacket.getString("user_id"));
             }
+        } else if (this.service.equals("events")) {
+        	this.signRequestData = false;
+        	JSONObject hashedUsers = new JSONObject();
+        	if (this.requestPacket.has("users")) {
+        		JSONArray users = this.requestPacket.getJSONArray("users");
+        		for (int i = 0; i < users.length(); i++) {
+        			String user = users.getString(i);
+        			String stringToHash = user + this.securityPacket.getString("consumer_key");
+        			String userHash = DigestUtils.sha256Hex(stringToHash);
+        			hashedUsers.put(user, userHash);
+        			}
+        		this.requestPacket.put("users", hashedUsers);
+        		this.requestString = this.requestPacket.toString();
+        	}
         }
     }
 

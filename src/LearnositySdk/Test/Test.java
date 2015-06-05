@@ -3,8 +3,8 @@ package learnositysdk.test;
 import learnositysdk.request.DataApi;
 import learnositysdk.request.Init;
 import learnositysdk.request.Remote;
-import java.util.UUID;
 
+import java.util.UUID;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -353,6 +353,30 @@ public class Test {
 
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
 				throw new Exception("Errors in the questions api initialisation");
+			}
+			
+			/*
+			*********************************************
+			Testing events initialisation
+			*********************************************
+			*/
+			System.out.println("Testing events initialisation");
+			req = new JSONObject();
+			JSONArray users = new JSONArray();
+			users.put("brianmoser");
+			users.put("hankschrader");
+			req.put("users", users);
+			init = new Init("events", sec, consumerSecret, req);
+			test = new JSONObject(init.generate());
+			if (!test.has("config") || !test.getJSONObject("config").has("users")) { 
+				throw new Exception("Errors in the events initialisation");
+			}
+			JSONObject usersFromInit = test.getJSONObject("config").getJSONObject("users");
+			if (!usersFromInit.has("brianmoser") ||
+					!usersFromInit.has("hankschrader") ||
+					!usersFromInit.getString("brianmoser").equals("096cb558f8005c8ded12c505a1f5eeea837d3b1042837d4e79ef9ba568707ebb") ||
+					!usersFromInit.getString("hankschrader").equals("ba0759a92d5569c6512c98bc81218a8a06d167eb5a8c56ec6681d574904e8bf4")) {
+				throw new Exception("Errors in the events initialisation, users wrongly set");
 			}
 			
 		}catch (Exception e) {
