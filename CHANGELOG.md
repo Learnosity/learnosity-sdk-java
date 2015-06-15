@@ -1,5 +1,9 @@
 ## v0.9 (2015-06-05)
 
+* Fixed a bug in hashing users for events api
+
+## v0.9 (2015-06-05)
+
 * Added support for events api
 
 ## v0.8 (2015-05-13)
