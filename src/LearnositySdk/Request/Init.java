@@ -86,7 +86,7 @@ public class Init {
 
     /**
      * Key names that are valid in the securityPacket, they are also in
-     * the correct order for signature generation.
+     * the correct order for signature generation. 
      */
     private final String[] validSecurityKeys = new String[] {"consumer_key", "domain", "timestamp", "user_id"};
 
@@ -326,7 +326,7 @@ public class Init {
         		JSONArray users = this.requestPacket.getJSONArray("users");
         		for (int i = 0; i < users.length(); i++) {
         			String user = users.getString(i);
-        			String stringToHash = user + this.securityPacket.getString("consumer_key");
+        			String stringToHash = user + this.secret;
         			String userHash = DigestUtils.sha256Hex(stringToHash);
         			hashedUsers.put(user, userHash);
         			}

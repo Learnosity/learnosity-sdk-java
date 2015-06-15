@@ -372,10 +372,11 @@ public class Test {
 				throw new Exception("Errors in the events initialisation");
 			}
 			JSONObject usersFromInit = test.getJSONObject("config").getJSONObject("users");
+
 			if (!usersFromInit.has("brianmoser") ||
 					!usersFromInit.has("hankschrader") ||
-					!usersFromInit.getString("brianmoser").equals("096cb558f8005c8ded12c505a1f5eeea837d3b1042837d4e79ef9ba568707ebb") ||
-					!usersFromInit.getString("hankschrader").equals("ba0759a92d5569c6512c98bc81218a8a06d167eb5a8c56ec6681d574904e8bf4")) {
+					!usersFromInit.getString("brianmoser").equals("7224f1cd26c7eaac4f30c16ccf8e143005734089724affe0dd9cbf008b941e2d") ||
+					!usersFromInit.getString("hankschrader").equals("1e94cba9c43295121a8c93c476601f4f54ce1ee93ddc7f6fb681729c90979b7f")) {
 				throw new Exception("Errors in the events initialisation, users wrongly set");
 			}
 			
