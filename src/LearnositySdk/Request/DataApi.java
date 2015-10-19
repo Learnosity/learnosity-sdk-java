@@ -6,6 +6,9 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import org.apache.http.client.config.RequestConfig;
+
+
 /**
  *--------------------------------------------------------------------------
  * Learnosity SDK - DataApi
@@ -131,11 +134,20 @@ public class DataApi
 		this.secret = secret;
 		this.action = action;
 	}
-	
+
 	/**
-	 * Function to make the post request
+	 * Function to modify the internal remote object based on a custom configuration
 	 * @return JSONObject containing the information of the request
 	 * @throws Exception
+	 */
+	
+	public void modifyRemote(RequestConfig requestConfig)
+	{
+		this.remote = new Remote(requestConfig);
+	}
+
+	/**
+	 * Function to make the post request
 	 */
 	public Remote request() throws Exception
 	{

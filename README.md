@@ -189,6 +189,11 @@ You'll call either get() or post() with the following arguments:
 ```
 // Instantiate the SDK Remote class:
 Remote remote = new Remote();
+
+// Instantiate the SDK Remote class with a RequestConfig - https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/client/config/RequestConfig.html:
+RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(1000).build();
+
+Remote remote = new Remote(requestConfig);
 // Call get() or post() with a URL:
 remote.get("http://schemas.learnosity.com/stable/questions/templates");
 
@@ -256,6 +261,13 @@ reqData = new HashMap<String,String>();
 reqData.put("limit", "10");
 
 DataApi dataApi = new DataApi("https://data.learnosity.com/latest/itembank/items", sec, consumerSecret, reqData, "get");
+
+// you can also configure the Data API with a requestConfig as above
+RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(1000).build();
+
+dataApi.modifyRequest(requestConfig);
+
+
 JSONObject response = dataApi.requestJSONObject();
 JSONObject res = new JSONObject(response.getString("body"));
 

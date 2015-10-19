@@ -12,6 +12,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.Header;
+import org.apache.http.client.config.RequestConfig;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -68,6 +69,17 @@ public class Remote {
 		httpclient = HttpClients.createDefault();
 	}
 	
+
+	/**
+	 * Alternate Constructor taking in requestConfig
+	 */
+	public Remote(RequestConfig requestConfig)
+	{
+		result = new HashMap<String,String>();
+		sb = new StringBuilder();
+		httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+	}
+
 	/**
 	 * Make a get request to the specified url
 	 * 
