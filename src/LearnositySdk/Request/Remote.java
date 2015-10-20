@@ -66,7 +66,7 @@ public class Remote {
 	{
 		result = new HashMap<String,String>();
 		sb = new StringBuilder();
-		httpclient = HttpClients.createDefault();
+		this.setDefaultClient();
 	}
 	
 
@@ -118,6 +118,21 @@ public class Remote {
 		this.request(url, true);
 	}
 	
+	/**
+	 * Set some default values for timeouts, emulating what is in the php sdk.
+	 * Not setting redirects as that's enabled by default, with max redirects
+	 * set to 50.
+	 * Also not setting ssl verification as that is also enabled by default.
+	 */
+	private void setDefaultClient()
+	{
+		RequestConfig defaultRequestConfig = RequestConfig.custom()
+				.setConnectTimeout(40000)
+				.setSocketTimeout(40000)
+				.setConnectionRequestTimeout(10000)
+				.build();
+		this.httpclient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
+	}
 	
 	/**
 	 * Makes the actual request

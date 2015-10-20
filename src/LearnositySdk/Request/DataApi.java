@@ -141,7 +141,7 @@ public class DataApi
 	 * @throws Exception
 	 */
 	
-	public void modifyRemote(RequestConfig requestConfig)
+	public void setRequestConfig(RequestConfig requestConfig)
 	{
 		this.remote = new Remote(requestConfig);
 	}

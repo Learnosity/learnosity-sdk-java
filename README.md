@@ -265,7 +265,7 @@ DataApi dataApi = new DataApi("https://data.learnosity.com/latest/itembank/items
 // you can also configure the Data API with a requestConfig as above
 RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(1000).build();
 
-dataApi.modifyRequest(requestConfig);
+dataApi.setRequestConfig(requestConfig);
 
 
 JSONObject response = dataApi.requestJSONObject();

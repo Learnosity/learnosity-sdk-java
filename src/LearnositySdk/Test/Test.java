@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.apache.http.client.config.RequestConfig;
 
 public class Test {
 	
@@ -33,9 +34,8 @@ public class Test {
 			securityMap.put("consumer_key", consumerKey);
 			securityMap.put("domain","localhost");
 			JSONArray items = new JSONArray();
-			items.put("bbf1380c-c75c-487c-90e3-18c7a36005d1");
-			items.put("7bd193b1-3dc7-4c4d-913d-0278accffd67");
-			items.put("99edf31b-8a7a-424b-8cba-f41795f55c19");
+			items.put("LEAR_1");
+			items.put("LEAR_2");
 			JSONObject data = new JSONObject();
 			data.put("items", items);
 		    
@@ -51,6 +51,7 @@ public class Test {
 			JSONObject req = new JSONObject();
 			req.put("activities", activities);
 			
+			RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(40000).build();
 			DataApi dataApi = new DataApi(endpoint, securityMap, consumerSecret, req, "set");
 			Remote remote = dataApi.request();
 			String body = remote.getBody();
@@ -132,6 +133,7 @@ public class Test {
 			
 			System.out.println("Testing data api call without request data, but with action");
 			dataApi = new DataApi("https://data.learnosity.com/stable/itembank/items", sec, consumerSecret, "get");
+			dataApi.setRequestConfig(requestConfig);
 			response = dataApi.requestJSONObject();
 			res = new JSONObject(response.getString("body"));
 			if ((response.getInt("statusCode") == 200 && res.getJSONObject("meta").getBoolean("status") != true) ||
