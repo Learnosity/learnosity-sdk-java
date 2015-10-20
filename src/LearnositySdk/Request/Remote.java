@@ -12,6 +12,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.Header;
+import org.apache.http.client.config.RequestConfig;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -65,9 +66,20 @@ public class Remote {
 	{
 		result = new HashMap<String,String>();
 		sb = new StringBuilder();
-		httpclient = HttpClients.createDefault();
+		this.setDefaultClient();
 	}
 	
+
+	/**
+	 * Alternate Constructor taking in requestConfig
+	 */
+	public Remote(RequestConfig requestConfig)
+	{
+		result = new HashMap<String,String>();
+		sb = new StringBuilder();
+		httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+	}
+
 	/**
 	 * Make a get request to the specified url
 	 * 
@@ -106,6 +118,21 @@ public class Remote {
 		this.request(url, true);
 	}
 	
+	/**
+	 * Set some default values for timeouts, emulating what is in the php sdk.
+	 * Not setting redirects as that's enabled by default, with max redirects
+	 * set to 50.
+	 * Also not setting ssl verification as that is also enabled by default.
+	 */
+	private void setDefaultClient()
+	{
+		RequestConfig defaultRequestConfig = RequestConfig.custom()
+				.setConnectTimeout(40000)
+				.setSocketTimeout(40000)
+				.setConnectionRequestTimeout(10000)
+				.build();
+		this.httpclient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
+	}
 	
 	/**
 	 * Makes the actual request
