@@ -1,3 +1,7 @@
+## v0.11 (2015-11-21)
+
+* Setting timeout defaults for requests and allowing user to set custom request configuration
+
 ## v0.10 (2015-06-05)
 
 * Fixed a bug in hashing users for events api
