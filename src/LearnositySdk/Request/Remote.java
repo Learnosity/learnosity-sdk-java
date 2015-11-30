@@ -155,22 +155,16 @@ public class Remote {
 			httpRequest = new HttpGet(url);
 		}
 
-		try {
-			resp = this.httpclient.execute(httpRequest);
-			InputStream is = resp.getEntity().getContent();
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(is, writer);
-			this.result.put("body", writer.toString());
-			this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
-			this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
-			this.headers = resp.getAllHeaders();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			this.result.put("error", e.getMessage());
-		} finally {
-			if (resp != null) {
-				resp.close();
-			}
+		resp = this.httpclient.execute(httpRequest);
+		InputStream is = resp.getEntity().getContent();
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(is, writer);
+		this.result.put("body", writer.toString());
+		this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
+		this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
+		this.headers = resp.getAllHeaders();
+		if (resp != null) {
+			resp.close();
 		}
 	}
 
@@ -189,19 +183,6 @@ public class Remote {
 	}
 
 	/**
-	 * Returns the error message of any exception thrown during the http request
-	 *
-	 * @return the error string (or an empty string, if no exception occurred)
-	 */
-	public String getError()
-	{
-		if (this.result.containsKey("error")) {
-			return this.result.get("error");
-		}
-		return "";
-	}
-
-	/**
 	 * Returns part of the response headers
 	 *
 	 * @param  type Which key in the headers packet to return
@@ -209,6 +190,9 @@ public class Remote {
 	 */
 	public String getHeader(String name)
 	{
+		if (this.headers == null) {
+			return "";
+		}
 		for (Header header : this.headers) {
 			if (header.getName().equals(name)) {
 				return header.getValue();
@@ -224,6 +208,9 @@ public class Remote {
 	 */
 	public String getContentType()
 	{
+		if (this.headers == null) {
+			return "";
+		}
 		for (Header header : this.headers) {
 			if (header.getName().equals("content_type")) {
 				return header.getValue();
