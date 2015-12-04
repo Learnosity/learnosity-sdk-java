@@ -1,3 +1,7 @@
+## v0.12 (2015-12-04)
+
+* Making exceptions in the request visible to users
+
 ## v0.11 (2015-11-21)
 
 * Setting timeout defaults for requests and allowing user to set custom request configuration
