@@ -1,4 +1,4 @@
-package learnositysdk.request;
+package com.learnosity.sdk.request;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -158,7 +158,7 @@ public class Remote {
 		resp = this.httpclient.execute(httpRequest);
 		InputStream is = resp.getEntity().getContent();
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(is, writer);
+		IOUtils.copy(is, writer, "UTF-8");
 		this.result.put("body", writer.toString());
 		this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
 		this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
@@ -185,7 +185,7 @@ public class Remote {
 	/**
 	 * Returns part of the response headers
 	 *
-	 * @param  type Which key in the headers packet to return
+	 * @param  name Which key in the headers packet to return
 	 * @return      Header from the response packet
 	 */
 	public String getHeader(String name)

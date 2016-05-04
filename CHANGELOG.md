@@ -1,3 +1,7 @@
+## v0.13 (2016-05-04)
+
+* Use gradle for build tooling
+
 ## v0.12 (2015-12-04)
 
 * Making exceptions in the request visible to users

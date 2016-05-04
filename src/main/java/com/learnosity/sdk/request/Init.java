@@ -1,4 +1,4 @@
-package learnositysdk.request;
+package com.learnosity.sdk.request;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

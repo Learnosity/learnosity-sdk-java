@@ -1,4 +1,4 @@
-package learnositysdk.request;
+package com.learnosity.sdk.request;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +77,7 @@ public class DataApi
 	 * @param secret
 	 * @throws Exception
 	 */
-	public DataApi(String url, Object securityPacket, String secret) throws Exception
+	public DataApi(String url, Object securityPacket, String secret)
 	{
 		this.remote = new Remote();
 		this.url = url;
@@ -218,7 +218,8 @@ public class DataApi
     	response.put("body", remote.getBody());
     	response.put("contentType",  remote.getContentType());
     	response.put("statusCode", remote.getStatusCode());
-    	response.put("error", remote.getError());
+//		Remote has not getError function, so not sure what to do here.
+//    	response.put("error", remote.getError());
     	response.put("timeTaken", remote.getTimeTaken());
     	return response;
     }

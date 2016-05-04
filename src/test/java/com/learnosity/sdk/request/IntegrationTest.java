@@ -1,28 +1,26 @@
-package learnositysdk.test;
+package com.learnosity.sdk.request;
 
-import learnositysdk.request.DataApi;
-import learnositysdk.request.Init;
-import learnositysdk.request.Remote;
-
-import java.util.UUID;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONObject;
-import org.json.JSONArray;
 import org.apache.http.client.config.RequestConfig;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 
-public class Test {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+public class IntegrationTest {
 	
 	static private String consumerKey = "yis0TYCu7U9V4o7M";
 	static private String expectedSignature = "e9cd04b624d1dbe89fd4cad0a447f485e0fcec1392cbd3e2841826a954cc4e8e";
 	private Remote remote;
 	private Init init;
 	
-	public static void main (String[] args)
-	{
-		try {
+	@Test
+	@Ignore("Test test doesn't work")
+	public void theBigTest() throws Exception {
 			Map reqData;
 			Init init;
 			String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
@@ -165,7 +163,7 @@ public class Test {
 			init = new Init("assess", sec, consumerSecret, req);
 			JSONObject test = new JSONObject(init.generate());
 			if (!test.getJSONArray("items").getJSONObject(0).get("reference").equals("Demo3")) {
-				throw new Exception("Errors in the assess initialisation");
+				Assert.fail("Errors in the assess initialisation");
 			}
 
 			/*
@@ -315,7 +313,7 @@ public class Test {
 			init = new Init("questions", sec, consumerSecret, req);
 			test = new JSONObject(init.generate());
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
-				throw new Exception("Errors in the questions api initialisation");
+				Assert.fail("Errors in the questions api initialisation");
 			}
 			
 			System.out.println("Testing question initialisation with JSON strings");
@@ -354,7 +352,7 @@ public class Test {
 			test = new JSONObject(init.generate());
 
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
-				throw new Exception("Errors in the questions api initialisation");
+				Assert.fail("Errors in the questions api initialisation");
 			}
 			
 			/*
@@ -371,7 +369,7 @@ public class Test {
 			init = new Init("events", sec, consumerSecret, req);
 			test = new JSONObject(init.generate());
 			if (!test.has("config") || !test.getJSONObject("config").has("users")) { 
-				throw new Exception("Errors in the events initialisation");
+				Assert.fail("Errors in the events initialisation");
 			}
 			JSONObject usersFromInit = test.getJSONObject("config").getJSONObject("users");
 
@@ -379,29 +377,24 @@ public class Test {
 					!usersFromInit.has("hankschrader") ||
 					!usersFromInit.getString("brianmoser").equals("7224f1cd26c7eaac4f30c16ccf8e143005734089724affe0dd9cbf008b941e2d") ||
 					!usersFromInit.getString("hankschrader").equals("1e94cba9c43295121a8c93c476601f4f54ce1ee93ddc7f6fb681729c90979b7f")) {
-				throw new Exception("Errors in the events initialisation, users wrongly set");
+				Assert.fail("Errors in the events initialisation, users wrongly set");
 			}
 			
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-
 	}
 	
-	private static void checkSecuritySettings (String sec) throws Exception
-	{
+	private void checkSecuritySettings (String sec) throws Exception {
 		JSONObject security = new JSONObject(sec);
 		
 		if (!(security.getString("consumer_key").equals(consumerKey) &&
 			security.getString("user_id").equals("12345678") &&
 			security.getString("timestamp").equals("20140612-0438") &&
 			security.getString("signature").equals(expectedSignature))) {
-	
-			throw new Exception("Idiot, check your code");
+
+			Assert.fail("Idiot, check your code");
 		}
 	}
 	
-	private static void checkSignature (String signature) throws Exception
+	private void checkSignature (String signature) throws Exception
 	{
 		//if (!signature.equals(expectedSignature)) {
 			//throw new Exception("Again check your code");

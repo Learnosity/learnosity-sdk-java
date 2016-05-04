@@ -1,0 +1,36 @@
+plugins {
+	id 'java' // or 'groovy' Must be explicitly applied
+	id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+version = '0.13'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Learnosity Java SDK',
+                   'Implementation-Version': version
+    }
+}
+
+
+dependencies {
+
+    compile 'commons-codec:commons-codec:1.10'
+	compile 'commons-io:commons-io:2.5'
+    compile 'commons-logging:commons-logging:1.2'
+    compile 'org.apache.httpcomponents:httpclient:4.3.6'
+	compile 'org.json:json:20160212'
+
+    testCompile 'junit:junit:4.12'
+}
+
+// add support for a shadow jar, which will include all dependencies
+apply plugin: 'com.github.johnrengelman.shadow'
+shadowJar {
+	baseName = 'learnosity-java-sdk-all'
+	classifier = ''
+}

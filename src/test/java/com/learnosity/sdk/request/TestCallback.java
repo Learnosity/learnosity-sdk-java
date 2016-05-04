@@ -1,8 +1,6 @@
-package learnositysdk.test;
+package com.learnosity.sdk.request;
 
 import org.json.JSONObject;
-
-import learnositysdk.request.RequestCallback;
 
 public class TestCallback implements RequestCallback {
 
