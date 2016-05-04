@@ -14,6 +14,8 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 
 /**
  *--------------------------------------------------------------------------
@@ -102,9 +104,8 @@ public class Init {
      * @param service        the service to be used
      * @param securityPacket any object which can be used to instantiate a json.org.JSONObject or a json.org.JSONObject
      * @param secret         the private key
-     * @throws Exception     if any of the passed arguments are invalid
      */
-    public Init (String service, Object securityPacket, String secret) throws Exception
+    public Init (String service, Object securityPacket, String secret)
     {
         // First validate and set the arguments
         this.validateRequiredArgs(service, securityPacket, secret);
@@ -126,9 +127,8 @@ public class Init {
      *                       a json.org.JSONObject
      * @param secret         the private key
      * @param requestPacket  an object which can be parsed into a JSONObject
-     * @throws Exception     if any of the passed arguments are invalid
      */
-    public Init (String service, Object securityPacket, String secret, Object requestPacket) throws Exception
+    public Init (String service, Object securityPacket, String secret, Object requestPacket)
     {
  
         // First validate and set the arguments
@@ -147,7 +147,7 @@ public class Init {
      * Setter method for action. If an action is required, it should be set before generate() is called
      * @param action the required action (e.g. get or post)
      */
-    public void setAction(String action) throws Exception
+    public void setAction(String action)
     {
     	this.action = action;
     	
@@ -161,7 +161,7 @@ public class Init {
      *
      * @return A JSON string
      */
-    public String generate() throws Exception
+    public String generate()
     {
         JSONObject output = new JSONObject();
         String outputString = "";
@@ -229,7 +229,7 @@ public class Init {
      *
      * @return A signature hash for the request authentication
      */
-    public String generateSignature() throws Exception
+    public String generateSignature()
     {
         ArrayList<String> signatureArray = new ArrayList<String>();
 
@@ -280,7 +280,7 @@ public class Init {
     /**
      * Set any options for services that aren't generic
      */
-    private void setServiceOptions() throws Exception
+    private void setServiceOptions()
     {
         if (this.service.equals("assess") ||
             this.service.equals("questions")) {
@@ -342,35 +342,28 @@ public class Init {
      * @param  service
      * @param  securityPacket
      * @param  secret
-     * @throws Exception
      */
-    private void validateRequiredArgs(String service, Object securityPacket, String secret) throws Exception
+    private void validateRequiredArgs(String service, Object securityPacket, String secret)
     {
         
-        if (service.isEmpty()) {
-            throw new Exception("The `service` argument wasn't found or was empty");
-        } else if (!Arrays.asList(this.validServices).contains(service.toLowerCase())) {
-            throw new Exception("The service provided " + service + " is not valid");
-        }
+        checkArgument(service.isEmpty(),"The `service` argument wasn't found or was empty");
+        checkArgument(!Arrays.asList(this.validServices).contains(service.toLowerCase()),
+            "The service provided " + service + " is not valid");
+        checkArgument(secret.isEmpty(),"The `secret` argument must be a valid string");
+
         this.service = service;
 
         // In case the user gave us a securityPacket String, convert to a JSONOBject
-        
-
         this.validateSecurityPacket(securityPacket);
         
-        if (secret.isEmpty()) {
-            throw new Exception("The `secret` argument must be a valid string");
-        }
         this.secret = secret;
     }
 
     /**
      * Validates the request packet argument
      * @param requestPacket
-     * @throws Exception
      */
-    private void validateRequestPacket(Object requestPacket) throws Exception
+    private void validateRequestPacket(Object requestPacket)
     {
         if (requestPacket instanceof JSONObject) {
             this.requestPacket = new JSONObject(requestPacket.toString());
@@ -388,17 +381,16 @@ public class Init {
                 this.requestString = this.requestPacket.toString();
             }
         }
-        if (this.requestPacket.length() == 0) {
-            throw new Exception("The requestPacket cannot be empty.");
-        }
+        checkArgument(this.requestPacket.length() == 0,
+				"The requestPacket cannot be empty.");
+
     }
 
     /**
      * Validate the security packet argument
      * @param securityPacket
-     * @throws Exception
      */
-    private void validateSecurityPacket (Object securityPacket) throws Exception
+    private void validateSecurityPacket (Object securityPacket)
     {
         if (securityPacket instanceof JSONObject) {
             this.securityPacket = new JSONObject(securityPacket.toString());
@@ -413,20 +405,20 @@ public class Init {
             }
         }
         
-        if (this.service.equals("questions") && !this.securityPacket.has("user_id")) {
-            throw new Exception("If using the questions api, a user id needs to be specified");
-        }
+        checkArgument(this.service.equals("questions") && !this.securityPacket.has("user_id"),
+            "If using the questions api, a user id needs to be specified");
 
-        if (this.securityPacket.length() == 0) {
-            throw new Exception("The security packet argument cannot be empty");
-        }
+
+        checkArgument(this.securityPacket.length() == 0,
+            "The security packet argument cannot be empty");
+
         
         Iterator<String> keyIter = this.securityPacket.keys();
         while (keyIter.hasNext()) {
             String key = keyIter.next();
-            if (!Arrays.asList(this.validSecurityKeys).contains(key)) {
-                throw new Exception("Invalid key found in the security packet: " + key);
-            }   
+            checkArgument(!Arrays.asList(this.validSecurityKeys).contains(key),
+                "Invalid key found in the security packet: " + key);
+
         }
 
         if (!this.securityPacket.has("timestamp")) {

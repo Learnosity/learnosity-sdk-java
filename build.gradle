@@ -24,8 +24,9 @@ dependencies {
     compile 'commons-logging:commons-logging:1.2'
     compile 'org.apache.httpcomponents:httpclient:4.3.6'
 	compile 'org.json:json:20160212'
+	compile 'com.google.guava:guava:19.0'
 
-    testCompile 'junit:junit:4.12'
+	testCompile 'junit:junit:4.12'
 }
 
 // add support for a shadow jar, which will include all dependencies
