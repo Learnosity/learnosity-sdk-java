@@ -149,15 +149,15 @@ public class DataApi
 	public Remote request() throws IOException {
 		this.options = new HashMap<String,Object>();
 		if (this.action.equals("")) {
-			this.init = new Init("data", this.securityPacket, this.secret);
+			this.init = new Init(Init.Service.Data, this.securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
 		if (!this.action.equals("") && this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret);
+			this.init = new Init(Init.Service.Data, securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
 		if (!this.action.equals("") && !this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret, this.requestString);
+			this.init = new Init(Init.Service.Data, securityPacket, this.secret, this.requestString);
 			this.init.setAction(this.action);
 			this.secJson = new JSONObject(init.generate());
 			this.options.put("action", action);
@@ -198,7 +198,7 @@ public class DataApi
 			body = new JSONObject(response.getString("body"));
 			meta = body.getJSONObject("meta");
 			data = body.getJSONArray("data");
-			if (meta.getBoolean("status") == true) {
+			if (meta.getBoolean("status")) {
 				callback.execute(response);
 			}
 			if (meta.has("next") && data.length() > 0) {

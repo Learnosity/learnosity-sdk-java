@@ -3,11 +3,14 @@ package com.learnosity.sdk.request;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -15,6 +18,10 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.learnosity.sdk.request.Init.Service.Assess;
+import static com.learnosity.sdk.request.Init.Service.Data;
+import static com.learnosity.sdk.request.Init.Service.Questions;
 
 
 /**
@@ -38,7 +45,7 @@ public class Init {
      *  - questions
      *  - reports
      */
-    private String service;
+    private Service service;
     
     /**
      * The consumer secret as provided by Learnosity. This is your private key
@@ -90,12 +97,22 @@ public class Init {
      * Key names that are valid in the securityPacket, they are also in
      * the correct order for signature generation. 
      */
-    private final String[] validSecurityKeys = new String[] {"consumer_key", "domain", "timestamp", "user_id"};
+    public static final List<String> VALID_SECURITY_KEYS = ImmutableList.of("consumer_key", "domain", "timestamp", "user_id");
 
     /**
      * Valid strings for service
      */
-    private String[] validServices = new String[] {"assess", "author", "data", "items", "questions", "reports", "events"};
+    public enum Service {
+		Assess("assess"), Author("author"), Data("data"), Items("items"), Questions("questions"), Reports("reports"), Events("events");
+		private final String key;
+
+		private Service(String key) {
+			this.key = key;
+		}
+		public String getKey() {
+			return this.key;
+		}
+	}
     
     /**
      * Instantiate this class with all security and request data. It
@@ -105,7 +122,7 @@ public class Init {
      * @param securityPacket any object which can be used to instantiate a json.org.JSONObject or a json.org.JSONObject
      * @param secret         the private key
      */
-    public Init (String service, Object securityPacket, String secret)
+    public Init (Service service, Object securityPacket, String secret)
     {
         // First validate and set the arguments
         this.validateRequiredArgs(service, securityPacket, secret);
@@ -128,7 +145,7 @@ public class Init {
      * @param secret         the private key
      * @param requestPacket  an object which can be parsed into a JSONObject
      */
-    public Init (String service, Object securityPacket, String secret, Object requestPacket)
+    public Init (Service service, Object securityPacket, String secret, Object requestPacket)
     {
  
         // First validate and set the arguments
@@ -166,58 +183,60 @@ public class Init {
         JSONObject output = new JSONObject();
         String outputString = "";
 
-        if (this.service.equals("assess") ||
-            this.service.equals("author") ||
-            this.service.equals("data") ||
-            this.service.equals("items") ||
-            this.service.equals("reports")) {
+		switch (this.service) {
+			case Assess:
+			case Author:
+			case Data:
+			case Items:
+			case Reports:
 
-            // Add the security packet (with signature) to the output
-            output.put("security", this.securityPacket);
+				// Add the security packet (with signature) to the output
+				output.put("security", this.securityPacket);
 
-            // Add the action if necessary (Data API)
-            if (!this.action.isEmpty()) {
-                output.put("action", this.action);
-            }
+				// Add the action if necessary (Data API)
+				if (!this.action.isEmpty()) {
+					output.put("action", this.action);
+				}
 
-            if (this.service.equals("data")) {
-                return output.getJSONObject("security").toString();
-            } else if (this.service.equals("assess")) {
-                return this.requestString;
-            }
+				if (this.service == Data) {
+					return output.getJSONObject("security").toString();
+				} else if (this.service == Assess) {
+					return this.requestString;
+				}
 
-            outputString = output.toString();
-            // Add the request packet if available
-            if (this.requestString != "") {
-                outputString = outputString.substring(0, outputString.length() - 1) + ",";
-                outputString = outputString + "\"request\":" + this.requestString + "}";
-            }
-        } else if (this.service.equals("questions")) {
-            // Make a copy of security packet (with signature) to the root of output
-            output = new JSONObject(this.securityPacket, JSONObject.getNames(this.securityPacket));
+				outputString = output.toString();
+				// Add the request packet if available
+				if (Strings.isNullOrEmpty(this.requestString)) {
+					outputString = outputString.substring(0, outputString.length() - 1) + ",";
+					outputString = outputString + "\"request\":" + this.requestString + "}";
+				}
+				break;
+			case Questions:
+				// Make a copy of security packet (with signature) to the root of output
+				output = new JSONObject(this.securityPacket, JSONObject.getNames(this.securityPacket));
 
-            // Remove the `domain` key from the security packet
-            output.remove("domain");
-                
-            outputString = output.toString();
-            // Merge the request packet if necessary. Note: to make sure we don't change the
-            // order of key/value pairs in the json, we manipulate the json string instead of
-            // the json object and then parsing into a string
-            if (this.requestString != "") {
-                outputString = outputString.substring(0, outputString.length() - 1) + ",";
-                outputString = outputString + this.requestString.substring(1);
-            }
-        } else if (this.service.equals("events")) {
-        	// Add the security packet (with signature) to the output
-        	output.put("security", this.securityPacket);
-        	outputString = output.toString();
+				// Remove the `domain` key from the security packet
+				output.remove("domain");
 
-            // Add the request packet as key 'config' if available
-            if (this.requestString != "") {
-                outputString = outputString.substring(0, outputString.length() - 1) + ",";
-                outputString = outputString + "\"config\":" + this.requestString + "}";
-            }
-        }
+				outputString = output.toString();
+				// Merge the request packet if necessary. Note: to make sure we don't change the
+				// order of key/value pairs in the json, we manipulate the json string instead of
+				// the json object and then parsing into a string
+				if (this.requestString != "") {
+					outputString = outputString.substring(0, outputString.length() - 1) + ",";
+					outputString = outputString + this.requestString.substring(1);
+				}
+			case Events:
+				// Add the security packet (with signature) to the output
+				output.put("security", this.securityPacket);
+				outputString = output.toString();
+
+				// Add the request packet as key 'config' if available
+				if (this.requestString != "") {
+					outputString = outputString.substring(0, outputString.length() - 1) + ",";
+					outputString = outputString + "\"config\":" + this.requestString + "}";
+				}
+		}
         return outputString;
     }
 
@@ -235,7 +254,7 @@ public class Init {
 
         // Create a pre-hash string based on the security credentials
         // The order is important
-        for (String key : this.validSecurityKeys) {
+        for (String key : this.VALID_SECURITY_KEYS) {
             if (this.securityPacket.has(key)) {
                 signatureArray.add(this.securityPacket.getString(key));
             }
@@ -343,13 +362,11 @@ public class Init {
      * @param  securityPacket
      * @param  secret
      */
-    private void validateRequiredArgs(String service, Object securityPacket, String secret)
+    private void validateRequiredArgs(Service service, Object securityPacket, String secret)
     {
-        
-        checkArgument(service.isEmpty(),"The `service` argument wasn't found or was empty");
-        checkArgument(!Arrays.asList(this.validServices).contains(service.toLowerCase()),
-            "The service provided " + service + " is not valid");
-        checkArgument(secret.isEmpty(),"The `secret` argument must be a valid string");
+
+		checkNotNull(service,"The `service` argument is required");
+        checkArgument(!Strings.isNullOrEmpty(secret),"The `secret` argument must be a valid string");
 
         this.service = service;
 
@@ -392,6 +409,7 @@ public class Init {
      */
     private void validateSecurityPacket (Object securityPacket)
     {
+		checkNotNull(securityPacket);
         if (securityPacket instanceof JSONObject) {
             this.securityPacket = new JSONObject(securityPacket.toString());
         } else {
@@ -404,19 +422,20 @@ public class Init {
                 this.securityPacket = new JSONObject(securityPacket);
             }
         }
-        
-        checkArgument(this.service.equals("questions") && !this.securityPacket.has("user_id"),
-            "If using the questions api, a user id needs to be specified");
 
+		if (this.service == Questions) {
+			checkArgument(this.securityPacket.has("user_id"),
+					"If using the questions api, a user id needs to be specified");
+		}
 
-        checkArgument(this.securityPacket.length() == 0,
-            "The security packet argument cannot be empty");
+        checkArgument(this.securityPacket.length() > 0,
+            "The security packet argument cannot be empty expected arguments: "+ Joiner.on(",").join(VALID_SECURITY_KEYS));
 
         
         Iterator<String> keyIter = this.securityPacket.keys();
         while (keyIter.hasNext()) {
             String key = keyIter.next();
-            checkArgument(!Arrays.asList(this.validSecurityKeys).contains(key),
+            checkArgument(this.VALID_SECURITY_KEYS.contains(key),
                 "Invalid key found in the security packet: " + key);
 
         }

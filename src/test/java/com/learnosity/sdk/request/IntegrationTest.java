@@ -67,7 +67,7 @@ public class IntegrationTest {
 			securityMap.put("timestamp", "20140915-0948");
 
 			String secret = consumerSecret;
-			String service = "questions";
+			Init.Service service = Init.Service.Questions;
 
 			System.out.println("HashMap security test");
 
@@ -160,7 +160,7 @@ public class IntegrationTest {
 			req.put("items", items);
 
 			System.out.println("Testing assess initialisation");
-			init = new Init("assess", sec, consumerSecret, req);
+			init = new Init(Init.Service.Assess, sec, consumerSecret, req);
 			JSONObject test = new JSONObject(init.generate());
 			if (!test.getJSONArray("items").getJSONObject(0).get("reference").equals("Demo3")) {
 				Assert.fail("Errors in the assess initialisation");
@@ -251,7 +251,7 @@ public class IntegrationTest {
 			
 			JSONObject itemsObj = new JSONObject(itemsString);
 			//itemsString = itemsObj.toString();
-			init = new Init("items", itemSecString, consumerSecret, itemsObj.toString());
+			init = new Init(Init.Service.Items, itemSecString, consumerSecret, itemsObj.toString());
 			String itemsTest = init.generate();
 			//System.out.println("In order to test this in the actual items api, set signedRequest in demo site, itemsapi_assess.php to the following value:");
 			//System.out.println(itemsTest);
@@ -310,7 +310,7 @@ public class IntegrationTest {
 
 			System.out.println("Testing question initialisation");
 			sec.put("user_id", "12345678");
-			init = new Init("questions", sec, consumerSecret, req);
+			init = new Init(Init.Service.Questions, sec, consumerSecret, req);
 			test = new JSONObject(init.generate());
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
 				Assert.fail("Errors in the questions api initialisation");
@@ -348,7 +348,7 @@ public class IntegrationTest {
 
 			
 			
-			init = new Init("questions", sec, consumerSecret, req);
+			init = new Init(Init.Service.Questions, sec, consumerSecret, req);
 			test = new JSONObject(init.generate());
 
 			if (!test.get("type").equals("local_practice") || test.getJSONArray("questions").length() != 1 || !test.get("consumer_key").equals(consumerKey)) {
@@ -366,7 +366,7 @@ public class IntegrationTest {
 			users.put("brianmoser");
 			users.put("hankschrader");
 			req.put("users", users);
-			init = new Init("events", sec, consumerSecret, req);
+			init = new Init(Init.Service.Events, sec, consumerSecret, req);
 			test = new JSONObject(init.generate());
 			if (!test.has("config") || !test.getJSONObject("config").has("users")) { 
 				Assert.fail("Errors in the events initialisation");
