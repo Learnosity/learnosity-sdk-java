@@ -1,5 +1,6 @@
-package learnositysdk.request;
+package com.learnosity.sdk.request;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,9 +76,8 @@ public class DataApi
 	 * @param url
 	 * @param securityPacket
 	 * @param secret
-	 * @throws Exception
 	 */
-	public DataApi(String url, Object securityPacket, String secret) throws Exception
+	public DataApi(String url, Object securityPacket, String secret)
 	{
 		this.remote = new Remote();
 		this.url = url;
@@ -90,9 +90,8 @@ public class DataApi
 	 * @param url
 	 * @param securityPacket
 	 * @param secret
-	 * @throws Exception
 	 */
-	public DataApi(String url, Object securityPacket, String secret, String action) throws Exception
+	public DataApi(String url, Object securityPacket, String secret, String action)
 	{
 		this.remote = new Remote();
 		this.url = url;
@@ -108,9 +107,8 @@ public class DataApi
 	 * @param secret
 	 * @param requestPacket
 	 * @param action
-	 * @throws Exception
 	 */
-	public DataApi(String url, Object securityPacket, String secret , Object requestPacket, String action) throws Exception
+	public DataApi(String url, Object securityPacket, String secret , Object requestPacket, String action)
 	{
 		this.remote = new Remote();
 	    if (requestPacket instanceof JSONObject) {
@@ -138,7 +136,6 @@ public class DataApi
 	/**
 	 * Function to modify the internal remote object based on a custom configuration
 	 * @return JSONObject containing the information of the request
-	 * @throws Exception
 	 */
 	
 	public void setRequestConfig(RequestConfig requestConfig)
@@ -149,19 +146,18 @@ public class DataApi
 	/**
 	 * Function to make the post request
 	 */
-	public Remote request() throws Exception
-	{
+	public Remote request() throws IOException {
 		this.options = new HashMap<String,Object>();
 		if (this.action.equals("")) {
-			this.init = new Init("data", this.securityPacket, this.secret);
+			this.init = new Init(Init.Service.Data, this.securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
 		if (!this.action.equals("") && this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret);
+			this.init = new Init(Init.Service.Data, securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
 		if (!this.action.equals("") && !this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret, this.requestString);
+			this.init = new Init(Init.Service.Data, securityPacket, this.secret, this.requestString);
 			this.init.setAction(this.action);
 			this.secJson = new JSONObject(init.generate());
 			this.options.put("action", action);
@@ -175,9 +171,9 @@ public class DataApi
 	/**
 	 * Function to make the post request
 	 * @return JSONObject containing the information of the request
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	public JSONObject requestJSONObject() throws Exception
+	public JSONObject requestJSONObject() throws IOException
 	{
 		this.request();
 		return this.createResponseObject(this.remote);
@@ -189,7 +185,7 @@ public class DataApi
      * Executes the callback function for every response.
      * 
      */
-	public void requestRecursive(RequestCallback callback) throws Exception {
+	public void requestRecursive(RequestCallback callback) throws IOException {
 		JSONObject response;
 		JSONObject body;
 		JSONObject meta;
@@ -202,7 +198,7 @@ public class DataApi
 			body = new JSONObject(response.getString("body"));
 			meta = body.getJSONObject("meta");
 			data = body.getJSONArray("data");
-			if (meta.getBoolean("status") == true) {
+			if (meta.getBoolean("status")) {
 				callback.execute(response);
 			}
 			if (meta.has("next") && data.length() > 0) {
@@ -213,12 +209,13 @@ public class DataApi
 		} while (makeNextRequest);
 	}
     
-    private JSONObject createResponseObject(Remote remote) throws Exception {
+    private JSONObject createResponseObject(Remote remote) {
     	JSONObject response = new JSONObject();
     	response.put("body", remote.getBody());
     	response.put("contentType",  remote.getContentType());
     	response.put("statusCode", remote.getStatusCode());
-    	response.put("error", remote.getError());
+//		Remote has not getError function, so not sure what to do here.
+//    	response.put("error", remote.getError());
     	response.put("timeTaken", remote.getTimeTaken());
     	return response;
     }

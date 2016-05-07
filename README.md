@@ -285,8 +285,8 @@ We recommend that you use the Java JSON implementation which comes packaged in t
 
 The 'light' jar:
 
-In eclipse right click the java sdk project and select 'Export'. Under 'Java', select 'JAR file'. In the following screen only select the packages in the src (excluding the library folder) and click 'Finish'.
+Just run `./gradlew clean build` and in build/libs a jar file will be emitted.
 
 The 'all' jar:
 
-In eclipse right click the java sdk project and select 'Export'. Under 'Java', select 'Runnable JAR file', click 'Next' and then 'Finish'. There are warnings that some libararies are included. This can be disregarded as the libraries are publicly available.
+Just run `./gradlew clean shadowjar` and build/libs will contains an 'all' jar with a dependencies already inside.

@@ -1,5 +1,7 @@
-package learnositysdk.request;
+package com.learnosity.sdk.request;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.NameValuePair;
@@ -14,6 +16,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -85,7 +89,7 @@ public class Remote {
 	 * 
 	 * @param url the url of the request
 	 */
-	public void get(String url) throws Exception
+	public void get(String url) throws IOException
 	{
 		this.request(url, false);
 	}
@@ -96,7 +100,7 @@ public class Remote {
 	 * @param  url      Full URL of where to GET the request
 	 * @param  data     optional get arguments
 	 */
-	public void get(String url, Map<String,Object> data) throws Exception
+	public void get(String url, Map<String,Object> data) throws IOException
 	{
 		sb.append(url);
 		sb.append("?");
@@ -112,8 +116,7 @@ public class Remote {
 	 * @param  url      Full URL of where to POST the request
 	 * @param  data     post arguments
 	 */
-	public void post(String url, Map<String, Object> data) throws Exception
-	{
+	public void post(String url, Map<String, Object> data) throws IOException {
 		this.postData = data;
 		this.request(url, true);
 	}
@@ -141,15 +144,18 @@ public class Remote {
 	 * @param  post     Flag to indicate if this is a post request
 	 * @return void
 	 */
-	private void request(String url, boolean post) throws Exception
-	{
+	private void request(String url, boolean post) throws IOException {
 		CloseableHttpResponse resp = null;
 	    long startTime = System.currentTimeMillis();
 	    HttpUriRequest httpRequest;
 
 		if (post) {
 			HttpPost httpPost = new HttpPost(url);
-			httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData), "UTF-8"));
+			try {
+				httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				Throwables.propagate(e);
+			}
 			httpRequest = httpPost;
 		} else {
 			httpRequest = new HttpGet(url);
@@ -158,7 +164,7 @@ public class Remote {
 		resp = this.httpclient.execute(httpRequest);
 		InputStream is = resp.getEntity().getContent();
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(is, writer);
+		IOUtils.copy(is, writer, "UTF-8");
 		this.result.put("body", writer.toString());
 		this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
 		this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
@@ -185,7 +191,7 @@ public class Remote {
 	/**
 	 * Returns part of the response headers
 	 *
-	 * @param  type Which key in the headers packet to return
+	 * @param  name Which key in the headers packet to return
 	 * @return      Header from the response packet
 	 */
 	public String getHeader(String name)
