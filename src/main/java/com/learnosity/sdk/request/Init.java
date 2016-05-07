@@ -398,7 +398,7 @@ public class Init {
                 this.requestString = this.requestPacket.toString();
             }
         }
-        checkArgument(this.requestPacket.length() == 0,
+        checkArgument(this.requestPacket.length() >= 0,
 				"The requestPacket cannot be empty.");
 
     }
