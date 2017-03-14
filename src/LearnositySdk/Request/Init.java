@@ -388,6 +388,9 @@ public class Init {
                 this.requestString = this.requestPacket.toString();
             }
         }
+
+        // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to the string
+        this.requestString = this.requestString.replace("\\/", "/");
         if (this.requestPacket.length() == 0) {
             throw new Exception("The requestPacket cannot be empty.");
         }
