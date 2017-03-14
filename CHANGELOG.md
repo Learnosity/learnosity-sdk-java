@@ -1,3 +1,7 @@
+## v0.13 (2017-03-13)
+
+* Replace escaped forward slashes with unescaped forward slashes after stringifying the json object
+
 ## v0.12 (2015-12-04)
 
 * Making exceptions in the request visible to users
