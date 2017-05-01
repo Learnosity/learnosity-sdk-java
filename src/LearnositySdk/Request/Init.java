@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -391,6 +392,9 @@ public class Init {
 
         // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to the string
         this.requestString = this.requestString.replace("\\/", "/");
+
+        // unescape any escape sequences created by JSONObject.toString
+        this.requestString = StringEscapeUtils.unescapeJava(this.requestString);
         if (this.requestPacket.length() == 0) {
             throw new Exception("The requestPacket cannot be empty.");
         }

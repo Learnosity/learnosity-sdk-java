@@ -1,3 +1,7 @@
+## v0.14 (2017-04-18)
+
+* Unescape escaped sequences created by JSONObject.toString()
+
 ## v0.13 (2017-03-13)
 
 * Replace escaped forward slashes with unescaped forward slashes after stringifying the json object
