@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -189,7 +190,7 @@ public class Init {
 
             outputString = output.toString();
             // Add the request packet if available
-            if (this.requestString != "") {
+            if (StringUtils.isNotEmpty(this.requestString)) {
                 outputString = outputString.substring(0, outputString.length() - 1) + ",";
                 outputString = outputString + "\"request\":" + this.requestString + "}";
             }
@@ -204,7 +205,7 @@ public class Init {
             // Merge the request packet if necessary. Note: to make sure we don't change the
             // order of key/value pairs in the json, we manipulate the json string instead of
             // the json object and then parsing into a string
-            if (this.requestString != "") {
+            if (StringUtils.isNotEmpty(this.requestString)) {
                 outputString = outputString.substring(0, outputString.length() - 1) + ",";
                 outputString = outputString + this.requestString.substring(1);
             }
@@ -214,7 +215,7 @@ public class Init {
         	outputString = output.toString();
 
             // Add the request packet as key 'config' if available
-            if (this.requestString != "") {
+            if (StringUtils.isNotEmpty(this.requestString)) {
                 outputString = outputString.substring(0, outputString.length() - 1) + ",";
                 outputString = outputString + "\"config\":" + this.requestString + "}";
             }
@@ -390,11 +391,17 @@ public class Init {
             }
         }
 
-        // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to the string
+        // If requestPacket is not a string, then requestString is generated using
+        // JSONObject.toString that causes escaping issues.
+        if (!(requestPacket instanceof String)) {
+            // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to
+            // the string
         this.requestString = this.requestString.replace("\\/", "/");
 
         // unescape any escape sequences created by JSONObject.toString
         this.requestString = StringEscapeUtils.unescapeJava(this.requestString);
+        }
+
         if (this.requestPacket.length() == 0) {
             throw new Exception("The requestPacket cannot be empty.");
         }
