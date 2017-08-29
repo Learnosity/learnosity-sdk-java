@@ -5,11 +5,11 @@ Include this library into your own codebase to ease integration with any of the 
 ## Installation
 Installation can be done in three ways:
 
-1.) Download LearnositySdkJavaAll.jar and add to your build path. All the required libraries are included in this jar.
+1.) Download the jar in directory learnosity-sdk-java/Dist/All/ and add to your build path. All the required libraries are included in this jar.
 
-2.) Download LearnositySdkJavaLight.jar and add to your build path. This requires the external libraries which can be found in Dist/Light/RequiredJars
+2.) Download the jar in learnosity-sdk-java/Dist/Light/ and add to your build path. This requires the external libraries which can be found in learnosity-sdk-java/Dist/Light/RequiredJars
 
-3.) Download the source code and integrate into your project. This requires the external libraries which can be found in Dist/Light/RequiredJars
+3.) Download the source code and integrate into your project. This requires the external libraries which can be found in learnosity-sdk-java/Dist/Light/RequiredJars
 
 ## Test
 
@@ -219,9 +219,6 @@ The following methods are available after making a `get()` or `post()`.
 **getBody()**<br>
 Returns the body of the response payload.
 
-**getError()**<br>
-Returns an array that includes the error code and message (if an error was thrown)
-
 **getHeader()**<br>
 Currently only returns the *content_type* header of the response.
 
@@ -290,3 +287,7 @@ In eclipse right click the java sdk project and select 'Export'. Under 'Java', s
 The 'all' jar:
 
 In eclipse right click the java sdk project and select 'Export'. Under 'Java', select 'Runnable JAR file', click 'Next' and then 'Finish'. There are warnings that some libararies are included. This can be disregarded as the libraries are publicly available.
+
+## Building with Maven
+
+Run ```mvn package``` in your root directory (where pom.xml is located). This will put the light and all jar in the correct folders.

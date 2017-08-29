@@ -396,10 +396,10 @@ public class Init {
         if (!(requestPacket instanceof String)) {
             // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to
             // the string
-        this.requestString = this.requestString.replace("\\/", "/");
+            this.requestString = this.requestString.replace("\\/", "/");
 
-        // unescape any escape sequences created by JSONObject.toString
-        this.requestString = StringEscapeUtils.unescapeJava(this.requestString);
+            // unescape any escape sequences created by JSONObject.toString
+            this.requestString = StringEscapeUtils.unescapeJava(this.requestString);
         }
 
         if (this.requestPacket.length() == 0) {
