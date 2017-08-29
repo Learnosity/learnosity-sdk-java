@@ -218,7 +218,6 @@ public class DataApi
     	response.put("body", remote.getBody());
     	response.put("contentType",  remote.getContentType());
     	response.put("statusCode", remote.getStatusCode());
-    	response.put("error", remote.getError());
     	response.put("timeTaken", remote.getTimeTaken());
     	return response;
     }

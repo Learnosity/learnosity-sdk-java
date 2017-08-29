@@ -1,3 +1,9 @@
+## v0.15 (2017-08-28)
+
+* Don't Unescape escaped sequences not created by JSONObject.toString()
+* Fix != on Strings
+* Remove call to nonexistent Remote.getError()
+
 ## v0.14 (2017-04-18)
 
 * Unescape escaped sequences created by JSONObject.toString()
