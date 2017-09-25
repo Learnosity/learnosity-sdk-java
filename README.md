@@ -46,7 +46,7 @@ If you have to set an action attribute (for calls to data api, if not using the 
 Map securityMap = new HashMap();
 securityMap.put("consumer_key", "yis0TYCu7U9V4o7M");
 securityMap.put("user_id", "12345678");
-securityMap.put("domain", "localhost"
+securityMap.put("domain", "localhost");
 
 // Create some data for the questions api
 JSONObject req = new JSONObject();
