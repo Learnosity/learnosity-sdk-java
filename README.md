@@ -96,22 +96,24 @@ req.put("questions", questions);
 
 
 // Instantiate the SDK Init class with your security and request data:
-init = new Init("questions", sec, consumerSecret, req);
+init = new Init("questions", securityMap, consumerSecret, req);
 
 // Call the generate() method to retrieve a JavaScript object
-String questionJson = Init.generate();
+String questionJson = init.generate();
 
 // Pass the object to the initialisation of any Learnosity API
-LearnosityApp.init(questionsJson);
+// For instance in your jsp file you can have:
+// <script src="//questions.learnosity.com"></script>
+// var questionsApp = LearnosityApp.init(questionJson);
+
 
 // Let's initialise with JSON Strings
  String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
-         + "\"domain\": \"assess.vg.learnosity.com\""
-         +   "\"user_id\": \"12345678\"}";
+         +    "\"domain\": \"assess.vg.learnosity.com\","
+         +    "\"user_id\": \"12345678\"}";
  
  String reqString = "{\"state\":\"initial\","
          +  "\"type\":\"local_practice\","
-         +  "\"timestamp\":\"20140617-0533\","
          +  "\"response_id\":\"60005\","
          +  "\"questions\":"
          +   "[{\"stimulus_list\":"
@@ -131,8 +133,8 @@ LearnosityApp.init(questionsJson);
          +       "[\"England\","
          +             "\"Ireland\","
          +       "\"France\","
-         +       "\"Australia\"]}}]
- init = new Init("questions", sec, consumerSecret, new JSONObject(reqString));
+         +       "\"Australia\"]}}]}";
+ init = new Init("questions", secString, consumerSecret, new JSONObject(reqString));
  questionJson = init.generate();
 
 ```
