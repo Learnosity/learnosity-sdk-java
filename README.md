@@ -40,102 +40,152 @@ The security and request Object can be of any type that can be parsed into a org
 
 If you have to set an action attribute (for calls to data api, if not using the DatApi class), you can use the setAction method of class Init.
 
+```
+import learnositysdk.request.Init;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class Questions {
+
+	public static void main (String[] args) throws Exception
+	{
+		try {
+			Init init;
+			String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
+			
+			// Create a security Map
+			Map securityMap = new HashMap();
+			securityMap.put("consumer_key", "yis0TYCu7U9V4o7M");
+			securityMap.put("user_id", "12345678");
+			securityMap.put("domain", "localhost");
+
+			// Create some data for the questions api
+			JSONObject req = new JSONObject();
+			req.put("type", "local_practice");
+			req.put("state", "initial");
+
+			// Create a questions JSONArrray
+			JSONArray questions = new JSONArray();
+
+			// Create a question
+			JSONObject question = new JSONObject();
+			question.put("response_id", "60005");
+			question.put("type", "association");
+			question.put("stimulus", "Match the cities to the parent nation");
+
+			// Add stimulus list
+			JSONArray stimList = new JSONArray();
+			stimList.put(0, "London");
+			stimList.put(1, "Dublin");
+			stimList.put(2, "Paris");
+			stimList.put(3, "Sydney");
+			question.put("stimulus_list", stimList);
+
+			// Add possible responses
+			JSONArray possibleResp = new JSONArray();
+			possibleResp.put(0, "Australia");
+			possibleResp.put(1, "France");
+			possibleResp.put(2, "Ireland");
+			possibleResp.put(3, "England");
+			question.put("possible_responses", possibleResp);
+
+			// Add validation
+			JSONObject validation = new JSONObject();
+			JSONArray validResp = new JSONArray();
+			validResp.put(0, "England");
+			validResp.put(1, "Ireland");
+			validResp.put(2, "France");
+			validResp.put(3, "Australia");
+			validation.put("valid_responses", validResp);
+			question.put("validation", validation);
+
+			// Add questions to questions array
+			questions.put(0, question);
+
+			// Finally add questions to request
+			req.put("questions", questions);
+
+
+			// Instantiate the SDK Init class with your security and request data:
+			init = new Init("questions", securityMap, consumerSecret, req);
+
+			// Call the generate() method to retrieve a JavaScript object
+			String questionJson = init.generate();
+
+			// Pass the object to the initialisation of any Learnosity API
+			// For instance in your jsp file you can have:
+			// <script src="//questions.learnosity.com"></script>
+			// var questionsApp = LearnosityApp.init(questionJson);
+			
+			 System.out.println(questionJson); 
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+}
+```
+
+Raw JSON initialisation snippet:
 
 ```
-// Create a security Map
-Map securityMap = new HashMap();
-securityMap.put("consumer_key", "yis0TYCu7U9V4o7M");
-securityMap.put("user_id", "12345678");
-securityMap.put("domain", "localhost");
+import learnositysdk.request.Init;
 
-// Create some data for the questions api
-JSONObject req = new JSONObject();
-req.put("type", "local_practice");
-req.put("state", "initial");
+import java.util.HashMap;
+import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-// Create a questions JSONArrray
-JSONArray questions = new JSONArray();
+public class Questions {
 
-// Create a question
-JSONObject question = new JSONObject();
-question.put("response_id", "60005");
-question.put("type", "association");
-question.put("stimulus", "Match the cities to the parent nation");
-
-// Add stimulus list
-JSONArray stimList = new JSONArray();
-stimList.put(0, "London");
-stimList.put(1, "Dublin");
-stimList.put(2, "Paris");
-stimList.put(3, "Sydney");
-question.put("stimulus_list", stimList);
-
-// Add possible responses
-JSONArray possibleResp = new JSONArray();
-possibleResp.put(0, "Australia");
-possibleResp.put(1, "France");
-possibleResp.put(2, "Ireland");
-possibleResp.put(3, "England");
-question.put("possible_responses", possibleResp);
-
-// Add validation
-JSONObject validation = new JSONObject();
-JSONArray validResp = new JSONArray();
-validResp.put(0, "England");
-validResp.put(1, "Ireland");
-validResp.put(2, "France");
-validResp.put(3, "Australia");
-validation.put("valid_responses", validResp);
-question.put("validation", validation);
-
-// Add questions to questions array
-questions.put(0, question);
-
-// Finally add questions to request
-req.put("questions", questions);
-
-
-// Instantiate the SDK Init class with your security and request data:
-init = new Init("questions", securityMap, consumerSecret, req);
-
-// Call the generate() method to retrieve a JavaScript object
-String questionJson = init.generate();
-
-// Pass the object to the initialisation of any Learnosity API
-// For instance in your jsp file you can have:
-// <script src="//questions.learnosity.com"></script>
-// var questionsApp = LearnosityApp.init(questionJson);
-
-
-// Let's initialise with JSON Strings
- String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
-         +    "\"domain\": \"assess.vg.learnosity.com\","
-         +    "\"user_id\": \"12345678\"}";
- 
- String reqString = "{\"state\":\"initial\","
-         +  "\"type\":\"local_practice\","
-         +  "\"response_id\":\"60005\","
-         +  "\"questions\":"
-         +   "[{\"stimulus_list\":"
-         +     "[\"London\","
-         +        "\"Dublin\","
-         +        "\"Paris\","
-         +      "\"Sydney\"],"
-         + "\"stimulus\":\"Match the cities to the parent nation\","
-         +   "\"type\":\"association\","
-         +   "\"possible_responses\":"
-         +   "[\"Australia\","
-         +     "\"France\","
-         +     "\"Ireland\","
-         +       "\"England\"],"
-         +   "\"validation\":"
-         +   "{\"valid_responses\":"
-         +       "[\"England\","
-         +             "\"Ireland\","
-         +       "\"France\","
-         +       "\"Australia\"]}}]}";
- init = new Init("questions", secString, consumerSecret, new JSONObject(reqString));
- questionJson = init.generate();
+	public static void main (String[] args) throws Exception
+	{
+		try {
+			Init init;
+			String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
+			
+		    String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
+			         +    "\"domain\": \"assess.vg.learnosity.com\","
+			         +    "\"user_id\": \"12345678\"}";
+			 
+			 String reqString = "{\"state\":\"initial\","
+			         +  "\"type\":\"local_practice\","
+			         +  "\"response_id\":\"60005\","
+			         +  "\"questions\":"
+			         +   "[{\"stimulus_list\":"
+			         +     "[\"London\","
+			         +        "\"Dublin\","
+			         +        "\"Paris\","
+			         +      "\"Sydney\"],"
+			         + "\"stimulus\":\"Match the cities to the parent nation\","
+			         +   "\"type\":\"association\","
+			         +   "\"possible_responses\":"
+			         +   "[\"Australia\","
+			         +     "\"France\","
+			         +     "\"Ireland\","
+			         +       "\"England\"],"
+			         +   "\"validation\":"
+			         +   "{\"valid_responses\":"
+			         +       "[\"England\","
+			         +             "\"Ireland\","
+			         +       "\"France\","
+			         +       "\"Australia\"]}}]}";
+			 init = new Init("questions", secString, consumerSecret, new JSONObject(reqString));
+			 String questionJson = init.generate();
+			 System.out.println(questionJson);
+			 
+			 // Now you can pass questionJson to the initialisation of Questions API
+             // For instance on jsp you might have
+             // <script src="//questions.learnosity.com"></script>
+             // var questionsApp = LearnosityApp.init(questionJson);
+			   
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+}
 
 ```
 
