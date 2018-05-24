@@ -13,7 +13,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 
+import javax.net.ssl.SSLContext;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -62,22 +68,27 @@ public class Remote {
 	/**
 	 * Constructor
 	 */
-	public Remote()
+	public Remote() throws Exception
 	{
 		result = new HashMap<String,String>();
 		sb = new StringBuilder();
-		this.setDefaultClient();
+		RequestConfig defaultRequestConfig = RequestConfig.custom()
+				.setConnectTimeout(40000)
+				.setSocketTimeout(40000)
+				.setConnectionRequestTimeout(10000)
+				.build();
+		this.setClient(defaultRequestConfig);
 	}
 	
 
 	/**
 	 * Alternate Constructor taking in requestConfig
 	 */
-	public Remote(RequestConfig requestConfig)
+	public Remote(RequestConfig requestConfig) throws Exception
 	{
 		result = new HashMap<String,String>();
 		sb = new StringBuilder();
-		httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+		this.setClient(requestConfig);
 	}
 
 	/**
@@ -124,14 +135,23 @@ public class Remote {
 	 * set to 50.
 	 * Also not setting ssl verification as that is also enabled by default.
 	 */
-	private void setDefaultClient()
+	private void setClient(RequestConfig config) throws Exception
 	{
-		RequestConfig defaultRequestConfig = RequestConfig.custom()
-				.setConnectTimeout(40000)
-				.setSocketTimeout(40000)
-				.setConnectionRequestTimeout(10000)
-				.build();
-		this.httpclient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
+		SSLContext sslContext = SSLContexts.custom()
+			.useTLS()
+			.build();
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+			sslContext,
+			new String[]{"TLSv1.2"},
+			null,
+			SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER
+		);
+
+		this.httpclient = HttpClients.custom()
+			.setDefaultRequestConfig(config)
+			.setSSLSocketFactory(socketFactory)
+			.build();
 	}
 	
 	/**
