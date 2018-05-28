@@ -1,5 +1,7 @@
 # Learnosity SDK - Java
 
+[![Build Status](https://travis-ci.org/Learnosity/learnosity-sdk-java.svg?branch=master)](https://travis-ci.org/Learnosity/learnosity-sdk-java)
+
 Include this library into your own codebase to ease integration with any of the Learnosity APIs. Requires Java 7 or higher.
 
 ## Installation
