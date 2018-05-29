@@ -32,9 +32,10 @@ public class DataApiIT
 		throws java.lang.Exception
 	{
 		String testEnv = System.getenv("ENV");
-		String testVersion = System.getenv("VERSION");
+		String testRegion = System.getenv("REGION");
+		String testVersion = System.getenv("VER");
 
-		baseUrl = buildBaseUrl(testEnv, testVersion);
+		baseUrl = buildBaseUrl(testEnv, testRegion, testVersion);
 
 		securityMap = new HashMap<String, String>();
 		securityMap.put("consumer_key", consumerKey);
@@ -187,11 +188,14 @@ public class DataApiIT
 				|| (statusCode != 200 && !status));
 	}
 
-	public String buildBaseUrl(String env, String version)
+	public String buildBaseUrl(String env, String region, String version)
 	{
 		String envDomain = "";
+		String regionDomain = ".learnosity.com";
 		if (env != null && !env.equals("prod")) {
 			envDomain = "." + env;
+		} else if (region != null) {
+				regionDomain = region;
 		}
 
 		String versionPath = "v1";
@@ -199,9 +203,8 @@ public class DataApiIT
 			versionPath = "latest";
 		} else if (version != null) {
 			versionPath = version;
-		} else {
 		}
 
-		return "https://data" + envDomain + ".learnosity.com/" + versionPath;
+		return "https://data" + envDomain + regionDomain + "/" + versionPath;
 	}
 }

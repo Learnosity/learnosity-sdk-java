@@ -1,3 +1,7 @@
+ENV=prod
+REGION=.learnosity.com
+# Data API
+VER=v1
 
 all: build test
 
