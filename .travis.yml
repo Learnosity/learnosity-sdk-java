@@ -6,9 +6,31 @@ jdk:
   - openjdk8
   - oraclejdk9
 
+env:
+  global:
+    - ORACLE_DOWNLOAD=http://download.oracle.com/otn-pub/java/jdk
+    - OLD_JDK_MIRROR=http://ftp.osuosl.org/pub/funtoo/distfiles/oracle-java
+  matrix:
+  - REGION=.learnosity.com
+  #- REGION=-ca.learnosity.com
+  - REGION=-ca.learnosity.com CUSTOM_JDK_MINOR=8 CUSTOM_JDK_REV=172 CUSTOM_JDK_BUILD=11 CUSTOM_JDK_HASH=a58eab1ec242421181065cdc37240b08
+
+matrix:
+  # We know this fails against TLS-1.2+ only stacks
+  allow_failures:
+    - jdk: oraclejdk7
+      env: REGION=-ca.learnosity.com CUSTOM_JDK_MINOR=8 CUSTOM_JDK_REV=172 CUSTOM_JDK_BUILD=11 CUSTOM_JDK_HASH=a58eab1ec242421181065cdc37240b08
+
 before_install:
-  - if [ "${TRAVIS_JDK_VERSION}" == "oraclejdk7" ]; then export JAVA_HOME="/usr/lib/jvm/java-7-oracle"; export PATH="${JAVA_HOME}/bin:${PATH}"; fi
-  - test "${TRAVIS_JDK_VERSION}" != "oraclejdk7" || (test ! -d "${JAVA_HOME}" && (curl http://ftp.osuosl.org/pub/funtoo/distfiles/oracle-java/jdk-7u80-linux-x64.tar.gz | sudo tar xz -C /usr/lib/jvm; sudo mv /usr/lib/jvm/jdk1.7.0_80 "${JAVA_HOME}"))
+  # Workaround oraclejdk7's absence by setting it as a custom JDK
+  - if [ "${TRAVIS_JDK_VERSION}" == "oraclejdk7" ]; then export CUSTOM_JDK_MINOR=7 CUSTOM_JDK_REV=80; fi
+  # Convenience variables
+  - if [ -n "${CUSTOM_JDK_MINOR}" ] && [ -n "${CUSTOM_JDK_REV}" ]; then export CUSTOM_JDK_VERSION="${CUSTOM_JDK_MINOR}u${CUSTOM_JDK_REV}"; fi
+  # Download custom JDKs
+  - test "${TRAVIS_JDK_VERSION}" != "oraclejdk7" -o "${CUSTOM_JDK_MINOR}" != "7" || curl -L "${OLD_JDK_MIRROR}/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz" -o "/tmp/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz"
+  - test "${TRAVIS_JDK_VERSION}" != "oraclejdk8" -o "${CUSTOM_JDK_MINOR}" != "8" || curl -L -b "oraclelicense=accept-securebackup-cookie" "${ORACLE_DOWNLOAD}/${CUSTOM_JDK_VERSION}-b${CUSTOM_JDK_BUILD}/${CUSTOM_JDK_HASH}/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz" -o "/tmp/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz"
+  # Install custom JDKs and set PATHs
+  - if [ -e "/tmp/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz" ]; then export JAVA_HOME="/usr/lib/jvm/custom-java-${CUSTOM_JDK_MINOR}-oracle"; export PATH="${JAVA_HOME}/bin:${PATH}"; sudo rm -rf "${JAVA_HOME}"; tar xzf "/tmp/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz" -C /tmp; sudo mv "/tmp/jdk1.${CUSTOM_JDK_MINOR}.0_${CUSTOM_JDK_REV}" "${JAVA_HOME}"; fi
 
 script:
   - java -version
