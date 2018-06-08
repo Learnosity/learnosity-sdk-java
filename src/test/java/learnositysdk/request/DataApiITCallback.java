@@ -1,10 +1,8 @@
-package learnositysdk.test;
+package learnositysdk.request;
 
 import org.json.JSONObject;
 
-import learnositysdk.request.RequestCallback;
-
-public class TestCallback implements RequestCallback {
+public class DataApiITCallback implements RequestCallback {
 
 	@Override
 	public void execute(JSONObject response) {

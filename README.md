@@ -1,6 +1,22 @@
 # Learnosity SDK - Java
 
-Include this library into your own codebase to ease integration with any of the Learnosity APIs. Requires Java 7 or higher.
+[![Build Status](https://travis-ci.org/Learnosity/learnosity-sdk-java.svg?branch=master)](https://travis-ci.org/Learnosity/learnosity-sdk-java)
+
+Include this library into your own codebase to ease integration with any of the Learnosity APIs.
+
+It supports current [Oracle LTS
+JDKs](http://www.oracle.com/technetwork/java/javase/downloads/eol-135779.html),
+as well as [OpenJDK](http://openjdk.java.net/) with matching versions.
+
+| Version			| End of Life   |
+|-------------------------------|:-------------:|
+| Oracle JDK8 / OpenJDK 1.8	| 2019-01	|
+| Oracle JDK11			| TBA		|
+
+Earlier versions may still keep working. Please refer to our [build
+matrix](https://travis-ci.org/Learnosity/learnosity-sdk-java) to verify (see the
+`Allowed Failures` section). However, please plan to upgrade to a supported JDK
+at the earliest opportunity.
 
 ## Installation
 Installation can be done in three ways:
