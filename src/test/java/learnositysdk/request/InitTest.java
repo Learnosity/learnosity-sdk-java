@@ -1,18 +1,12 @@
 package learnositysdk.request;
 
-import java.util.UUID;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
-
-import org.json.JSONObject;
-import org.json.JSONArray;
-import org.apache.http.client.config.RequestConfig;
-
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class InitTest
 	extends TestCase {
@@ -49,6 +43,14 @@ public class InitTest
 		assertSignature(init.generateSignature());
 	}
 
+	public void testInitGenerateAsJsonObject() throws Exception
+	{
+		System.out.println("Init: Generate as json object");
+
+		init = new Init("questions", securityObj, consumerSecret);
+		assertSecurityPacket(init.generateAsJsonObject().toString());
+	}
+
 	public void testInitGenerateFromString()
 		throws java.lang.Exception
 	{
@@ -80,7 +82,7 @@ public class InitTest
 	}
 
 	public void testInitAssessGenerate()
-		throws java.lang.Exception
+			throws java.lang.Exception
 	{
 		System.out.println("Init Assess: Generate");
 
@@ -105,7 +107,36 @@ public class InitTest
 		assertEquals("Errors in the Assess initialisation",
 				"Demo3",
 				signedRequest.getJSONArray("items").getJSONObject(0).get("reference")
-			    );
+		);
+	}
+
+	public void testInitAssessGenerateAsObject()
+			throws java.lang.Exception
+	{
+		System.out.println("Init Assess: Generate As Object");
+
+		JSONArray responseIds = new JSONArray();
+		responseIds.put(0, "Demo123");
+
+		JSONObject item = new JSONObject();
+		item.put("reference", "Demo3");
+		item.put("content", "<p>HI</p>");
+		item.put("response_ids", responseIds);
+
+		JSONArray items = new JSONArray();
+		items.put(0, item);
+
+		request.put("items", items);
+
+		securityObj.put("domain","demos.learnosity.com");
+
+		init = new Init("assess", securityObj, consumerSecret, request);
+
+		JSONObject signedRequest = init.generateAsJsonObject();
+		assertEquals("Errors in the Assess initialisation",
+				"Demo3",
+				signedRequest.getJSONArray("items").getJSONObject(0).get("reference")
+		);
 	}
 
 	public void testInitItemsGenerate()
