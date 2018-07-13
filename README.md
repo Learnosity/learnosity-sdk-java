@@ -27,6 +27,8 @@ Installation can be done in three ways:
 
 3.) Download the source code and integrate into your project. This requires the external libraries which can be found in learnosity-sdk-java/Dist/Light/RequiredJars
 
+4.) To use as a dependency in a maven project see below 'Using with a file based repository'
+
 ## Test
 
 In order to check that you've added the required code correctly, you can download src/LearnositySdk/Test and try to run the test file. If it runs successfully, all should be fine.
@@ -359,3 +361,26 @@ In eclipse right click the java sdk project and select 'Export'. Under 'Java', s
 ## Building with Maven
 
 Run ```mvn package``` in your root directory (where pom.xml is located). This will put the light and all jar in the correct folders.
+
+## Using with a maven file based repository
+
+1.) Download the 'light' jar and the learnosity project pom file (pom.xml) into a temporary directory (say /home/temp)
+
+2.) Add a directory to your maven project to build the file-based repository into (e.g. ./learnosity-sdk-repo)
+
+3.) Install the learnosity SDK with maven into that directory by running the following (modify locations as appropriate):
+```bash
+mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dversion=0.15 -Durl=file:./learnosity-sdk-repo/ -DrepositoryId=learnosity-sdk-repo -DupdateReleaseInfo=true -Dfile=/home/temp/learnositysdk-0.15.jar -DpomFile=/home/temp/pom.xml
+```
+
+4.) Add the directory as a file based repository in your project pom.xml:
+```xml
+<repositories>
+    <repository>
+        <id>learnosity-sdk-repo</id>
+        <url>file://${project.basedir}/learnosity-sdk-repo</url>
+    </repository>
+</repositories>
+```
+
+5.) Don't forget to commit your file-based repository
