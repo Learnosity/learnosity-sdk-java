@@ -1,20 +1,19 @@
 package learnositysdk.request;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TimeZone;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TimeZone;
 
 
 /**
@@ -156,7 +155,72 @@ public class Init {
     	// Re-generate the signature, as an action is now set
         this.securityPacket.put("signature", this.generateSignature());
     }
-    
+
+    /**
+     * Generate the data necessary to make a request to one of the
+     * Learnosity products/services - note this doesn't escape any of the json
+     * strings so remains valid json.
+     * @return  The signed JSON Object ready to be used as a request to learnosity by the front-end
+     */
+    public JSONObject generateAsJsonObject() throws Exception
+    {
+        if (this.service.equals("assess") ||
+                this.service.equals("author") ||
+                this.service.equals("data") ||
+                this.service.equals("items") ||
+                this.service.equals("reports")) {
+            JSONObject output = new JSONObject();
+
+            // Add the security packet (with signature) to the output
+            output.put("security", this.securityPacket);
+
+            // Add the action if necessary (Data API)
+            if (!this.action.isEmpty()) {
+                output.put("action", this.action);
+            }
+
+            if (this.service.equals("data")) {
+                return output.getJSONObject("security");
+            } else if (this.service.equals("assess")) {
+                return this.requestPacket;
+            }
+
+            // Add the request packet if available
+            if(this.requestPacket != null)  {
+                output.put("request", requestPacket);
+            }
+            return output;
+        }
+
+        if (this.service.equals("questions")) {
+            // Make a copy of security packet (with signature) to the root of output
+            JSONObject output = new JSONObject(this.securityPacket, JSONObject.getNames(this.securityPacket));
+
+            // Remove the `domain` key from the security packet
+            output.remove("domain");
+
+            // Add the request packet if available
+            if(this.requestPacket != null)  {
+                output.put("request", requestPacket);
+            }
+            return output;
+        }
+
+        if (this.service.equals("events")) {
+            JSONObject output = new JSONObject();
+            // Add the security packet (with signature) to the output
+            output.put("security", this.securityPacket);
+
+            // Add the request packet if available as key 'config' if available
+            if(this.requestPacket != null)  {
+                output.put("config", requestPacket);
+            }
+            return output;
+        }
+
+        return new JSONObject(); //Return empty json object if the service isn't supported
+    }
+
     /**
      * Generate the data necessary to make a request to one of the
      * Learnosity products/services.
