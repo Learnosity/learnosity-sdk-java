@@ -15,7 +15,7 @@ env:
   matrix:
     - REGION=.learnosity.com
     #- REGION=-ca.learnosity.com
-    - REGION=-ca.learnosity.com CUSTOM_JDK_MINOR=8 CUSTOM_JDK_REV=172 CUSTOM_JDK_BUILD=11 CUSTOM_JDK_HASH=a58eab1ec242421181065cdc37240b08
+    - REGION=-ca.learnosity.com CUSTOM_JDK_MINOR=8 CUSTOM_JDK_REV=181 CUSTOM_JDK_BUILD=11 CUSTOM_JDK_HASH=a58eab1ec242421181065cdc37240b08
 
 script:
   - java -version
