@@ -137,6 +137,22 @@ public class DataApiIT
 		/* Can't assert much here, expecting no exceptions... */
 	}
 
+	public void testGetQuestionsRecursive()
+		throws java.lang.Exception
+	{
+		String[] itemRefs = {"item_2", "item_3", "item_4"};
+		String endpoint = baseUrl + "/itembank/questions";
+		System.out.println("Testing Data API call to " + endpoint + " with recursive GET request");
+
+		request.put("item_references", itemRefs);
+		request.put("limit", "1");
+
+		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");
+		dataApi.requestRecursive(new DataApiITCallback());
+
+		/* Can't assert much here, expecting no exceptions... */
+	}
+
 	private JSONObject assertDataApiRequestWorks(String endpoint, Map securityMap, String consumerSecret)
 		throws java.lang.Exception
 	{

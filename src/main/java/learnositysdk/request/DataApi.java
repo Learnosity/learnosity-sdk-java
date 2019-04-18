@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.apache.http.client.config.RequestConfig;
@@ -24,27 +25,27 @@ public class DataApi
 	 * Used to store the post options
 	 */
 	private Map<String,Object> options;
-	
+
 	/**
 	 * The Remote instance used for posting a request
 	 */
 	private Remote remote;
-	
+
 	/**
 	 * The Init instance used to initialise the security array
 	 */
 	private Init init;
-	
+
 	/**
 	 * The url for the request
 	 */
 	private String url;
-	
+
 	/**
 	 * JSONObject for storing security information
 	 */
 	private JSONObject secJson;
-	
+
 	/**
 	 * JSONObject for storing request data
 	 */
@@ -69,7 +70,7 @@ public class DataApi
 	 * String to save the consumer secret
 	 */
 	private String secret;
-	
+
 	/**
 	 * Constructor
 	 * @param url
@@ -84,7 +85,7 @@ public class DataApi
 		this.securityPacket = securityPacket;
 		this.secret = secret;
 	}
-	
+
 	/**
 	 * Constructor
 	 * @param url
@@ -100,7 +101,7 @@ public class DataApi
 		this.secret = secret;
 		this.action = action;
 	}
-	
+
 	/**
 	 * Constructor
 	 * @param url
@@ -140,7 +141,7 @@ public class DataApi
 	 * @return JSONObject containing the information of the request
 	 * @throws Exception
 	 */
-	
+
 	public void setRequestConfig(RequestConfig requestConfig)
 	{
 		this.remote = new Remote(requestConfig);
@@ -171,7 +172,7 @@ public class DataApi
 		this.remote.post(this.url, this.options);
 		return remote;
 	}
-	
+
 	/**
 	 * Function to make the post request
 	 * @return JSONObject containing the information of the request
@@ -187,13 +188,13 @@ public class DataApi
      * Makes a recursive request to the data api, dependent on
      * whether 'next' and some data is returned in the meta object.
      * Executes the callback function for every response.
-     * 
+     *
      */
-	public void requestRecursive(RequestCallback callback) throws Exception {
+	public void requestRecursive(RequestCallback callback) throws Exception
+	{
 		JSONObject response;
 		JSONObject body;
 		JSONObject meta;
-		JSONArray data;
 		boolean makeNextRequest;
 
 		do {
@@ -201,19 +202,21 @@ public class DataApi
 			response = this.requestJSONObject();
 			body = new JSONObject(response.getString("body"));
 			meta = body.getJSONObject("meta");
-			data = body.getJSONArray("data");
+
 			if (meta.getBoolean("status") == true) {
 				callback.execute(response);
 			}
-			if (meta.has("next") && data.length() > 0) {
+
+			if (this.responseHasNext(body)) {
 				this.requestPacket.put("next", meta.get("next"));
 				this.requestString = this.requestPacket.toString();
 				makeNextRequest = true;
 			}
 		} while (makeNextRequest);
 	}
-    
-    private JSONObject createResponseObject(Remote remote) throws Exception {
+
+    private JSONObject createResponseObject(Remote remote) throws Exception
+    {
     	JSONObject response = new JSONObject();
     	response.put("body", remote.getBody());
     	response.put("contentType",  remote.getContentType());
@@ -221,4 +224,28 @@ public class DataApi
     	response.put("timeTaken", remote.getTimeTaken());
     	return response;
     }
+
+	/**
+	 * Determines if the response indicates that there is more data to be
+	 * fetched to fully satisfy the request.
+	 *
+	 * @param responseBody The full "body" field of the response
+	 * @return whether there is a next response to get
+	 * @throws JSONException if the "data" field of the response is neither an
+	 * 		object nor an array
+	 */
+	private boolean responseHasNext(JSONObject responseBody) throws JSONException
+	{
+		JSONObject meta = responseBody.getJSONObject("meta");
+		Object data = responseBody.get("data");
+		int dataLength;
+
+		if (data instanceof JSONObject) {
+			dataLength = ((JSONObject) data).length();
+		} else {
+			dataLength = ((JSONArray) data).length();
+		}
+
+		return meta.has("next") && dataLength > 0;
+	}
 }
