@@ -384,3 +384,13 @@ mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dvers
 ```
 
 5.) Don't forget to commit your file-based repository
+
+## Tracking
+In version v0.16.0 we introduced code to track the following information by adding it to the request being signed:
+- SDK version
+- SDK language
+- SDK language version
+- Host platform (OS)
+- Platform version
+
+We use this data to enable better support and feature planning. All subsequent versions of the SDK shall include this usage tracking.

@@ -35,6 +35,8 @@ public class InitTest
 		securityObj.put("user_id", "12345678");
 		securityObj.put("timestamp", "20140612-0438");
 
+		Init.disableTelemetry();
+
 		request = new JSONObject ();
 	}
 
