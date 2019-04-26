@@ -297,7 +297,6 @@ public class InitTest
 
 		String reqString = "{\"state\":\"initial\","
 			+  "\"type\":\"local_practice\","
-			+  "\"timestamp\":\"20140617-0533\","
 			+  "\"response_id\":\"60005\","
 			+  "\"questions\":"
 			+		"[{\"stimulus_list\":"
