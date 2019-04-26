@@ -115,15 +115,14 @@ public class InitTest
 	{
 		System.out.println("Init Items: Generate");
 
-		String expectedSignature = "1e2e42c037e2536d4252d18bd6515ea8bee7ae6f70d2f7c6156c923605115113";
-		String itemsString = "{\"limit\":50}";
+		String expectedSignature = "5af6775ea5307b43a62c0add8a5e8dc26140391e55eb9018560a1c7f2dbedce4";
+		String itemsString = "{\"user_id\":\"demo_student\",\"rendering_type\":\"assess\",\"name\":\"Items API demo - assess activity demo\",\"state\":\"initial\",\"activity_id\":\"items_assess_demo\",\"session_id\":\"demo_session_uuid\",\"type\":\"submit_practice\",\"config\":{\"configuration\":{\"responsive_regions\":true},\"navigation\":{\"scrolling_indicator\":true},\"regions\":\"main\",\"time\":{\"show_pause\":true,\"max_time\":300},\"title\":\"ItemsAPI Assess Isolation Demo\",\"subtitle\":\"Testing Subtitle Text\"},\"items\":[\"Demo3\"]}";
 
 		request = new JSONObject(itemsString);
 
 		securityObj.put("domain","demos.learnosity.com");
 
 		init = new Init("items", securityObj, consumerSecret, request);
-		String itemsTest = init.generate();
 		JSONObject signedRequest = new JSONObject(init.generate());
 
 		assertEquals("Errors in the Items initialisation",
