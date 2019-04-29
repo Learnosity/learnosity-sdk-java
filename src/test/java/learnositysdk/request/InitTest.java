@@ -1,18 +1,13 @@
 package learnositysdk.request;
 
-import java.util.UUID;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
-import org.apache.http.client.config.RequestConfig;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 public class InitTest
 	extends TestCase {
@@ -363,6 +358,53 @@ public class InitTest
 		assertEquals("Error in the Events API initialisation, invalid signature: hankschrader",
 				"1e94cba9c43295121a8c93c476601f4f54ce1ee93ddc7f6fb681729c90979b7f",
 				signedUsers.getString("hankschrader"));
+	}
+
+	public void testDataApiGenerate()
+		throws java.lang.Exception
+	{
+		String[][] testCases = {
+			{
+				"get",
+				"e1eae0b86148df69173cb3b824275ea73c9c93967f7d17d6957fcdd299c8a4fe"
+			},
+			{
+				"post",
+				"18e5416041a13f95681f747222ca7bdaaebde057f4f222083881cd0ad6282c38"
+			}
+		};
+
+		for (String[] testCase: testCases) {
+			String action = testCase[0];
+			String expectedSignature = testCase[1];
+
+			System.out.println("Data API " + action + ": Generate");
+
+			String reqString = "{\"limit\":100}";
+			String timestamp = "20140626-0528";
+
+			// Ensure no altering request even if telemetry is enabled
+			Init.enableTelemetry();
+
+			securityObj.put("domain", "localhost");
+			securityObj.put("timestamp", timestamp);
+			securityObj.remove("user_id");
+
+			init = new Init("data", securityObj, consumerSecret, reqString);
+			init.setAction(action);
+			signedRequest = new JSONObject(init.generate());
+
+			assertEquals(
+				"Error in Data API signing, request string altered when it must not be",
+				reqString,
+				init.getRequestString()
+			);
+			assertEquals(
+				"Error in the Data API signing, invalid signature",
+				expectedSignature,
+				signedRequest.getString("signature")
+			);
+		}
 	}
 
 	private static void assertSecurityPacket (String securityObj)

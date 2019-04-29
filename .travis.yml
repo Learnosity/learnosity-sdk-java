@@ -1,12 +1,18 @@
 language: java
 jdk:
-  - oraclejdk7
+  - openjdk7
   - oraclejdk8
   - openjdk8
   - oraclejdk9
-  - openjdk9
-  - oraclejdk10
-  - openjdk10
+  - oraclejdk11
+  # The following fail to be fetched by Travis, skipping for now. Potentially related:
+  # https://docs.travis-ci.com/user/languages/java/#using-java-10-and-later
+  #- oraclejdk7
+  #- openjdk9
+  #- openjdk10
+  #- openjdk11
+  #- oraclejdk12
+  #- openjdk12
 
 env:
   global:
@@ -14,8 +20,8 @@ env:
     - OLD_JDK_MIRROR=http://ftp.osuosl.org/pub/funtoo/distfiles/oracle-java
   matrix:
     - REGION=.learnosity.com
-    #- REGION=-ca.learnosity.com
-    - REGION=-ca.learnosity.com CUSTOM_JDK_MINOR=8 CUSTOM_JDK_REV=172 CUSTOM_JDK_BUILD=11 CUSTOM_JDK_HASH=a58eab1ec242421181065cdc37240b08
+    - REGION=-ca.learnosity.com
+    #- REGION=-ca.learnosity.com CUSTOM_JDK_MINOR=8 CUSTOM_JDK_REV=172 CUSTOM_JDK_BUILD=11 CUSTOM_JDK_HASH=a58eab1ec242421181065cdc37240b08
 
 script:
   - java -version
@@ -28,10 +34,10 @@ matrix:
     # Those are not officially supported; Ideally we want them in a separate
     # build stage named accordingly
     - jdk: openjdk7
-    - jdk: oraclejdk9
     - jdk: openjdk9
-    - jdk: oraclejdk10
     - jdk: openjdk10
+    - jdk: oraclejdk12
+    - jdk: openjdk12
 
 before_install:
   # Workaround oraclejdk7's absence by setting it as a custom JDK

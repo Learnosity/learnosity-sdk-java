@@ -2,16 +2,13 @@ package learnositysdk.request;
 
 import java.util.UUID;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.apache.http.client.config.RequestConfig;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 public class DataApiIT
 	extends TestCase {
