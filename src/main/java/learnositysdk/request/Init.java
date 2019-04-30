@@ -81,7 +81,7 @@ public class Init {
      * Currently, Data API requests cannot be altered because the full request
      * string is not returned by the `generate()` method.
      */
-    private boolean canAlterRequestData = true;
+    private boolean preserveRequest = false;
 
     /**
      * Most services add the request packet (if passed) to the signature
@@ -106,7 +106,8 @@ public class Init {
      * will be used to create a signature.
      *
      * @param service        the service to be used
-     * @param securityPacket any object which can be used to instantiate a json.org.JSONObject or a json.org.JSONObject
+     * @param securityPacket the security information. Can be a json.org.JSONObject or an object of
+     *                       any type which is valid to instantiate a json.org.JSONObject with
      * @param secret         the private key
      * @throws Exception     if any of the passed arguments are invalid
      */
@@ -127,14 +128,33 @@ public class Init {
      * will be used to create a signature.
      *
      * @param service        the service to be used
-     * @param securityPacket the security information. Can be a json.org.JSONObject or an object of any type which is valid to instantiate
-     *                       a json.org.JSONObject
+     * @param securityPacket the security information. Can be a json.org.JSONObject or an object of
+     *                       any type which is valid to instantiate a json.org.JSONObject with
      * @param secret         the private key
      * @param requestPacket  an object which can be parsed into a JSONObject
      * @throws Exception     if any of the passed arguments are invalid
      */
     public Init (String service, Object securityPacket, String secret, Object requestPacket) throws Exception
     {
+        this(service, securityPacket, secret, requestPacket, service.equals("data"));
+    }
+
+    /**
+     * This Constructor is only for use within the SDK to take advantage of
+     * potentially breaking changes.
+     *
+     * @param service         the service to be used
+     * @param securityPacket  the security information. Can be a json.org.JSONObject or an object of
+     *                        any type which is valid to instantiate a json.org.JSONObject with
+     * @param secret          the private key
+     * @param requestPacket   an object which can be parsed into a JSONObject
+     * @param preserveRequest flag denoting if the passed request must not be altered
+     * @throws Exception      if any of the passed arguments are invalid
+     */
+    Init (String service, Object securityPacket, String secret, Object requestPacket, boolean preserveRequest) throws Exception
+    {
+        this.preserveRequest = preserveRequest;
+
         // First validate and set the arguments
         this.validateRequiredArgs(service, securityPacket, secret);
 
@@ -260,6 +280,11 @@ public class Init {
         return this.hashValue(signatureArray);
     }
 
+    public String getRequestString()
+    {
+        return this.requestString;
+    }
+
     /**
      * Hash an array value
      *
@@ -355,7 +380,6 @@ public class Init {
             throw new Exception("The service provided " + service + " is not valid");
         }
         this.service = service;
-        this.canAlterRequestData = !service.equals("data");
 
         // In case the user gave us a securityPacket String, convert to a JSONObject
         this.validateSecurityPacket(securityPacket);
@@ -376,7 +400,7 @@ public class Init {
         JSONObject convertedPacket = validateRequestPacket(requestPacket);
 
         // Prevent updating request packet in situations where we must not do so
-        if (!this.canAlterRequestData) {
+        if (this.preserveRequest) {
             // Only properly support using inputs provided as String
             if (this.requestPacket == null) {
                 if (requestPacket instanceof String) {
@@ -384,18 +408,14 @@ public class Init {
                     this.requestPacket = convertedPacket;
                     return;
                 }
-                // If any other format is provided, we cannot make the any
+                // If any other format is provided, we cannot make any
                 // guarantees anyway - fall through.
             } else {
                 throw new Exception("Cannot update request packet for this request");
             }
         }
 
-        if (Telemetry.isEnabled()) {
-            Telemetry.addToRequest(convertedPacket);
-        }
-
-        this.requestPacket = convertedPacket;
+        this.requestPacket = Telemetry.addToRequest(convertedPacket);
         this.updateRequestString();
     }
 

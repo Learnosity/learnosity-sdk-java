@@ -52,11 +52,6 @@ public class DataApi
 	private JSONObject requestPacket;
 
 	/**
-	 * String for storing json string
-	 */
-	private String requestString = "";
-
-	/**
 	 * Object for storing the security settings
 	 */
 	private Object securityPacket;
@@ -112,11 +107,7 @@ public class DataApi
 	public DataApi(String url, Object securityPacket, String secret , Object requestPacket, String action) throws Exception
 	{
 		this.remote = new Remote();
-
-		this.setRequestPacket(
-			Init.validateRequestPacket(requestPacket)
-		);
-
+		this.requestPacket = Init.validateRequestPacket(requestPacket);
 		this.url = url;
 		this.securityPacket = securityPacket;
 		this.secret = secret;
@@ -140,21 +131,26 @@ public class DataApi
 	public Remote request() throws Exception
 	{
 		this.options = new HashMap<String,Object>();
+
 		if (this.action.equals("")) {
 			this.init = new Init("data", this.securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
-		if (!this.action.equals("") && this.requestString.equals("")) {
+
+		if (!this.action.equals("") && this.requestPacket == null) {
 			this.init = new Init("data", securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
-		if (!this.action.equals("") && !this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret, this.requestString);
+
+		if (!this.action.equals("") && this.requestPacket != null) {
+			this.init = new Init("data", securityPacket, this.secret, this.requestPacket, false);
 			this.init.setAction(this.action);
+
 			this.secJson = new JSONObject(init.generate());
-			this.options.put("action", action);
-			this.options.put("request", this.requestString);
+			this.options.put("action", this.action);
+			this.options.put("request", this.init.getRequestString());
 		}
+
 		this.options.put("security", this.secJson.toString());
 		this.remote.post(this.url, this.options);
 		return remote;
@@ -192,37 +188,15 @@ public class DataApi
 			body = new JSONObject(response.getString("body"));
 			meta = body.getJSONObject("meta");
 
-			if (meta.getBoolean("status") == true) {
+			if (meta.getBoolean("status")) {
 				callback.execute(response);
 			}
 
 			if (this.responseHasNext(body)) {
 				this.requestPacket.put("next", meta.get("next"));
-				this.updateRequestString();
 				makeNextRequest = true;
 			}
 		} while (makeNextRequest);
-	}
-
-	/**
-	 * Sets the request packet, updating the stored string version as well
-	 * @param requestPacket The request packet to store
-	 */
-	private void setRequestPacket(JSONObject requestPacket)
-	{
-		if (Telemetry.isEnabled()) {
-			Telemetry.addToRequest(requestPacket);
-		}
-
-		this.requestPacket = requestPacket;
-		this.updateRequestString();
-	}
-
-	/**
-	 * Updates the stored request string using the current request packet
-	 */
-	private void updateRequestString() {
-		this.requestString = this.requestPacket.toString();
 	}
 
 	private JSONObject createResponseObject(Remote remote) {

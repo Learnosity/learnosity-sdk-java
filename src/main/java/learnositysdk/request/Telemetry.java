@@ -45,12 +45,12 @@ class Telemetry {
 	 *
 	 * @param requestPacket The request to add the telemetry data to
 	 */
-	static void addToRequest(JSONObject requestPacket)
+	static JSONObject addToRequest(JSONObject requestPacket)
 	{
 		JSONObject meta;
 
 		if (!Telemetry.telemetryEnabled) {
-			return;
+			return requestPacket;
 		}
 
 		try {
@@ -61,6 +61,8 @@ class Telemetry {
 			meta.put("sdk", Telemetry.getTelemetryData());
 			requestPacket.put("meta", meta);
 		}
+
+		return requestPacket;
 	}
 
 	private static JSONObject getTelemetryData()
