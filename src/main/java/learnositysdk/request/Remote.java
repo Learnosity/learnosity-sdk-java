@@ -14,6 +14,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import java.io.StringWriter;
 */
 
 public class Remote {
-	
+
 	/**
 	 * Map to store the result of the requests
 	 */
@@ -43,22 +44,22 @@ public class Remote {
 	 * Helper class to build up a query string
 	 */
 	private StringBuilder sb;
-	
+
 	/**
 	 * Data to be used in a post request
 	 */
 	private Map<String,Object> postData;
-	
+
 	/**
 	 * Http client
 	 */
 	private CloseableHttpClient httpclient;
-	
+
 	/**
 	 * Array to store header information
 	 */
 	private Header[] headers;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -68,7 +69,7 @@ public class Remote {
 		sb = new StringBuilder();
 		this.setDefaultClient();
 	}
-	
+
 
 	/**
 	 * Alternate Constructor taking in requestConfig
@@ -82,14 +83,14 @@ public class Remote {
 
 	/**
 	 * Make a get request to the specified url
-	 * 
+	 *
 	 * @param url the url of the request
 	 */
 	public void get(String url) throws Exception
 	{
 		this.request(url, false);
 	}
-	
+
 	/**
 	 * Make a get request to the specified url
 	 *
@@ -101,8 +102,8 @@ public class Remote {
 		sb.append(url);
 		sb.append("?");
 		sb.append(this.makeQueryString(data));
-		
-		
+
+
 		this.request(sb.toString(), false);
 	}
 
@@ -117,7 +118,7 @@ public class Remote {
 		this.postData = data;
 		this.request(url, true);
 	}
-	
+
 	/**
 	 * Set some default values for timeouts, emulating what is in the php sdk.
 	 * Not setting redirects as that's enabled by default, with max redirects
@@ -133,10 +134,10 @@ public class Remote {
 				.build();
 		this.httpclient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
 	}
-	
+
 	/**
 	 * Makes the actual request
-	 * 
+	 *
 	 * @param  url      Full URL of the request
 	 * @param  post     Flag to indicate if this is a post request
 	 * @return void
@@ -158,7 +159,7 @@ public class Remote {
 		resp = this.httpclient.execute(httpRequest);
 		InputStream is = resp.getEntity().getContent();
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(is, writer);
+		IOUtils.copy(is, writer, Charset.defaultCharset());
 		this.result.put("body", writer.toString());
 		this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
 		this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
@@ -175,7 +176,7 @@ public class Remote {
 	 * @return the body of the response, typically a JSON string
 	 */
 	public String getBody()
-	{	
+	{
 		if (this.result.containsKey("body")) {
 			return this.result.get("body");
 		}
@@ -244,7 +245,7 @@ public class Remote {
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * Create a query string for a http get request using a map as input
 	 * @return query String
@@ -254,7 +255,7 @@ public class Remote {
 		List<NameValuePair> parameters = makeNameValueList(values);
 		return URLEncodedUtils.format(parameters, "UTF-8");
 	}
-	
+
 	/**
 	 * Create a List containing NameValuePairs out of a map
 	 * 	 * @return List<NameValuePair>

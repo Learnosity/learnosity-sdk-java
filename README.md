@@ -53,12 +53,12 @@ or 4 arguments:
  * Object  security details (**no secret**)
  * String  secret
  * Object  request details
- 
+
 The security and request Object can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples). Learnosity recommends that you pass the request details as a JSONObject, or a String generated from a JSONObject to the constructor. This way, issues arising from adding/removing whitespace can be avoided.
 
 If you have to set an action attribute (for calls to data api, if not using the DatApi class), you can use the setAction method of class Init.
 
-```
+```java
 import learnositysdk.request.Init;
 
 import java.util.HashMap;
@@ -68,87 +68,87 @@ import org.json.JSONObject;
 
 public class Questions {
 
-	public static void main (String[] args) throws Exception
-	{
-		try {
-			Init init;
-			String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
-			
-			// Create a security Map
-			Map securityMap = new HashMap();
-			securityMap.put("consumer_key", "yis0TYCu7U9V4o7M");
-			securityMap.put("user_id", "12345678");
-			securityMap.put("domain", "localhost");
+    public static void main (String[] args) throws Exception
+    {
+        try {
+            Init init;
+            String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
 
-			// Create some data for the questions api
-			JSONObject req = new JSONObject();
-			req.put("type", "local_practice");
-			req.put("state", "initial");
+            // Create a security Map
+            Map securityMap = new HashMap();
+            securityMap.put("consumer_key", "yis0TYCu7U9V4o7M");
+            securityMap.put("user_id", "12345678");
+            securityMap.put("domain", "localhost");
 
-			// Create a questions JSONArrray
-			JSONArray questions = new JSONArray();
+            // Create some data for the questions api
+            JSONObject req = new JSONObject();
+            req.put("type", "local_practice");
+            req.put("state", "initial");
 
-			// Create a question
-			JSONObject question = new JSONObject();
-			question.put("response_id", "60005");
-			question.put("type", "association");
-			question.put("stimulus", "Match the cities to the parent nation");
+            // Create a questions JSONArrray
+            JSONArray questions = new JSONArray();
 
-			// Add stimulus list
-			JSONArray stimList = new JSONArray();
-			stimList.put(0, "London");
-			stimList.put(1, "Dublin");
-			stimList.put(2, "Paris");
-			stimList.put(3, "Sydney");
-			question.put("stimulus_list", stimList);
+            // Create a question
+            JSONObject question = new JSONObject();
+            question.put("response_id", "60005");
+            question.put("type", "association");
+            question.put("stimulus", "Match the cities to the parent nation");
 
-			// Add possible responses
-			JSONArray possibleResp = new JSONArray();
-			possibleResp.put(0, "Australia");
-			possibleResp.put(1, "France");
-			possibleResp.put(2, "Ireland");
-			possibleResp.put(3, "England");
-			question.put("possible_responses", possibleResp);
+            // Add stimulus list
+            JSONArray stimList = new JSONArray();
+            stimList.put(0, "London");
+            stimList.put(1, "Dublin");
+            stimList.put(2, "Paris");
+            stimList.put(3, "Sydney");
+            question.put("stimulus_list", stimList);
 
-			// Add validation
-			JSONObject validation = new JSONObject();
-			JSONArray validResp = new JSONArray();
-			validResp.put(0, "England");
-			validResp.put(1, "Ireland");
-			validResp.put(2, "France");
-			validResp.put(3, "Australia");
-			validation.put("valid_responses", validResp);
-			question.put("validation", validation);
+            // Add possible responses
+            JSONArray possibleResp = new JSONArray();
+            possibleResp.put(0, "Australia");
+            possibleResp.put(1, "France");
+            possibleResp.put(2, "Ireland");
+            possibleResp.put(3, "England");
+            question.put("possible_responses", possibleResp);
 
-			// Add questions to questions array
-			questions.put(0, question);
+            // Add validation
+            JSONObject validation = new JSONObject();
+            JSONArray validResp = new JSONArray();
+            validResp.put(0, "England");
+            validResp.put(1, "Ireland");
+            validResp.put(2, "France");
+            validResp.put(3, "Australia");
+            validation.put("valid_responses", validResp);
+            question.put("validation", validation);
 
-			// Finally add questions to request
-			req.put("questions", questions);
+            // Add questions to questions array
+            questions.put(0, question);
+
+            // Finally add questions to request
+            req.put("questions", questions);
 
 
-			// Instantiate the SDK Init class with your security and request data:
-			init = new Init("questions", securityMap, consumerSecret, req);
+            // Instantiate the SDK Init class with your security and request data:
+            init = new Init("questions", securityMap, consumerSecret, req);
 
-			// Call the generate() method to retrieve a JavaScript object
-			String questionJson = init.generate();
+            // Call the generate() method to retrieve a JavaScript object
+            String questionJson = init.generate();
 
-			// Pass the object to the initialisation of any Learnosity API
-			// For instance in your jsp file you can have:
-			// <script src="//questions.learnosity.com"></script>
-			// var questionsApp = LearnosityApp.init(questionJson);
-			
-			 System.out.println(questionJson); 
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
+            // Pass the object to the initialisation of any Learnosity API
+            // For instance in your jsp file you can have:
+            // <script src="//questions.learnosity.com"></script>
+            // var questionsApp = LearnosityApp.init(questionJson);
+
+             System.out.println(questionJson);
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
 ```
 
 Raw JSON initialisation snippet:
 
-```
+```java
 import learnositysdk.request.Init;
 
 import java.util.HashMap;
@@ -158,53 +158,51 @@ import org.json.JSONObject;
 
 public class Questions {
 
-	public static void main (String[] args) throws Exception
-	{
-		try {
-			Init init;
-			String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
-			
-		    String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
-			         +    "\"domain\": \"assess.vg.learnosity.com\","
-			         +    "\"user_id\": \"12345678\"}";
-			 
-			 String reqString = "{\"state\":\"initial\","
-			         +  "\"type\":\"local_practice\","
-			         +  "\"response_id\":\"60005\","
-			         +  "\"questions\":"
-			         +   "[{\"stimulus_list\":"
-			         +     "[\"London\","
-			         +        "\"Dublin\","
-			         +        "\"Paris\","
-			         +      "\"Sydney\"],"
-			         + "\"stimulus\":\"Match the cities to the parent nation\","
-			         +   "\"type\":\"association\","
-			         +   "\"possible_responses\":"
-			         +   "[\"Australia\","
-			         +     "\"France\","
-			         +     "\"Ireland\","
-			         +       "\"England\"],"
-			         +   "\"validation\":"
-			         +   "{\"valid_responses\":"
-			         +       "[\"England\","
-			         +             "\"Ireland\","
-			         +       "\"France\","
-			         +       "\"Australia\"]}}]}";
-			 init = new Init("questions", secString, consumerSecret, new JSONObject(reqString));
-			 String questionJson = init.generate();
-			 System.out.println(questionJson);
-			 
-			 // Now you can pass questionJson to the initialisation of Questions API
-             // For instance on jsp you might have
-             // <script src="//questions.learnosity.com"></script>
-             // var questionsApp = LearnosityApp.init(questionJson);
-			   
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
-}
+    public static void main (String[] args) throws Exception
+    {
+        try {
+            Init init;
+            String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
 
+            String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
+                    +    "\"domain\": \"assess.vg.learnosity.com\","
+                    +    "\"user_id\": \"12345678\"}";
+
+            String reqString = "{\"state\":\"initial\","
+                    +  "\"type\":\"local_practice\","
+                    +  "\"response_id\":\"60005\","
+                    +  "\"questions\":"
+                    +   "[{\"stimulus_list\":"
+                    +     "[\"London\","
+                    +        "\"Dublin\","
+                    +        "\"Paris\","
+                    +      "\"Sydney\"],"
+                    + "\"stimulus\":\"Match the cities to the parent nation\","
+                    +   "\"type\":\"association\","
+                    +   "\"possible_responses\":"
+                    +   "[\"Australia\","
+                    +     "\"France\","
+                    +     "\"Ireland\","
+                    +       "\"England\"],"
+                    +   "\"validation\":"
+                    +   "{\"valid_responses\":"
+                    +       "[\"England\","
+                    +             "\"Ireland\","
+                    +       "\"France\","
+                    +       "\"Australia\"]}}]}";
+            init = new Init("questions", secString, consumerSecret, new JSONObject(reqString));
+            String questionJson = init.generate();
+            System.out.println(questionJson);
+
+            // Now you can pass questionJson to the initialisation of Questions API
+            // For instance on jsp you might have
+            // <script src="//questions.learnosity.com"></script>
+            // var questionsApp = LearnosityApp.init(questionJson);
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
 ```
 
 #### Arguments
@@ -256,7 +254,7 @@ You'll call either get() or post() with the following arguments:
 * [String] URL
 * [Map<String,Object>]  Data payload
 
-```
+```java
 // Instantiate the SDK Remote class:
 Remote remote = new Remote();
 
@@ -299,7 +297,7 @@ Returns the HTTP status code of the response.
 
 ### DataApi
 
-This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive function which can be called with a class implementing RequestCallback.java. The execute() function will be called for each response. 
+This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive function which can be called with a class implementing RequestCallback.java. The execute() function will be called for each response.
 
 The DataApi Constructor can handle either 3 arguments;
 * url
@@ -319,7 +317,7 @@ or 5 arguments:
 * requestPacket
 * action
 
-```
+```java
 Map<String,String> sec = new HashMap<String, String>();
 sec.put("consumer_key", "yis0TYCu7U9V4o7M");
 sec.put("domain","localhost");
@@ -384,3 +382,13 @@ mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dvers
 ```
 
 5.) Don't forget to commit your file-based repository
+
+## Tracking
+In version v0.16.0 we introduced code to track the following information by adding it to the request being signed:
+- SDK version
+- SDK language
+- SDK language version
+- Host platform (OS)
+- Platform version
+
+We use this data to enable better support and feature planning. All subsequent versions of the SDK shall include this usage tracking.

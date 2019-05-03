@@ -52,11 +52,6 @@ public class DataApi
 	private JSONObject requestPacket;
 
 	/**
-	 * String for storing json string
-	 */
-	private String requestString = "";
-
-	/**
 	 * Object for storing the security settings
 	 */
 	private Object securityPacket;
@@ -76,9 +71,8 @@ public class DataApi
 	 * @param url
 	 * @param securityPacket
 	 * @param secret
-	 * @throws Exception
 	 */
-	public DataApi(String url, Object securityPacket, String secret) throws Exception
+	public DataApi(String url, Object securityPacket, String secret)
 	{
 		this.remote = new Remote();
 		this.url = url;
@@ -91,9 +85,8 @@ public class DataApi
 	 * @param url
 	 * @param securityPacket
 	 * @param secret
-	 * @throws Exception
 	 */
-	public DataApi(String url, Object securityPacket, String secret, String action) throws Exception
+	public DataApi(String url, Object securityPacket, String secret, String action)
 	{
 		this.remote = new Remote();
 		this.url = url;
@@ -114,22 +107,7 @@ public class DataApi
 	public DataApi(String url, Object securityPacket, String secret , Object requestPacket, String action) throws Exception
 	{
 		this.remote = new Remote();
-	    if (requestPacket instanceof JSONObject) {
-        	this.requestPacket = new JSONObject(requestPacket.toString());
-        	this.requestString = requestPacket.toString();
-        } else {
-        	if (requestPacket instanceof String) {
-        		this.requestPacket = new JSONObject((String)requestPacket);
-        		this.requestString = (String)requestPacket;
-        	} else if (requestPacket instanceof Map) {
-        		this.requestPacket = new JSONObject((Map)requestPacket);
-        		this.requestString = this.requestPacket.toString();
-        	} else {
-        		// Try to make a JSONObject out of a hopefully valid java bean
-        		this.requestPacket = new JSONObject(requestPacket);
-        		this.requestString = this.requestPacket.toString();
-        	}
-        }
+		this.requestPacket = Init.validateRequestPacket(requestPacket);
 		this.url = url;
 		this.securityPacket = securityPacket;
 		this.secret = secret;
@@ -139,7 +117,6 @@ public class DataApi
 	/**
 	 * Function to modify the internal remote object based on a custom configuration
 	 * @return JSONObject containing the information of the request
-	 * @throws Exception
 	 */
 
 	public void setRequestConfig(RequestConfig requestConfig)
@@ -149,25 +126,31 @@ public class DataApi
 
 	/**
 	 * Function to make the post request
+	 * @throws Exception
 	 */
 	public Remote request() throws Exception
 	{
 		this.options = new HashMap<String,Object>();
+
 		if (this.action.equals("")) {
 			this.init = new Init("data", this.securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
-		if (!this.action.equals("") && this.requestString.equals("")) {
+
+		if (!this.action.equals("") && this.requestPacket == null) {
 			this.init = new Init("data", securityPacket, this.secret);
 			this.secJson = new JSONObject(init.generate());
 		}
-		if (!this.action.equals("") && !this.requestString.equals("")) {
-			this.init = new Init("data", securityPacket, this.secret, this.requestString);
+
+		if (!this.action.equals("") && this.requestPacket != null) {
+			this.init = new Init("data", securityPacket, this.secret, this.requestPacket, false);
 			this.init.setAction(this.action);
+
 			this.secJson = new JSONObject(init.generate());
-			this.options.put("action", action);
-			this.options.put("request", this.requestString);
+			this.options.put("action", this.action);
+			this.options.put("request", this.init.getRequestString());
 		}
+
 		this.options.put("security", this.secJson.toString());
 		this.remote.post(this.url, this.options);
 		return remote;
@@ -175,7 +158,7 @@ public class DataApi
 
 	/**
 	 * Function to make the post request
-	 * @return JSONObject containing the information of the request
+	 * @return JSONObject version of the response from Data API
 	 * @throws Exception
 	 */
 	public JSONObject requestJSONObject() throws Exception
@@ -184,12 +167,14 @@ public class DataApi
 		return this.createResponseObject(this.remote);
 	}
 
-    /**
-     * Makes a recursive request to the data api, dependent on
-     * whether 'next' and some data is returned in the meta object.
-     * Executes the callback function for every response.
-     *
-     */
+	/**
+	 * Makes a recursive request to the data api, dependent on
+	 * whether 'next' and some data is returned in the meta object.
+	 * Executes the callback function for every response.
+	 * @param callback An implementation of the RequestCallback to be run with
+	 *                 each response from Data API.
+	 * @throws Exception
+	 */
 	public void requestRecursive(RequestCallback callback) throws Exception
 	{
 		JSONObject response;
@@ -203,27 +188,25 @@ public class DataApi
 			body = new JSONObject(response.getString("body"));
 			meta = body.getJSONObject("meta");
 
-			if (meta.getBoolean("status") == true) {
+			if (meta.getBoolean("status")) {
 				callback.execute(response);
 			}
 
 			if (this.responseHasNext(body)) {
 				this.requestPacket.put("next", meta.get("next"));
-				this.requestString = this.requestPacket.toString();
 				makeNextRequest = true;
 			}
 		} while (makeNextRequest);
 	}
 
-    private JSONObject createResponseObject(Remote remote) throws Exception
-    {
-    	JSONObject response = new JSONObject();
-    	response.put("body", remote.getBody());
-    	response.put("contentType",  remote.getContentType());
-    	response.put("statusCode", remote.getStatusCode());
-    	response.put("timeTaken", remote.getTimeTaken());
-    	return response;
-    }
+	private JSONObject createResponseObject(Remote remote) {
+		JSONObject response = new JSONObject();
+		response.put("body", remote.getBody());
+		response.put("contentType",  remote.getContentType());
+		response.put("statusCode", remote.getStatusCode());
+		response.put("timeTaken", remote.getTimeTaken());
+		return response;
+	}
 
 	/**
 	 * Determines if the response indicates that there is more data to be

@@ -2,19 +2,17 @@ package learnositysdk.request;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.json.JSONArray;
-
-import java.util.ArrayList;
+import org.json.JSONObject;
 
 
 /**
@@ -39,7 +37,7 @@ public class Init {
      *  - reports
      */
     private String service;
-    
+
     /**
      * The consumer secret as provided by Learnosity. This is your private key
      * known only by the client (you) and Learnosity, which must not be exposed
@@ -47,7 +45,7 @@ public class Init {
      * It should never be distributed publicly.
      */
     private String secret;
-    
+
     /**
      * A JSONObject of security details. This typically contains:
      *  - consumer_key
@@ -80,6 +78,12 @@ public class Init {
     private String action = "";
 
     /**
+     * Currently, Data API requests cannot be altered because the full request
+     * string is not returned by the `generate()` method.
+     */
+    private boolean preserveRequest = false;
+
+    /**
      * Most services add the request packet (if passed) to the signature
      * for security reasons. This flag can override that behaviour for
      * services that don't require this.
@@ -88,7 +92,7 @@ public class Init {
 
     /**
      * Key names that are valid in the securityPacket, they are also in
-     * the correct order for signature generation. 
+     * the correct order for signature generation.
      */
     private final String[] validSecurityKeys = new String[] {"consumer_key", "domain", "timestamp", "user_id"};
 
@@ -96,13 +100,14 @@ public class Init {
      * Valid strings for service
      */
     private String[] validServices = new String[] {"assess", "author", "data", "items", "questions", "reports", "events"};
-    
+
     /**
      * Instantiate this class with all security and request data. It
      * will be used to create a signature.
      *
      * @param service        the service to be used
-     * @param securityPacket any object which can be used to instantiate a json.org.JSONObject or a json.org.JSONObject
+     * @param securityPacket the security information. Can be a json.org.JSONObject or an object of
+     *                       any type which is valid to instantiate a json.org.JSONObject with
      * @param secret         the private key
      * @throws Exception     if any of the passed arguments are invalid
      */
@@ -117,53 +122,70 @@ public class Init {
         // Generate the signature based on the arguments provided
         this.securityPacket.put("signature", this.generateSignature());
     }
-       
-    
+
     /**
      * Instantiate this class with all security and request data. It
      * will be used to create a signature.
      *
      * @param service        the service to be used
-     * @param securityPacket the security information. Can be a json.org.JSONObject or an object of any type which is valid to instantiate
-     *                       a json.org.JSONObject
+     * @param securityPacket the security information. Can be a json.org.JSONObject or an object of
+     *                       any type which is valid to instantiate a json.org.JSONObject with
      * @param secret         the private key
      * @param requestPacket  an object which can be parsed into a JSONObject
      * @throws Exception     if any of the passed arguments are invalid
      */
     public Init (String service, Object securityPacket, String secret, Object requestPacket) throws Exception
     {
- 
+        this(service, securityPacket, secret, requestPacket, service.equals("data"));
+    }
+
+    /**
+     * This Constructor is only for use within the SDK to take advantage of
+     * potentially breaking changes.
+     *
+     * @param service         the service to be used
+     * @param securityPacket  the security information. Can be a json.org.JSONObject or an object of
+     *                        any type which is valid to instantiate a json.org.JSONObject with
+     * @param secret          the private key
+     * @param requestPacket   an object which can be parsed into a JSONObject
+     * @param preserveRequest flag denoting if the passed request must not be altered
+     * @throws Exception      if any of the passed arguments are invalid
+     */
+    Init (String service, Object securityPacket, String secret, Object requestPacket, boolean preserveRequest) throws Exception
+    {
+        this.preserveRequest = preserveRequest;
+
         // First validate and set the arguments
         this.validateRequiredArgs(service, securityPacket, secret);
-        
-        this.validateRequestPacket(requestPacket);
-        
+
+        this.setRequestPacket(requestPacket);
+
         // Set any service specific options
         this.setServiceOptions();
 
         // Generate the signature based on the arguments provided
         this.securityPacket.put("signature", this.generateSignature());
     }
-    
+
     /**
      * Setter method for action. If an action is required, it should be set before generate() is called
      * @param action the required action (e.g. get or post)
      */
-    public void setAction(String action) throws Exception
+    public void setAction(String action)
     {
     	this.action = action;
-    	
+
     	// Re-generate the signature, as an action is now set
         this.securityPacket.put("signature", this.generateSignature());
     }
-    
+
     /**
      * Generate the data necessary to make a request to one of the
      * Learnosity products/services.
      *
      * @return A JSON string
      */
-    public String generate() throws Exception
+    public String generate()
     {
         JSONObject output = new JSONObject();
         String outputString = "";
@@ -200,7 +222,7 @@ public class Init {
 
             // Remove the `domain` key from the security packet
             output.remove("domain");
-                
+
             outputString = output.toString();
             // Merge the request packet if necessary. Note: to make sure we don't change the
             // order of key/value pairs in the json, we manipulate the json string instead of
@@ -231,7 +253,7 @@ public class Init {
      *
      * @return A signature hash for the request authentication
      */
-    public String generateSignature() throws Exception
+    public String generateSignature()
     {
         ArrayList<String> signatureArray = new ArrayList<String>();
 
@@ -243,7 +265,6 @@ public class Init {
             }
         }
 
-        
         // Add the secret
         signatureArray.add(this.secret);
         // Add the requestPacket if necessary
@@ -257,6 +278,11 @@ public class Init {
         }
 
         return this.hashValue(signatureArray);
+    }
+
+    public String getRequestString()
+    {
+        return this.requestString;
     }
 
     /**
@@ -282,7 +308,7 @@ public class Init {
     /**
      * Set any options for services that aren't generic
      */
-    private void setServiceOptions() throws Exception
+    private void setServiceOptions()
     {
         if (this.service.equals("assess") ||
             this.service.equals("questions")) {
@@ -333,13 +359,13 @@ public class Init {
         			hashedUsers.put(user, userHash);
         			}
         		this.requestPacket.put("users", hashedUsers);
-        		this.requestString = this.requestPacket.toString();
+        		this.updateRequestString();
         	}
         }
     }
 
     /**
-     * Validate the required parameters of the constructor and set them if ok 
+     * Validate the required parameters of the constructor and set them if ok
      *
      * @param  service
      * @param  securityPacket
@@ -348,7 +374,6 @@ public class Init {
      */
     private void validateRequiredArgs(String service, Object securityPacket, String secret) throws Exception
     {
-        
         if (service.isEmpty()) {
             throw new Exception("The `service` argument wasn't found or was empty");
         } else if (!Arrays.asList(this.validServices).contains(service.toLowerCase())) {
@@ -356,11 +381,9 @@ public class Init {
         }
         this.service = service;
 
-        // In case the user gave us a securityPacket String, convert to a JSONOBject
-        
-
+        // In case the user gave us a securityPacket String, convert to a JSONObject
         this.validateSecurityPacket(securityPacket);
-        
+
         if (secret.isEmpty()) {
             throw new Exception("The `secret` argument must be a valid string");
         }
@@ -368,43 +391,39 @@ public class Init {
     }
 
     /**
-     * Validates the request packet argument
-     * @param requestPacket
-     * @throws Exception
+     * Sets the request packet, updating the stored string version as well
+     *
+     * @param requestPacket The request packet to store
      */
-    private void validateRequestPacket(Object requestPacket) throws Exception
+    private void setRequestPacket(Object requestPacket) throws Exception
     {
-        if (requestPacket instanceof JSONObject) {
-            this.requestPacket = new JSONObject(requestPacket.toString());
-            this.requestString = requestPacket.toString();
-        } else {
-            if (requestPacket instanceof String) {
-                this.requestPacket = new JSONObject((String)requestPacket);
-                this.requestString = (String)requestPacket;
-            } else if (requestPacket instanceof Map) {
-                this.requestPacket = new JSONObject((Map)requestPacket);
-                this.requestString = this.requestPacket.toString();
+        JSONObject convertedPacket = validateRequestPacket(requestPacket);
+
+        // Prevent updating request packet in situations where we must not do so
+        if (this.preserveRequest) {
+            // Only properly support using inputs provided as String
+            if (this.requestPacket == null) {
+                if (requestPacket instanceof String) {
+                    this.requestString = (String) requestPacket;
+                    this.requestPacket = convertedPacket;
+                    return;
+                }
+                // If any other format is provided, we cannot make any
+                // guarantees anyway - fall through.
             } else {
-                // Try to make a JSONObject out of a hopefully valid java bean
-                this.requestPacket = new JSONObject(requestPacket);
-                this.requestString = this.requestPacket.toString();
+                throw new Exception("Cannot update request packet for this request");
             }
         }
 
-        // If requestPacket is not a string, then requestString is generated using
-        // JSONObject.toString that causes escaping issues.
-        if (!(requestPacket instanceof String)) {
-            // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to
-            // the string
-            this.requestString = this.requestString.replace("\\/", "/");
+        this.requestPacket = Telemetry.addToRequest(convertedPacket);
+        this.updateRequestString();
+    }
 
-            // unescape any escape sequences created by JSONObject.toString
-            this.requestString = StringEscapeUtils.unescapeJava(this.requestString);
-        }
-
-        if (this.requestPacket.length() == 0) {
-            throw new Exception("The requestPacket cannot be empty.");
-        }
+    /**
+     * Updates the stored request string using the current request packet
+     */
+    private void updateRequestString() {
+        this.requestString = this.requestPacket.toString();
     }
 
     /**
@@ -426,7 +445,7 @@ public class Init {
                 this.securityPacket = new JSONObject(securityPacket);
             }
         }
-        
+
         if (this.service.equals("questions") && !this.securityPacket.has("user_id")) {
             throw new Exception("If using the questions api, a user id needs to be specified");
         }
@@ -434,13 +453,13 @@ public class Init {
         if (this.securityPacket.length() == 0) {
             throw new Exception("The security packet argument cannot be empty");
         }
-        
+
         Iterator<String> keyIter = this.securityPacket.keys();
         while (keyIter.hasNext()) {
             String key = keyIter.next();
             if (!Arrays.asList(this.validSecurityKeys).contains(key)) {
                 throw new Exception("Invalid key found in the security packet: " + key);
-            }   
+            }
         }
 
         if (!this.securityPacket.has("timestamp")) {
@@ -449,5 +468,55 @@ public class Init {
             Date date = new Date();
             this.securityPacket.put("timestamp", dateFormat.format(date));
         }
-    }   
+    }
+
+    /**
+     * Disables telemetry.
+     *
+     * We use telemetry to enable better support and feature planning. It is therefore not advised to
+     * disable it, because it will not interfere with any usage.
+     */
+    public static void disableTelemetry()
+    {
+        Telemetry.disableTelemetry();
+    }
+
+    /**
+     * Enables telemetry.
+     *
+     * Telemetry is enabled by default. We use it to enable better support and feature planning.
+     * It is however not advised to disable it, and it will not interfere with any usage.
+     */
+    public static void enableTelemetry()
+    {
+        Telemetry.enableTelemetry();
+    }
+
+    /**
+     * Validates the request packet stored in this instance
+     * @throws Exception if the requestPacket is empty or cannot be converted
+     *                   into a JSONObject
+     */
+    static JSONObject validateRequestPacket(Object requestPacket) throws Exception
+    {
+        JSONObject convertedPacket;
+
+        // Properly convert the request packet into a JSONObject
+        if (requestPacket instanceof JSONObject) {
+            convertedPacket = new JSONObject(requestPacket.toString());
+        } else if (requestPacket instanceof String) {
+            convertedPacket = new JSONObject((String) requestPacket);
+        } else if (requestPacket instanceof Map) {
+            convertedPacket = new JSONObject((Map) requestPacket);
+        } else {
+            // Try to make a JSONObject out of a hopefully valid java bean
+            convertedPacket = new JSONObject(requestPacket);
+        }
+
+        if (convertedPacket.length() == 0) {
+            throw new Exception("The requestPacket cannot be empty.");
+        }
+
+        return convertedPacket;
+    }
 }
