@@ -67,7 +67,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Questions {
-
     public static void main (String[] args) throws Exception
     {
         try {
@@ -138,7 +137,7 @@ public class Questions {
             // <script src="//questions.learnosity.com"></script>
             // var questionsApp = LearnosityApp.init(questionJson);
 
-             System.out.println(questionJson);
+            System.out.println(questionJson);
         }catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -157,7 +156,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Questions {
-
     public static void main (String[] args) throws Exception
     {
         try {
@@ -368,7 +366,7 @@ Run ```mvn package``` in your root directory (where pom.xml is located). This wi
 
 3.) Install the learnosity SDK with maven into that directory by running the following (modify locations as appropriate):
 ```bash
-mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dversion=0.15 -Durl=file:./learnosity-sdk-repo/ -DrepositoryId=learnosity-sdk-repo -DupdateReleaseInfo=true -Dfile=/home/temp/learnositysdk-0.15.jar -DpomFile=/home/temp/pom.xml
+mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dversion=0.16.0 -Durl=file:./learnosity-sdk-repo/ -DrepositoryId=learnosity-sdk-repo -DupdateReleaseInfo=true -Dfile=/home/temp/learnositysdk-0.16.0.jar -DpomFile=/home/temp/pom.xml
 ```
 
 4.) Add the directory as a file based repository in your project pom.xml:
