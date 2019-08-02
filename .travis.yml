@@ -1,13 +1,13 @@
 language: java
 jdk:
-  - openjdk7
-  - oraclejdk8
   - openjdk8
-  - oraclejdk9
   - oraclejdk11
   # The following fail to be fetched by Travis, skipping for now. Potentially related:
   # https://docs.travis-ci.com/user/languages/java/#using-java-10-and-later
   #- oraclejdk7
+  #- openjdk7
+  #- oraclejdk8
+  #- oraclejdk9
   #- openjdk9
   #- openjdk10
   #- openjdk11
@@ -26,18 +26,6 @@ env:
 script:
   - java -version
   - mvn verify
-
-matrix:
-  allow_failures:
-    # We know this fails against TLS-1.2+ only stacks
-    - jdk: oraclejdk7
-    # Those are not officially supported; Ideally we want them in a separate
-    # build stage named accordingly
-    - jdk: openjdk7
-    - jdk: openjdk9
-    - jdk: openjdk10
-    - jdk: oraclejdk12
-    - jdk: openjdk12
 
 before_install:
   # Workaround oraclejdk7's absence by setting it as a custom JDK
