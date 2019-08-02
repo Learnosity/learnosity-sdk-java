@@ -14,7 +14,7 @@ public class InitTest
 
 	static private String consumerKey = "yis0TYCu7U9V4o7M";
 	static private String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
-	static private String expectedSignature = "e9cd04b624d1dbe89fd4cad0a447f485e0fcec1392cbd3e2841826a954cc4e8e";
+	static private String expectedSignature = "c9ae25df8be352182dc9223f7d7705a42d37745e167215724ea377133dd4032d";
 
 	private JSONObject securityObj;
 	private JSONObject request;
@@ -27,7 +27,7 @@ public class InitTest
 	{
 		securityObj = new JSONObject();
 		securityObj.put("consumer_key", consumerKey);
-		securityObj.put("user_id", "12345678");
+		securityObj.put("user_id", "$ANONYMIZED_USER_ID");
 		securityObj.put("timestamp", "20140612-0438");
 
 		Init.disableTelemetry();
@@ -110,8 +110,8 @@ public class InitTest
 	{
 		System.out.println("Init Items: Generate");
 
-		String expectedSignature = "5af6775ea5307b43a62c0add8a5e8dc26140391e55eb9018560a1c7f2dbedce4";
-		String itemsString = "{\"user_id\":\"demo_student\",\"rendering_type\":\"assess\",\"name\":\"Items API demo - assess activity demo\",\"state\":\"initial\",\"activity_id\":\"items_assess_demo\",\"session_id\":\"demo_session_uuid\",\"type\":\"submit_practice\",\"config\":{\"configuration\":{\"responsive_regions\":true},\"navigation\":{\"scrolling_indicator\":true},\"regions\":\"main\",\"time\":{\"show_pause\":true,\"max_time\":300},\"title\":\"ItemsAPI Assess Isolation Demo\",\"subtitle\":\"Testing Subtitle Text\"},\"items\":[\"Demo3\"]}";
+		String expectedSignature = "36f107162a26d878ac4b33a5218cf09a518c6d98651f09b22507970c56cf604f";
+		String itemsString = "{\"user_id\":\"$ANONYMIZED_USER_ID\",\"rendering_type\":\"assess\",\"name\":\"Items API demo - assess activity demo\",\"state\":\"initial\",\"activity_id\":\"items_assess_demo\",\"session_id\":\"demo_session_uuid\",\"type\":\"submit_practice\",\"config\":{\"configuration\":{\"responsive_regions\":true},\"navigation\":{\"scrolling_indicator\":true},\"regions\":\"main\",\"time\":{\"show_pause\":true,\"max_time\":300},\"title\":\"ItemsAPI Assess Isolation Demo\",\"subtitle\":\"Testing Subtitle Text\"},\"items\":[\"Demo3\"]}";
 
 		request = new JSONObject(itemsString);
 
@@ -144,7 +144,7 @@ public class InitTest
 			+ "\"type\"           : \"submit_practice\","
 			+ "\"course_id\"      : \"demo_yis0TYCu7U9V4o7M\","
 			+ "\"session_id\"     : \"041f48c9-cb80-42e8-9d06-467d92013b00\","
-			+ "\"user_id\"        : \"demo_student\","
+			+ "\"user_id\"        : \"$ANONYMIZED_USER_ID\","
 			+ "\"items\": [\"Demo3\", \"Demo4\", \"Demo5\", \"Demo6\", \"Demo7\", \"Demo8\", \"Demo9\",\"Demo10\"],"
 			+ "\"assess_inline\": true,"
 			+ "\"config\": {"
@@ -270,7 +270,7 @@ public class InitTest
 		request.put("state", "initial");
 		request.put("questions", questions);
 
-		securityObj.put("user_id", "12345678");
+		securityObj.put("user_id", "$ANONYMIZED_USER_ID");
 
 		init = new Init("questions", securityObj, consumerSecret, request);
 		JSONObject signedRequest = new JSONObject(init.generate());
@@ -331,8 +331,8 @@ public class InitTest
 		System.out.println("Init Events: Generate");
 
 		JSONArray users = new JSONArray();
-		users.put("brianmoser");
-		users.put("hankschrader");
+		users.put("$ANONYMIZED_USER_ID_1");
+		users.put("$ANONYMIZED_USER_ID_2");
 
 		request = new JSONObject();
 		request.put("users", users);
@@ -348,16 +348,16 @@ public class InitTest
 				signedRequest.getJSONObject("config").has("users"));
 
 
-		assertTrue("Error in the Events API initialisation, missing user: brianmoser",
-				signedUsers.has("brianmoser"));
-		assertEquals("Error in the Events API initialisation, invalid signature: brianmoser",
-				"7224f1cd26c7eaac4f30c16ccf8e143005734089724affe0dd9cbf008b941e2d",
-				signedUsers.getString("brianmoser"));
-		assertTrue("Error in the Events API initialisation, missing user: hankschrader",
-				signedUsers.has("hankschrader"));
-		assertEquals("Error in the Events API initialisation, invalid signature: hankschrader",
-				"1e94cba9c43295121a8c93c476601f4f54ce1ee93ddc7f6fb681729c90979b7f",
-				signedUsers.getString("hankschrader"));
+		assertTrue("Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_1",
+				signedUsers.has("$ANONYMIZED_USER_ID_1"));
+		assertEquals("Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_1",
+				"64ccf06154cf4133624372459ebcccb8b2f8bd7458a73df681acef4e742e175c",
+				signedUsers.getString("$ANONYMIZED_USER_ID_1"));
+		assertTrue("Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_2",
+				signedUsers.has("$ANONYMIZED_USER_ID_2"));
+		assertEquals("Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_2",
+				"7fa4d6ef8926add8b6411123fce916367250a6a99f50ab8ec39c99d768377adb",
+				signedUsers.getString("$ANONYMIZED_USER_ID_2"));
 	}
 
 	public void testDataApiGenerate()
@@ -415,7 +415,7 @@ public class InitTest
 		assertEquals("Unexpected consumer key",
 				consumerKey, security.getString("consumer_key"));
 		assertEquals("Unexpected user id",
-				"12345678", security.getString("user_id"));
+				"$ANONYMIZED_USER_ID", security.getString("user_id"));
 		assertEquals("Unexpected timestamp",
 				"20140612-0438", security.getString("timestamp"));
 	}
