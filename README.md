@@ -76,7 +76,7 @@ public class Questions {
             // Create a security Map
             Map securityMap = new HashMap();
             securityMap.put("consumer_key", "yis0TYCu7U9V4o7M");
-            securityMap.put("user_id", "12345678");
+            securityMap.put("user_id", "$ANONYMIZED_USER_ID");
             securityMap.put("domain", "localhost");
 
             // Create some data for the questions api
@@ -164,7 +164,7 @@ public class Questions {
 
             String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
                     +    "\"domain\": \"assess.vg.learnosity.com\","
-                    +    "\"user_id\": \"12345678\"}";
+                    +    "\"user_id\": \"$ANONYMIZED_USER_ID\"}";
 
             String reqString = "{\"state\":\"initial\","
                     +  "\"type\":\"local_practice\","
