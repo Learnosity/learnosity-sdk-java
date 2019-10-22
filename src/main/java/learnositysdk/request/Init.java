@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 /**
  *--------------------------------------------------------------------------
  * Learnosity SDK - Init
@@ -424,6 +423,10 @@ public class Init {
      */
     private void updateRequestString() {
         this.requestString = this.requestPacket.toString();
+
+        // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to
+        // the string
+        this.requestString = this.requestString.replace("\\/", "/");
     }
 
     /**
