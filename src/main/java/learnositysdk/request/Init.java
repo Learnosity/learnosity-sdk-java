@@ -424,8 +424,8 @@ public class Init {
     private void updateRequestString() {
         this.requestString = this.requestPacket.toString();
 
-        // JSONObject.toString escapes forward slashes. Undo that, in order to avoid changes to
-        // the string
+        // Undo escaped forward slashes by JSONObject.toString to match PHP sdk
+        // https://github.com/Learnosity/learnosity-sdk-php/blob/42f2ffade51831966e0f92f25fa06e50c1dbecce/src/LearnositySdk/Utils/Json.php#L54
         this.requestString = this.requestString.replace("\\/", "/");
     }
 
