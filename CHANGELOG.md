@@ -6,6 +6,10 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.16.1] - 2019-10-31
+### Fixed
+* Fixed a bug where forward slashes were being escaped incorrectly, which could cause a signature mismatch to occur.
+
 ## [v0.16.0] - 2019-05-06
 ### Security
 * Upgrade dependency `org.apache.httpcomponents:httpclient` to v4.5.8 to patch vulnerabilities.
