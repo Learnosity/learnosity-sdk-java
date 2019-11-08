@@ -407,6 +407,33 @@ public class InitTest
 		}
 	}
 
+	public void testJsonSlashEscaping()
+        throws java.lang.Exception
+    {
+        System.out.println("Init: Test that forward slashes are not escaped");
+
+        String expectedSignature = "43fe102e08d0bb97de79ee7cbc128a24f610b730719022978380028a6198eeeb";
+        String expectedSubstring = "<h1>Items API demo</h1>";
+        String itemsString = "{\"user_id\":\"$ANONYMIZED_USER_ID\",\"rendering_type\":\"assess\",\"name\":\"" + expectedSubstring + " - assess activity demo\",\"state\":\"initial\",\"activity_id\":\"items_assess_demo\",\"session_id\":\"demo_session_uuid\",\"type\":\"submit_practice\",\"items\":[\"Demo3\"]}";
+
+        request = new JSONObject(itemsString);
+
+        securityObj.put("domain","demos.learnosity.com");
+
+        init = new Init("items", securityObj, consumerSecret, request);
+        String signedRequest = init.generate();
+        JSONObject signedReqObject = new JSONObject(signedRequest);
+
+        assertTrue("Expected substring was not found, make sure slashes are not escaped",
+            signedRequest.contains(expectedSubstring)
+        );
+
+        assertEquals("Invalid signature generated",
+            expectedSignature,
+            signedReqObject.getJSONObject("security").getString("signature")
+        );
+    }
+
 	private static void assertSecurityPacket (String securityObj)
 		throws org.json.JSONException
 	{
