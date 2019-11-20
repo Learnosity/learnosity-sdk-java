@@ -8,8 +8,12 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.apache.http.client.config.RequestConfig;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class DataApiIT {
 
@@ -24,7 +28,7 @@ public class DataApiIT {
 	static JSONObject response;
 	private JSONObject responseJson;
 
-	@Before
+	@BeforeEach
 	public void setUp()
 		throws java.lang.Exception
 	{
@@ -203,9 +207,7 @@ public class DataApiIT {
 	private void assertConsistentResponseCodeStatus(int statusCode, boolean status)
 		throws org.json.JSONException
 	{
-		assertTrue("Inconsistent HTTP status cand and meta status",
-				(statusCode == 200 && status)
-				|| (statusCode != 200 && !status));
+		assertTrue((statusCode == 200 && status) || (statusCode != 200 && !status), "Inconsistent HTTP status cand and meta status");
 	}
 
 	public String buildBaseUrl(String env, String region, String version)
