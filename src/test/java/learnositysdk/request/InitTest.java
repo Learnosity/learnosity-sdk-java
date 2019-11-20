@@ -7,10 +7,10 @@ import java.util.Iterator;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-import junit.framework.TestCase;
+import org.junit.*;
+import static org.junit.Assert.*;
 
-public class InitTest
-	extends TestCase {
+public class InitTest {
 
 	static private String consumerKey = "yis0TYCu7U9V4o7M";
 	static private String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
@@ -21,8 +21,8 @@ public class InitTest
 	private Init init;
 	private JSONObject signedRequest;
 
-	@Override
-	protected void setUp()
+	@Before
+	public void setUp()
 		throws java.lang.Exception
 	{
 		securityObj = new JSONObject();
@@ -35,6 +35,7 @@ public class InitTest
 		request = new JSONObject ();
 	}
 
+	@Test
 	public void testInitGenerate()
 		throws java.lang.Exception
 	{
@@ -46,6 +47,7 @@ public class InitTest
 		assertSignature(init.generateSignature());
 	}
 
+	@Test
 	public void testInitGenerateFromString()
 		throws java.lang.Exception
 	{
@@ -58,6 +60,7 @@ public class InitTest
 		assertSignature(init.generateSignature());
 	}
 
+	@Test
 	public void testInitGenerateFromHashMap()
 		throws java.lang.Exception
 	{
@@ -76,6 +79,7 @@ public class InitTest
 		assertSignature(init.generateSignature());
 	}
 
+	@Test
 	public void testInitAssessGenerate()
 		throws java.lang.Exception
 	{
@@ -105,6 +109,7 @@ public class InitTest
 			    );
 	}
 
+	@Test
 	public void testInitItemsGenerate()
 		throws java.lang.Exception
 	{
@@ -129,7 +134,9 @@ public class InitTest
 	// XXX: This test is skipped as different JDKs reorder JSON arrays in different ways.
 	// The signature for the final string will still be valid, but we cannot easily
 	// encode this uncertainty is a practical test across all JDKs.
-	public void SKIPPEDtestInitItemsComplexGenerate()
+	@Ignore
+	@Test
+	public void testInitItemsComplexGenerate()
 		throws java.lang.Exception
 	{
 		System.out.println("Init Items: Generate");
@@ -227,6 +234,7 @@ public class InitTest
 	/* XXX: This is quite redundant with testInitQuestionsGenerate and
 	 * testInitGenerateFromString
 	 */
+	@Test
 	public void testInitQuestionsGenerate()
 		throws java.lang.Exception
 	{
@@ -286,6 +294,7 @@ public class InitTest
 	/* XXX: This is quite redundant with testInitQuestionsGenerate and
 	 * testInitGenerateFromString
 	 */
+	@Test
 	public void testInitQuestionsGenerateFromString()
 		throws java.lang.Exception
 	{
@@ -325,6 +334,7 @@ public class InitTest
 				signedRequest.get("consumer_key"));
 	}
 
+	@Test
 	public void testInitEventsGenerate()
 		throws java.lang.Exception
 	{
@@ -360,6 +370,7 @@ public class InitTest
 				signedUsers.getString("$ANONYMIZED_USER_ID_2"));
 	}
 
+	@Test
 	public void testDataApiGenerate()
 		throws java.lang.Exception
 	{
