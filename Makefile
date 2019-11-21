@@ -7,7 +7,7 @@ all: build test
 
 dist: prodbuild
 
-test: test-unit test-integration-dev
+test: test-unit test-integration-env
 
 clean: build-clean
 

@@ -7,10 +7,13 @@ import java.util.Iterator;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class InitTest
-	extends TestCase {
+public class InitTest {
 
 	static private String consumerKey = "yis0TYCu7U9V4o7M";
 	static private String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
@@ -21,8 +24,8 @@ public class InitTest
 	private Init init;
 	private JSONObject signedRequest;
 
-	@Override
-	protected void setUp()
+	@BeforeEach
+	public void setUp()
 		throws java.lang.Exception
 	{
 		securityObj = new JSONObject();
@@ -35,6 +38,7 @@ public class InitTest
 		request = new JSONObject ();
 	}
 
+	@Test
 	public void testInitGenerate()
 		throws java.lang.Exception
 	{
@@ -46,6 +50,7 @@ public class InitTest
 		assertSignature(init.generateSignature());
 	}
 
+	@Test
 	public void testInitGenerateFromString()
 		throws java.lang.Exception
 	{
@@ -58,6 +63,7 @@ public class InitTest
 		assertSignature(init.generateSignature());
 	}
 
+	@Test
 	public void testInitGenerateFromHashMap()
 		throws java.lang.Exception
 	{
@@ -76,6 +82,7 @@ public class InitTest
 		assertSignature(init.generateSignature());
 	}
 
+	@Test
 	public void testInitAssessGenerate()
 		throws java.lang.Exception
 	{
@@ -99,12 +106,13 @@ public class InitTest
 		init = new Init("assess", securityObj, consumerSecret, request);
 
 		JSONObject signedRequest = new JSONObject(init.generate());
-		assertEquals("Errors in the Assess initialisation",
-				"Demo3",
-				signedRequest.getJSONArray("items").getJSONObject(0).get("reference")
-			    );
+
+		assertEquals("Demo3",
+			signedRequest.getJSONArray("items").getJSONObject(0).get("reference"),
+			"Errors in the Assess initialisation");
 	}
 
+	@Test
 	public void testInitItemsGenerate()
 		throws java.lang.Exception
 	{
@@ -120,16 +128,17 @@ public class InitTest
 		init = new Init("items", securityObj, consumerSecret, request);
 		JSONObject signedRequest = new JSONObject(init.generate());
 
-		assertEquals("Errors in the Items initialisation",
-				expectedSignature,
-				signedRequest.getJSONObject("security").getString("signature")
-			    );
+		assertEquals(expectedSignature,
+			signedRequest.getJSONObject("security").getString("signature"),
+			"Errors in the Items initialisation");
 	}
 
 	// XXX: This test is skipped as different JDKs reorder JSON arrays in different ways.
 	// The signature for the final string will still be valid, but we cannot easily
 	// encode this uncertainty is a practical test across all JDKs.
-	public void SKIPPEDtestInitItemsComplexGenerate()
+	@Disabled
+	@Test
+	public void testInitItemsComplexGenerate()
 		throws java.lang.Exception
 	{
 		System.out.println("Init Items: Generate");
@@ -218,15 +227,15 @@ public class InitTest
 		String itemsTest = init.generate();
 		JSONObject signedRequest = new JSONObject(init.generate());
 
-		assertEquals("Errors in the Items initialisation",
-				expectedSignature,
-				signedRequest.getJSONObject("security").getString("signature")
-			    );
+		assertEquals(expectedSignature,
+			signedRequest.getJSONObject("security").getString("signature"),
+			"Errors in the Items initialisation");
 	}
 
 	/* XXX: This is quite redundant with testInitQuestionsGenerate and
 	 * testInitGenerateFromString
 	 */
+	@Test
 	public void testInitQuestionsGenerate()
 		throws java.lang.Exception
 	{
@@ -275,17 +284,23 @@ public class InitTest
 		init = new Init("questions", securityObj, consumerSecret, request);
 		JSONObject signedRequest = new JSONObject(init.generate());
 
-		assertEquals("Error in the Questions API initialisation: type",
-				"local_practice", signedRequest.get("type"));
-		assertEquals("Error in the Questions API initialisation: number of questions",
-				1, signedRequest.getJSONArray("questions").length());
-		assertEquals("Error in the Questions API initialisation: consumer key",
-				consumerKey, signedRequest.get("consumer_key"));
+		assertEquals("local_practice",
+			signedRequest.get("type"),
+			"Error in the Questions API initialisation: type");
+
+		assertEquals(1,
+			signedRequest.getJSONArray("questions").length(),
+			"Error in the Questions API initialisation: number of questions");
+
+		assertEquals(consumerKey,
+			signedRequest.get("consumer_key"),
+			"Error in the Questions API initialisation: consumer key");
 	}
 
 	/* XXX: This is quite redundant with testInitQuestionsGenerate and
 	 * testInitGenerateFromString
 	 */
+	@Test
 	public void testInitQuestionsGenerateFromString()
 		throws java.lang.Exception
 	{
@@ -317,14 +332,20 @@ public class InitTest
 		init = new Init("questions", securityObj, consumerSecret, reqString);
 		signedRequest = new JSONObject(init.generate());
 
-		assertEquals("Errors in the Questions API initialisation: type",
-				"local_practice", signedRequest.get("type"));
-		assertEquals("Errors in the Questions API initialisation: number of questions", 1,
-				signedRequest.getJSONArray("questions").length());
-		assertEquals("Errors in the Questions API initialisation: consumer key", consumerKey,
-				signedRequest.get("consumer_key"));
+		assertEquals("local_practice",
+			signedRequest.get("type"),
+			"Errors in the Questions API initialisation: type");
+
+		assertEquals(1,
+			signedRequest.getJSONArray("questions").length(),
+			"Errors in the Questions API initialisation: number of questions");
+
+		assertEquals(consumerKey,
+			signedRequest.get("consumer_key"),
+			"Errors in the Questions API initialisation: consumer key");
 	}
 
+	@Test
 	public void testInitEventsGenerate()
 		throws java.lang.Exception
 	{
@@ -342,24 +363,22 @@ public class InitTest
 		JSONObject signedUsers = signedRequest.getJSONObject("config")
 			.getJSONObject("users");
 
-		assertTrue("Error in the Events API initialisation: config",
-				signedRequest.has("config"));
-		assertTrue("Error in the Events API initialisation: users",
-				signedRequest.getJSONObject("config").has("users"));
-
-
-		assertTrue("Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_1",
-				signedUsers.has("$ANONYMIZED_USER_ID_1"));
-		assertEquals("Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_1",
-				"64ccf06154cf4133624372459ebcccb8b2f8bd7458a73df681acef4e742e175c",
-				signedUsers.getString("$ANONYMIZED_USER_ID_1"));
-		assertTrue("Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_2",
-				signedUsers.has("$ANONYMIZED_USER_ID_2"));
-		assertEquals("Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_2",
-				"7fa4d6ef8926add8b6411123fce916367250a6a99f50ab8ec39c99d768377adb",
-				signedUsers.getString("$ANONYMIZED_USER_ID_2"));
+		assertTrue(signedRequest.has("config"), "Error in the Events API initialisation: config");
+		assertTrue(signedRequest.getJSONObject("config").has("users"),
+			"Error in the Events API initialisation: users");
+		assertTrue(signedUsers.has("$ANONYMIZED_USER_ID_1"),
+			"Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_1");
+		assertEquals("64ccf06154cf4133624372459ebcccb8b2f8bd7458a73df681acef4e742e175c",
+			signedUsers.getString("$ANONYMIZED_USER_ID_1"),
+			"Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_1");
+		assertTrue(signedUsers.has("$ANONYMIZED_USER_ID_2"),
+				"Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_2");
+		assertEquals("7fa4d6ef8926add8b6411123fce916367250a6a99f50ab8ec39c99d768377adb",
+			signedUsers.getString("$ANONYMIZED_USER_ID_2"),
+			"Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_2");
 	}
 
+	@Test
 	public void testDataApiGenerate()
 		throws java.lang.Exception
 	{
@@ -394,16 +413,13 @@ public class InitTest
 			init.setAction(action);
 			signedRequest = new JSONObject(init.generate());
 
-			assertEquals(
-				"Error in Data API signing, request string altered when it must not be",
-				reqString,
-				init.getRequestString()
-			);
-			assertEquals(
-				"Error in the Data API signing, invalid signature",
-				expectedSignature,
-				signedRequest.getString("signature")
-			);
+			assertEquals(reqString,
+				init.getRequestString(),
+				"Error in Data API signing, request string altered when it must not be");
+
+			assertEquals(expectedSignature,
+				signedRequest.getString("signature"),
+				"Error in the Data API signing, invalid signature");
 		}
 	}
 
@@ -424,13 +440,13 @@ public class InitTest
         String signedRequest = init.generate();
         JSONObject signedReqObject = new JSONObject(signedRequest);
 
-        assertTrue("Expected substring was not found, make sure slashes are not escaped",
-            signedRequest.contains(expectedSubstring)
+        assertTrue(signedRequest.contains(expectedSubstring),
+			"Expected substring was not found, make sure slashes are not escaped"
         );
 
-        assertEquals("Invalid signature generated",
-            expectedSignature,
-            signedReqObject.getJSONObject("security").getString("signature")
+        assertEquals(expectedSignature,
+            signedReqObject.getJSONObject("security").getString("signature"),
+			"Invalid signature generated"
         );
     }
 
@@ -439,17 +455,13 @@ public class InitTest
 	{
 		JSONObject security = new JSONObject(securityObj);
 
-		assertEquals("Unexpected consumer key",
-				consumerKey, security.getString("consumer_key"));
-		assertEquals("Unexpected user id",
-				"$ANONYMIZED_USER_ID", security.getString("user_id"));
-		assertEquals("Unexpected timestamp",
-				"20140612-0438", security.getString("timestamp"));
+		assertEquals(consumerKey, security.getString("consumer_key"), "Unexpected consumer key");
+		assertEquals("$ANONYMIZED_USER_ID", security.getString("user_id"), "Unexpected user id");
+		assertEquals("20140612-0438", security.getString("timestamp"), "Unexpected timestamp");
 	}
 
-	private static void assertSignature (String signature)
+	private void assertSignature (String signature)
 	{
-		assertEquals("Unexpected signature",
-				expectedSignature, signature);
+		assertEquals(expectedSignature, signature, "Unexpected signature");
 	}
 }
