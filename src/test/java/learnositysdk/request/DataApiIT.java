@@ -8,10 +8,11 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.apache.http.client.config.RequestConfig;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DataApiIT
-	extends TestCase {
+public class DataApiIT {
 
 	static private String consumerKey = "yis0TYCu7U9V4o7M";
 	static private String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
@@ -24,8 +25,8 @@ public class DataApiIT
 	static JSONObject response;
 	private JSONObject responseJson;
 
-	@Override
-	protected void setUp()
+	@BeforeEach
+	public void setUp()
 		throws java.lang.Exception
 	{
 		String testEnv = System.getenv("ENV");
@@ -43,6 +44,7 @@ public class DataApiIT
 		request = new HashMap<String,String>();
 	}
 
+	@Test
 	public void testGetActivitites()
 		throws java.lang.Exception
 	{
@@ -70,6 +72,7 @@ public class DataApiIT
 		assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "set");
 	}
 
+	@Test
 	public void testGetItemsEmptyRemote()
 		throws java.lang.Exception
 	{
@@ -86,6 +89,7 @@ public class DataApiIT
 		assertConsistentResponseRemote(remote, responseJson);
 	}
 
+	@Test
 	public void testGetItemsEmpty()
 		throws java.lang.Exception
 	{
@@ -95,6 +99,7 @@ public class DataApiIT
 		assertDataApiRequestWorks(endpoint, securityMap, consumerSecret);
 	}
 
+	@Test
 	public void testExplicitGetItemsEmpty()
 		throws java.lang.Exception
 	{
@@ -108,6 +113,7 @@ public class DataApiIT
 		assertConsistentResponse(response, responseJson);
 	}
 
+	@Test
 	public void testGetItemsLimit()
 		throws java.lang.Exception
 	{
@@ -119,6 +125,7 @@ public class DataApiIT
 		assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "get");
 	}
 
+	@Test
 	public void testGetItemsRecursive()
 		throws java.lang.Exception
 	{
@@ -134,6 +141,7 @@ public class DataApiIT
 		/* Can't assert much here, expecting no exceptions... */
 	}
 
+	@Test
 	public void testGetQuestionsRecursive()
 		throws java.lang.Exception
 	{
@@ -196,9 +204,10 @@ public class DataApiIT
 	private void assertConsistentResponseCodeStatus(int statusCode, boolean status)
 		throws org.json.JSONException
 	{
-		assertTrue("Inconsistent HTTP status cand and meta status",
-				(statusCode == 200 && status)
-				|| (statusCode != 200 && !status));
+		assertTrue(
+				(statusCode == 200 && status) || (statusCode != 200 && !status),
+				"Inconsistent HTTP status cand and meta status"
+				);
 	}
 
 	public String buildBaseUrl(String env, String region, String version)
