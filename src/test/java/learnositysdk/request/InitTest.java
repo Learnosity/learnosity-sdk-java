@@ -423,6 +423,7 @@ public class InitTest {
 		}
 	}
 
+	@Test
 	public void testJsonSlashEscaping()
         throws java.lang.Exception
     {
