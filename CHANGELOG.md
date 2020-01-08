@@ -5,6 +5,8 @@ and this project now adheres to [Semantic
 Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v0.16.2] - 2019-01-08
 ### Fixed
 * Upgrade dependencies for housekeeping (`commons-codec` to 1.13, `commons-lang3` to 3.8.1, `commons-io` to 2.6, `httpclient` to 4.5.10, `httpcore` to 4.4.12, and `org.json` to 20190722).
 * Updated the test suite to use `JUnit 5`.
