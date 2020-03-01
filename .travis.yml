@@ -37,3 +37,7 @@ before_install:
   - test "${TRAVIS_JDK_VERSION}" != "oraclejdk8" -o "${CUSTOM_JDK_MINOR}" != "8" || curl -L -b "oraclelicense=accept-securebackup-cookie" "${ORACLE_DOWNLOAD}/${CUSTOM_JDK_VERSION}-b${CUSTOM_JDK_BUILD}/${CUSTOM_JDK_HASH}/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz" -o "/tmp/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz"
   # Install custom JDKs and set PATHs
   - if [ -e "/tmp/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz" ]; then export JAVA_HOME="/usr/lib/jvm/custom-java-${CUSTOM_JDK_MINOR}-oracle"; export PATH="${JAVA_HOME}/bin:${PATH}"; sudo rm -rf "${JAVA_HOME}"; tar xzf "/tmp/jdk-${CUSTOM_JDK_VERSION}-linux-x64.tar.gz" -C /tmp; sudo mv "/tmp/jdk1.${CUSTOM_JDK_MINOR}.0_${CUSTOM_JDK_REV}" "${JAVA_HOME}"; fi
+notifications:
+  slack:
+    rooms:
+      secure: cEVjK0UWhOCd7nodIWy3tJwcOmN2b4rAwW3OKrww5YAoB8EzRWmZJ4iUW06Trl9Z1MWzPtjVx7fda1KViOzqkH1hcCES4FOejcaGr0qzzgyl+Xo+M5RusVDNoDkdVysJ7bJMvskJqaQyMpZLHnyqrJXrRjZ8isKtnVacLHikwDM=
