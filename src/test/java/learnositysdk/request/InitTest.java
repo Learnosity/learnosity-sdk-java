@@ -451,6 +451,29 @@ public class InitTest {
         );
     }
 
+	@Test
+	public void testJsonUnicodeEscaping()
+			throws java.lang.Exception
+	{
+		System.out.println("Init: Test that unicode characters are not escaped");
+
+		String expectedEnDashSignature = "b451145040e7dc7018cad9c0eae2eec938aa8bfc16de7e95bf2a957d9ba5b8fe";
+		String request = "{\"endash\":\"–\",\"slash\":\"/\",\"slash-back\":\"\\\\\"}";
+
+		securityObj.put("domain","demos.learnosity.com");
+
+		init = new Init("items", securityObj, consumerSecret, request);
+		String signedRequest = init.generate();
+		JSONObject signedReqObject = new JSONObject(signedRequest);
+
+		assertSecurityPacket(signedReqObject.getJSONObject("security").toString());
+
+		assertEquals(expectedEnDashSignature,
+				signedReqObject.getJSONObject("security").getString("signature"),
+				"Invalid signature generated"
+		);
+	}
+
 	private static void assertSecurityPacket (String securityObj)
 		throws org.json.JSONException
 	{

@@ -14,6 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.regex.Pattern;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+
 /**
  *--------------------------------------------------------------------------
  * Learnosity SDK - Init
@@ -424,9 +428,31 @@ public class Init {
     private void updateRequestString() {
         this.requestString = this.requestPacket.toString();
 
-        // Undo escaped forward slashes by JSONObject.toString to match PHP sdk
-        // https://github.com/Learnosity/learnosity-sdk-php/blob/42f2ffade51831966e0f92f25fa06e50c1dbecce/src/LearnositySdk/Utils/Json.php#L54
-        this.requestString = this.requestString.replace("\\/", "/");
+        this.requestString = fixJson(this.requestString);
+    }
+
+    /**
+     * Ensures encoded JSON is correctly formatted for the Learnosity APIs
+     *
+     * PHP SDK: https://github.com/Learnosity/learnosity-sdk-php/blob/42f2ffade51831966e0f92f25fa06e50c1dbecce/src/LearnositySdk/Utils/Json.php#L54
+     */
+    private String fixJson(String string) {
+        final Pattern pattern = Pattern.compile("\\\\u([0-9A-Fa-f]{4})");
+        StringBuilder result = new StringBuilder();
+        final Matcher matcher = pattern.matcher(string);
+        int lastMatch = 0;
+
+        while(matcher.find()) {
+            final MatchResult matchResult = matcher.toMatchResult();
+            String replacement = Character.toString((char)Integer.parseInt(matchResult.group(1), 16));
+            result.append(string.substring(lastMatch, matchResult.start())).append(replacement);
+            lastMatch = matchResult.end();
+        }
+
+        if (lastMatch < string.length())
+            result.append(string.substring(lastMatch));
+
+        return result.toString().replace("\\/", "/");
     }
 
     /**
