@@ -41,3 +41,4 @@ notifications:
   slack:
     rooms:
       secure: cEVjK0UWhOCd7nodIWy3tJwcOmN2b4rAwW3OKrww5YAoB8EzRWmZJ4iUW06Trl9Z1MWzPtjVx7fda1KViOzqkH1hcCES4FOejcaGr0qzzgyl+Xo+M5RusVDNoDkdVysJ7bJMvskJqaQyMpZLHnyqrJXrRjZ8isKtnVacLHikwDM=
+    on_success: change
