@@ -6,7 +6,7 @@
 
   <groupId>learnositysdk</groupId>
   <artifactId>learnositysdk</artifactId>
-  <version>0.16.3</version>
+  <version>0.16.4</version>
 
   <name>Learnosity SDK</name>
   <url>https://github.com/Learnosity/learnosity-sdk-java</url>
