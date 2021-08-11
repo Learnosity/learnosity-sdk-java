@@ -1,6 +1,6 @@
 # Learnosity SDK - Java
 
-[![Build Status](https://travis-ci.org/Learnosity/learnosity-sdk-java.svg?branch=master)](https://travis-ci.org/Learnosity/learnosity-sdk-java)
+[![Build Status](https://travis-ci.com/Learnosity/learnosity-sdk-java.svg?branch=master)](https://travis-ci.com/Learnosity/learnosity-sdk-java)
 
 Include this library into your own codebase to ease integration with any of the Learnosity APIs.
 
