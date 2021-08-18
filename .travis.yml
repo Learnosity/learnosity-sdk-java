@@ -28,6 +28,8 @@ script:
   - mvn verify
 
 before_install:
+  # Login to docker hub
+  - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   # Workaround oraclejdk7's absence by setting it as a custom JDK
   - if [ "${TRAVIS_JDK_VERSION}" == "oraclejdk7" ]; then export CUSTOM_JDK_MINOR=7 CUSTOM_JDK_REV=80; fi
   # Convenience variables
