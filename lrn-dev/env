@@ -1,0 +1,2 @@
+JAVA_DIST=adoptopenjdk
+JAVA_VERSION=11
