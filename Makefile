@@ -1,69 +1,65 @@
-ifndef LRN_SDK_NO_DOCKER
-CMP_PROJECT = lrn-sdk-java
-CMP = docker-compose -f lrn-dev/docker-compose.yml --env-file lrn-dev/env --project-name $(CMP_PROJECT)
-CMP_RUN = $(CMP) run --rm java
-CMP_BUILD = $(CMP) build
-CMP_CLEAN = docker image ls --filter reference=$(CMP_PROJECT)\* -q | xargs docker rmi
-CMP_RM_VOLUME = docker volume rm $(CMP_PROJECT)_repo
-endif
+DOCKER := $(if $(LRN_SDK_NO_DOCKER),,$(shell which docker))
+JAVA_DIST = eclipse-temurin
+JAVA_VERSION = 11
+IMAGE = $(JAVA_DIST)-maven:$(JAVA_VERSION)
 
-PROJECT_VERSION_CMD = mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout
-PKG_VER = v$(shell $(CMP_RUN) $(PROJECT_VERSION_CMD))
-GIT_TAG = $(shell git describe --tags)
-VERSION_MISMATCH = For a release build, the package version number $(PKG_VER) must match the git tag $(GIT_TAG).
+TARGETS = build dist \
+	test test-unit test-integration-env \
+	version-check version-check-message \
+	clean
+.PHONY: $(TARGETS)
 
+ifneq (,$(DOCKER))
+# Re-run the make command in a container
+DKR = docker container run -t --rm \
+		-v $(CURDIR):/srv/sdk/java:z,delegated \
+		-v lrn-sdk-java_cache:/root/.m2/repository \
+		-w /srv/sdk/java \
+		-e LRN_SDK_NO_DOCKER=1 \
+		-e ENV -e REGION -e VER \
+		$(if $(findstring dev,$(ENV)),--net host) \
+		$(IMAGE)
+
+$(TARGETS): $(if $(shell docker image ls -q --filter reference=$(IMAGE)),,docker-build)
+	$(DKR) make -e MAKEFLAGS="$(MAKEFLAGS)" $@
+
+docker-build:
+	docker image build --progress plain --build-arg JAVA_DIST=$(JAVA_DIST) --build-arg JAVA_VERSION=$(JAVA_VERSION) -t $(IMAGE) .
+.PHONY: docker-build
+
+else
 # Data API settings
-
-DAPI_ENV = prod
-DAPI_REGION = .learnosity.com
-DAPI_VER = v1
+ENV = prod
+REGION = .learnosity.com
+VER = v1
 
 # Dev cycle targets
 
-all: lrn-dev build test
-
 build:
-	$(CMP_RUN) mvn compile
+	mvn compile
 
 test: test-unit test-integration-env
 
 test-unit:
-	$(CMP_RUN) mvn test
+	mvn test
 
 test-integration-env:
-	ENV=$(DAPI_ENV) REGION=$(DAPI_REGION) VER=$(DAPI_VER) $(CMP_RUN) mvn integration-test
+	ENV=$(ENV) REGION=$(REGION) VER=$(VER) mvn integration-test
 
 clean:
-	$(CMP_RUN) mvn clean
+	mvn clean
 
-prodbuild: version-check build test
-	$(CMP_RUN) mvn package
+dist: version-check build test
+	mvn package
+
+PROJECT_VERSION_CMD = mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+PKG_VER = v$(shell $(PROJECT_VERSION_CMD))
+GIT_TAG = $(shell git describe --tags)
+VERSION_MISMATCH = For a release build, the package version number $(PKG_VER) must match the git tag $(GIT_TAG).
 
 version-check-message:
 	@echo Checking git and project versions ...
 
 version-check: version-check-message
 	@echo $(GIT_TAG) | grep -qw "$(PKG_VER)" || (echo $(VERSION_MISMATCH); exit 1)
-
-# Some target aliases
-
-dist: prodbuild
-
-devbuild: build
-
-# LRN environment targets
-
-lrn-dev:
-	$(CMP_BUILD)
-
-lrn-clean:
-	$(CMP_CLEAN)
-	-$(if $(LRN_SDK_KEEP_VOLUME),,$(CMP_RM_VOLUME))
-
-# Not a single real target
-
-.PHONY: all build prodbuild devbuild dist \
-	test test-unit test-integration-env \
-	version-check version-check-message \
-	clean \
-	lrn-dev lrn-clean
+endif
