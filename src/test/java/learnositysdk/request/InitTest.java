@@ -69,7 +69,7 @@ public class InitTest {
 	{
 		System.out.println("Init: Generate from HashMap");
 
-		Map<String,String> securityMap = new HashMap();
+		Map<String,String> securityMap = new HashMap<String,String>();
 		Iterator<?> keys = securityObj.keys();
 		while( keys.hasNext() ) {
 			String key = (String)keys.next();
