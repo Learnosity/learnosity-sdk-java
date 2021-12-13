@@ -3,9 +3,10 @@ JAVA_DIST = eclipse-temurin
 JAVA_VERSION = 11
 IMAGE = $(JAVA_DIST)-maven:$(JAVA_VERSION)
 
-TARGETS = build dist \
+TARGETS = build dist install \
 	test test-unit test-integration-env \
 	version-check version-check-message \
+	quickstart-assessment quickstart-clean \
 	clean
 .PHONY: $(TARGETS)
 
@@ -49,7 +50,7 @@ test-integration-env:
 clean:
 	mvn clean
 
-dist: version-check build test
+dist: version-check test-integration-env
 	mvn package
 
 PROJECT_VERSION_CMD = mvn help:evaluate -Dexpression=project.version -q -DforceStdout
@@ -62,4 +63,32 @@ version-check-message:
 
 version-check: version-check-message
 	@echo $(GIT_TAG) | grep -qw "$(PKG_VER)" || (echo $(VERSION_MISMATCH); exit 1)
+
+install:
+	mvn install
+
+# The following targets are for the Quickstart Assessment Demo
+
+quickstart-assessment: docs/quickstart/assessment/webapps/quickstart-*.war demo-run-message
+
+docs/quickstart/assessment/webapps/quickstart-%.war: docs/quickstart/assessment/target/quickstart-%.war
+	mkdir -p docs/quickstart/assessment/webapps
+	cp docs/quickstart/assessment/target/quickstart-*.war docs/quickstart/assessment/webapps
+
+docs/quickstart/assessment/target/quickstart-%.war: install
+	cd docs/quickstart/assessment && mvn package
+
+demo-run-message:
+	@echo -e '\033[0;32m** Demo package complete **\033[0m'
+	@echo Now copy docs/quickstart/assessment/webapps/quickstart*.war to the webapps
+	@echo directory of a servlet container like Jetty or Tomcat, or use Docker:
+	@echo
+	@echo 'docker container run --rm -d -v $$(pwd)/docs/quickstart/assessment/webapps:/var/lib/jetty/webapps -p 9280:8080 jetty:11.0.7-jdk11'
+	@echo
+.PHONY: demo-run-message
+
+quickstart-clean:
+	cd docs/quickstart/assessment && mvn clean
+	rm -rf docs/quickstart/assessment/webapps
+
 endif

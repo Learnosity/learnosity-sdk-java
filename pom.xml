@@ -102,7 +102,7 @@
         <version>3.1.0</version>
         <configuration>
           <outputDirectory>${project.basedir}/Dist/All</outputDirectory>
-          <appendAssemblyId>false</appendAssemblyId>
+          <appendAssemblyId>true</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
