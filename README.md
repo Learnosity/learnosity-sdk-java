@@ -59,6 +59,7 @@ Note: just looking for a .WAR file? Look in the Maven target directory.
 Not using Java? See the [SDKs for other languages](https://help.learnosity.com/hc/en-us/sections/360000194318-Server-side-development-SDKs).
 
 ### **Supported Java Versions**
+
 The following Java versions are tested and supported:
 
 * [OpenJDK](http://openjdk.java.net/) versions 8 and 11, tested on compatible runtime [Eclipse Adoptium/Temurin 11 LTS](https://projects.eclipse.org/projects/adoptium.temurin/downloads) (previously known as 'AdoptOpenJDK').
