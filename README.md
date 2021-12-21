@@ -91,7 +91,7 @@ To start, navigate to the root folder of the project on the command line, and ru
 
 This will compile and test the project, building the .WAR file. 
 
-You will get the following advice on the command line, to either copy the .WAR file into your J2EE servlet container, or run the Docker below to boot the Jetty web server: 
+You will get the following advice on the command line, to either copy the .WAR file into your J2EE servlet container, or run the Docker below to boot the Jetty web server:
 
 ``` Bash
 ** Demo package complete **
