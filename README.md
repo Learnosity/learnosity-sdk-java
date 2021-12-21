@@ -303,7 +303,7 @@ We use this data to enable better support and feature planning.
 [(Back to top)](#table-of-contents)
 
 ## Further reading
-Thanks for reading to the end! Find more information about developing an app with Learnosity on our documentation sites: 
+Thanks for reading to the end! Find more information about developing an app with Learnosity on our documentation sites:
 
 * [help.learnosity.com](http://help.learnosity.com/hc/en-us) -- general help portal and tutorials,
 * [reference.learnosity.com](http://reference.learnosity.com) -- developer reference site, and
