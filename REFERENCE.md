@@ -329,7 +329,7 @@ Run ```mvn package``` in your root directory (where pom.xml is located). This wi
 
 2.) Add a directory to your maven project to build the file-based repository into (e.g. ./learnosity-sdk-repo)
 
-3.) Install the learnosity SDK with maven into that directory by running the following (modify locations as appropriate):
+3.) Install the Learnosity SDK with maven into that directory by running the following (modify locations as appropriate):
 ```bash
 mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dversion=0.16.3 -Durl=file:./learnosity-sdk-repo/ -DrepositoryId=learnosity-sdk-repo -DupdateReleaseInfo=true -Dfile=/home/temp/learnositysdk-0.16.3.jar -DpomFile=/home/temp/pom.xml
 ```
