@@ -260,7 +260,7 @@ Returns the HTTP status code of the response.
 
 ### DataApi
 
-This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive function which can be called with a class implementing RequestCallback.java. The execute() function will be called for each response.
+This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive() function which can be called with a class implementing RequestCallback.java. The execute() function will be called for each response.
 
 The DataApi Constructor can handle either 3 arguments;
 * url
