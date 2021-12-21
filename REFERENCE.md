@@ -228,7 +228,7 @@ Remote remote = new Remote(requestConfig);
 // Call get() or post() with a URL:
 remote.get("http://schemas.learnosity.com/stable/questions/templates");
 
-// getBody() gives you to body of the request
+// getBody() gives you the body of the response
 String body = response.getBody();
 ```
 
