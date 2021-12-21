@@ -4,24 +4,18 @@
 
 ### Init
 
-The Init class is used to create the necessary *security* and *request* details used to integrate with a Learnosity API. Most often this will be a JavaScript object.
+The Init class is used to create the necessary *security* and *request* details used to integrate with a Learnosity API.
 
-The Init constructor takes either 3 arguments:
+The Init constructor takes 4 arguments:
 
- * String  service type
- * Object  security details (**no secret**)
- * String  secret
+ * String service type
+ * Object security details (**no secret**)
+ * String secret
+ * Object request details
 
-or 4 arguments:
+The security and request Object can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples). Learnosity recommends that you pass the request details as a JSONObject, or a String generated from a JSONObject to the constructor. This way, issues arising from adding/removing whitespace can be avoided.
 
- * String  service type
- * Object  security details (**no secret**)
- * String  secret
- * Object  request details
-
-The security and request objects can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples). Learnosity recommends that you pass the request details as a JSONObject, or a String generated from a JSONObject to the constructor. This way, issues arising from adding/removing whitespace can be avoided.
-
-If you have to set an action attribute (for calls to data api, if not using the DataApi class), you can use the setAction method of class Init.
+If you have to set an action attribute (for calls to data api, if not using the DatApi class), you can use the setAction method of class Init.
 
 ```java
 import learnositysdk.request.Init;
@@ -103,7 +97,7 @@ public class Questions {
             // var questionsApp = LearnosityApp.init(questionJson);
 
             System.out.println(questionJson);
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -161,7 +155,7 @@ public class Questions {
             // For instance on jsp you might have
             // <script src="//questions.learnosity.com"></script>
             // var questionsApp = LearnosityApp.init(questionJson);
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -228,7 +222,7 @@ Remote remote = new Remote(requestConfig);
 // Call get() or post() with a URL:
 remote.get("http://schemas.learnosity.com/stable/questions/templates");
 
-// getBody() gives you the body of the response
+// getBody() gives you to body of the request
 String body = response.getBody();
 ```
 
@@ -260,7 +254,7 @@ Returns the HTTP status code of the response.
 
 ### DataApi
 
-This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive() function which can be called with a class implementing RequestCallback.java. The execute() function will be called for each response.
+This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive function which can be called with a class implementing RequestCallback.java. The execute() function will be called for each response.
 
 The DataApi Constructor can handle either 3 arguments;
 * url
@@ -329,7 +323,7 @@ Run ```mvn package``` in your root directory (where pom.xml is located). This wi
 
 2.) Add a directory to your maven project to build the file-based repository into (e.g. ./learnosity-sdk-repo)
 
-3.) Install the Learnosity SDK with maven into that directory by running the following (modify locations as appropriate):
+3.) Install the learnosity SDK with maven into that directory by running the following (modify locations as appropriate):
 ```bash
 mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dversion=0.16.3 -Durl=file:./learnosity-sdk-repo/ -DrepositoryId=learnosity-sdk-repo -DupdateReleaseInfo=true -Dfile=/home/temp/learnositysdk-0.16.3.jar -DpomFile=/home/temp/pom.xml
 ```
@@ -348,9 +342,11 @@ mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dvers
 
 ## Testing
 
-In order to check that you've added the required code correctly, you can download src/LearnositySdk/Test and try to run the test file. If it runs successfully, all should be fine.
+To run the unit and integration tests, run this command from the project home folder:
 
-The Test.java class also gives some examples on how to use the SDK.
+``` bash
+make test
+```
 
 ## Further reading
 Thanks for reading to the end! Find more information about developing an app with Learnosity on our documentation sites: 
