@@ -161,7 +161,7 @@ public class Questions {
             // For instance on jsp you might have
             // <script src="//questions.learnosity.com"></script>
             // var questionsApp = LearnosityApp.init(questionJson);
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
