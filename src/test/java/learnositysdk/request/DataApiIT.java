@@ -20,7 +20,7 @@ public class DataApiIT {
 	private String baseUrl;
 	static Map<String,String> securityMap;
 	private RequestConfig requestConfig;
-	private Map request;
+	private HashMap<String, String> request;
 	private DataApi dataApi;
 	static JSONObject response;
 	private JSONObject responseJson;
@@ -67,7 +67,7 @@ public class DataApiIT {
 		JSONArray activities = new JSONArray();
 		activities.put(activity);
 
-		request.put("activities", activities);
+		request.put("activities", activities.toString());
 
 		assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "set");
 	}
@@ -149,7 +149,7 @@ public class DataApiIT {
 		String endpoint = baseUrl + "/itembank/questions";
 		System.out.println("Testing Data API call to " + endpoint + " with recursive GET request");
 
-		request.put("item_references", itemRefs);
+		request.put("item_references", String.join(",", itemRefs));
 		request.put("limit", "1");
 
 		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");

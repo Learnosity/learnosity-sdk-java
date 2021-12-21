@@ -1,392 +1,315 @@
-# Learnosity SDK - Java
+<p align="center"><img width="50%" height="50%" src="docs/images/image-logo-graphic.png"></p>
+<h1 align="center">Learnosity SDK - Java</h1>
+<p align="center">Everything you need to start building your app in Learnosity, with the Java programming language.<br> 
+(Prefer another language? <a href="https://help.learnosity.com/hc/en-us/sections/360000194318-Server-side-development-SDKs">Click here</a>)<br>
+An official Learnosity open-source project.</p>
 
-[![Build Status](https://travis-ci.com/Learnosity/learnosity-sdk-java.svg?branch=master)](https://travis-ci.com/Learnosity/learnosity-sdk-java)
+[![Latest Stable Version](https://badge.fury.io/gh/Learnosity%2Flearnosity-sdk-java.svg)](https://github.com/Learnosity/learnosity-sdk-java/releases)
+[![Build Status](https://travis-ci.org/Learnosity/learnosity-sdk-java.svg?branch=master)](https://app.travis-ci.com/github/Learnosity/learnosity-sdk-java)
+[![License](docs/images/apache-license.svg)](LICENSE.md)
+[![Downloads](docs/images/downloads.svg)](https://github.com/Learnosity/learnosity-sdk-java/releases)
+---
 
-Include this library into your own codebase to ease integration with any of the Learnosity APIs.
+## Table of Contents
 
-It supports current [Oracle LTS
-JDKs](http://www.oracle.com/technetwork/java/javase/downloads/eol-135779.html),
-as well as [OpenJDK](http://openjdk.java.net/) with matching versions.
+* [Overview: what does it do?](#overview-what-does-it-do)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Quick start guide](#quick-start-guide)
+* [Next steps: additional documentation](#next-steps-additional-documentation)
+* [Contributing to this project](#contributing-to-this-project)
+* [License](#license)
+* [Usage tracking](#usage-tracking)
+* [Further reading](#further-reading)
 
-| Version			| End of Life   |
-|-------------------------------|:-------------:|
-| Oracle JDK8 / OpenJDK 1.8	| 2019-01	|
-| Oracle JDK11			| TBA		|
+## Overview: what does it do?
+The Learnosity Java SDK makes it simple to interact with Learnosity APIs.
 
-Earlier versions may still keep working. Please refer to our [build
-matrix](https://travis-ci.org/Learnosity/learnosity-sdk-java) to verify (see the
-`Allowed Failures` section). However, please plan to upgrade to a supported JDK
-at the earliest opportunity.
+![image-concept-overview.png](docs/images/image-concept-overview.png)
+
+It provides a number of convenience features for developers, that make it simple to do the following essential tasks:
+* Creating signed security requests for API initialization, and
+* Interacting with the Data API.
+
+For example, the SDK helps with creating a signed request for Learnosity:
+
+![image-signed-request-creation.png](docs/images/image-signed-request-creation.png)
+
+Once the SDK has created the signed request for you, your app sends that on to an API in the Learnosity cloud, which then retrieves the assessment you are asking for, as seen in the diagram below:
+
+![image-assessment-retrieval.png](docs/images/image-assessment-retrieval.png)
+
+This scenario is what you can see running in the Quick start guide example ([see below](#quick-start-guide)).
+
+There's more features, besides. See the detailed list of SDK features on the [reference page](REFERENCE.md).
+
+[(Back to top)](#table-of-contents)
+
+## Requirements
+
+
+1. Runtime libraries for Java installed. We've used Eclipse Adoptium/Temurin 11 LTS (previously known as 'AdoptOpenJDK'). ([instructions](https://projects.eclipse.org/projects/adoptium.temurin/downloads))
+
+2. Maven installed ([instructions](https://maven.apache.org/download.cgi)). We tested on Maven 3.8.4.
+
+3. Docker installed (required for the example tutorial on this page). ([instructions](https://www.docker.com/get-started)). We tested on Docker version 3.x.
+
+Note: just looking for a .WAR file? Look in the Maven target directory.
+
+Not using Java? See the [SDKs for other languages](https://help.learnosity.com/hc/en-us/sections/360000194318-Server-side-development-SDKs).
+
+### **Supported Java Versions**
+
+The following Java versions are tested and supported:
+
+* [OpenJDK](http://openjdk.java.net/) versions 8 and 11, tested on compatible runtime [Eclipse Adoptium/Temurin 11 LTS](https://projects.eclipse.org/projects/adoptium.temurin/downloads) (previously known as 'AdoptOpenJDK').
+
+We aim to support current LTS versions of Java and the JDK. If you need specific support for another version, please get in touch with our Support team.
+
+[(Back to top)](#table-of-contents)
 
 ## Installation
-Installation can be done in three ways:
 
-1.) Download the jar in directory learnosity-sdk-java/Dist/All/ and add to your build path. All the required libraries are included in this jar.
+### **Development install from a Git clone**
+To install from the terminal, run this command:
 
-2.) Download the jar in learnosity-sdk-java/Dist/Light/ and add to your build path. This requires the external libraries which can be found in learnosity-sdk-java/Dist/Light/RequiredJars
+    git clone git@github.com:Learnosity/learnosity-sdk-Java.git
 
-3.) Download the source code and integrate into your project. This requires the external libraries which can be found in learnosity-sdk-java/Dist/Light/RequiredJars
+### **Alternative method 1: download the zip file**
+Download the latest version of the SDK as a self-contained ZIP file from the [GitHub Releases](https://github.com/Learnosity/learnosity-sdk-Java/releases) page. The distribution ZIP file contains all the necessary dependencies.
 
-4.) To use as a dependency in a maven project see below 'Using with a file based repository'
+[(Back to top)](#table-of-contents)
 
-## Test
+## Quick start guide
 
-In order to check that you've added the required code correctly, you can download src/LearnositySdk/Test and try to run the test file. If it runs successfully, all should be fine.
+Let's take a look at a simple example of the SDK in action. In this example, we'll load an assessment into the browser.
 
-The Test.java class also gives some examples on how to use the sdk.
+### **Build the .WAR file**
+To start, navigate to the root folder of the project on the command line, and run the following command:
 
-## Usage
+``` bash
+    make quickstart-assessment
+```
 
-### Init
+This will compile and test the project, building the .WAR file. 
 
-The Init class is used to create the necessary *security* and *request* details used to integrate with a Learnosity API. Most often this will be a JavaScript object.
+You will get the following advice on the command line, to either copy the .WAR file into your J2EE servlet container, or run the Docker below to boot the Jetty web server:
 
-The Init constructor takes either 3 arguments:
+``` Bash
+** Demo package complete **
+Now copy docs/quickstart/assessment/webapps/quickstart-1.0.war to the webapps
+directory of a servlet container like Jetty or Tomcat, or use Docker:
 
- * String  service type
- * Object  security details (**no secret**)
- * String  secret
+docker container run --rm -d -v $(pwd)/docs/quickstart/assessment/webapps:/var/lib/jetty/webapps -p 9280:8080 jetty:11.0.7-jdk11
+```
 
-or 4 arguments:
+Note: your working directory should be the SDK home directory. 
 
- * String  service type
- * Object  security details (**no secret**)
- * String  secret
- * Object  request details
+Note: this will load some dependencies, then run a servlet from a JSP file, which uses `App.java` as an adaptor between the servlet and the SDK. 
 
-The security and request Object can be of any type that can be parsed into a org.json.JSONObject. Examples are org.json.JSONOBject, a valid JSON String or a map. (See Test.java for examples). Learnosity recommends that you pass the request details as a JSONObject, or a String generated from a JSONObject to the constructor. This way, issues arising from adding/removing whitespace can be avoided.
+From this point on, we'll assume that your web server is available at this local address (it will report the port being used when you launch it, by default it's port 9280): 
 
-If you have to set an action attribute (for calls to data api, if not using the DatApi class), you can use the setAction method of class Init.
+http://localhost:9280/quickstart-1.0/
 
-```java
+The page will load. This is a basic example of an assessment loaded into a web page with Learnosity's assessment player. You can interact with this demo assessment to try out the various Question types.
+
+<img width="50%" height="50%" src="docs/images/image-quickstart-examples-assessment.png">
+
+[(Back to top)](#table-of-contents)
+
+### **How it works**
+Let's walk through the code for this standalone assessment example. The source files are included under the quickstart folder, in the following locations:
+
+    /learnosity-sdk-java/docs/quickstart/assessment/src/main/java/com/learnosity/quickstart/App.java
+    /learnosity-sdk-java/docs/quickstart/assessment/src/main/webapp/index.jsp
+    /learnosity-sdk-java/docs/quickstart/assessment/src/main/resources/config.properties
+
+The first section of code discussed (`App.java`) and is executed server-side. It constructs a set of configuration options for Items API, and securely signs them using the consumer key. The second section is HTML and JavaScript in a JSP page (`index.jsp`) and is executed server-side, and what it generates is loaded in the browser. It renders and runs the assessment functionality.
+
+[(Back to top)](#table-of-contents)
+
+### **Server-side code**
+
+Starting with `App.java`, we start by including some LearnositySDK helpers - they'll make it easy to generate and sign the config options. We also include the standard UUID library for generating unique user and session IDs.
+
+``` Java
 import learnositysdk.request.Init;
+import java.util.UUID;
+```
 
-import java.util.HashMap;
-import java.util.Map;
-import org.json.JSONArray;
-import org.json.JSONObject;
+Now we'll declare the configuration options for Items API. These specify which assessment content should be rendered, how it should be displayed, which user is taking this assessment and how their responses should be stored. 
 
-public class Questions {
-    public static void main (String[] args) throws Exception
-    {
-        try {
-            Init init;
-            String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
+``` Java
+private Map<String, String> createRequestObject() {
+    var r = new HashMap();
+    r.put("user_id", this.user_id);
+    r.put("activity_template_id", "quickstart_examples_activity_template_001");
+    r.put("session_id", this.session_id);
+    r.put("activity_id", "quickstart_examples_activity_001");
+    r.put("rendering_type", "assess");
+    r.put("type", "submit_practice");
+    r.put("name", "Items API Quickstart");
+    r.put("state", "initial");
+    return r;
+}
+```
 
-            // Create a security Map
-            Map securityMap = new HashMap();
-            securityMap.put("consumer_key", "yis0TYCu7U9V4o7M");
-            securityMap.put("user_id", "$ANONYMIZED_USER_ID");
-            securityMap.put("domain", "localhost");
+* `user_id`: unique student identifier. Note: we never send or save student's names or other personally identifiable information in these requests. The unique identifier should be used to look up the entry in a database of students accessible within your system only. [Learn more](https://help.learnosity.com/hc/en-us/articles/360002309578-Student-Privacy-and-Personally-Identifiable-Information-PII-).
+* `activity_template_id`: reference of the Activity to retrieve from the Item bank. The Activity defines which Items will be served in this assessment.
+* `session_id`: uniquely identifies this specific assessment attempt for save/resume, data retrieval and reporting purposes. Here, we're using the `UUID` library to auto-generate a unique session id.
+* `activity_id`: a string you define, used solely for analytics to allow you run reporting and compare results of users submitting the same assessment.
+* `rendering_type`: selects a rendering mode, `assess` mode is a "standalone" mode (loading a complete assessment player for navigation, as opposed to `inline` for embedding without).
+* `type`: selects the context for the student response storage. `submit_practice` mode means the student responses will be stored in the Learnosity cloud, allowing for grading and review.
+* `name`: human-friendly display name to be shown in reporting, via Reports API and Data API.
+* `state`: Optional. Can be set to `initial`, `resume` or `review`. `initial` is the default.
 
-            // Create some data for the questions api
-            JSONObject req = new JSONObject();
-            req.put("type", "local_practice");
-            req.put("state", "initial");
+**Note**: you can submit the configuration options as a Java map as shown above, or alternatively as a JSON string, JSON object or JavaBean.
 
-            // Create a questions JSONArrray
-            JSONArray questions = new JSONArray();
+Next, we declare the Learnosity consumer credentials we'll use to authorize this request. We also construct security settings that ensure the report is initialized on the intended domain. The value provided to the domain property must match the domain from which the file is actually served. The consumer key and consumer secret in this example are for Learnosity's public "demos" account. Once Learnosity provides your own consumer credentials, your Item bank and assessment data will be tied to your own consumer key and secret.
 
-            // Create a question
-            JSONObject question = new JSONObject();
-            question.put("response_id", "60005");
-            question.put("type", "association");
-            question.put("stimulus", "Match the cities to the parent nation");
+Note: the values for the consumer key and secret are stored in the `config.properties` file:
 
-            // Add stimulus list
-            JSONArray stimList = new JSONArray();
-            stimList.put(0, "London");
-            stimList.put(1, "Dublin");
-            stimList.put(2, "Paris");
-            stimList.put(3, "Sydney");
-            question.put("stimulus_list", stimList);
+``` Java
+consumer=yis0TYCu7U9V4o7M
+consumerSecret=74c5fd430cf1242a527f6223aebd42d30464be22
+```
 
-            // Add possible responses
-            JSONArray possibleResp = new JSONArray();
-            possibleResp.put(0, "Australia");
-            possibleResp.put(1, "France");
-            possibleResp.put(2, "Ireland");
-            possibleResp.put(3, "England");
-            question.put("possible_responses", possibleResp);
+<i>(of course, you should never normally put passwords into version control)</i>
 
-            // Add validation
-            JSONObject validation = new JSONObject();
-            JSONArray validResp = new JSONArray();
-            validResp.put(0, "England");
-            validResp.put(1, "Ireland");
-            validResp.put(2, "France");
-            validResp.put(3, "Australia");
-            validation.put("valid_responses", validResp);
-            question.put("validation", validation);
+Now we call LearnositySDK's `Init()` helper to construct our Items API configuration parameters, and sign them securely with the `security`, `request` and `secret` parameters. `init.generate()` returns us a JSON blob of signed configuration parameters.
 
-            // Add questions to questions array
-            questions.put(0, question);
-
-            // Finally add questions to request
-            req.put("questions", questions);
-
-
-            // Instantiate the SDK Init class with your security and request data:
-            init = new Init("questions", securityMap, consumerSecret, req);
-
-            // Call the generate() method to retrieve a JavaScript object
-            String questionJson = init.generate();
-
-            // Pass the object to the initialisation of any Learnosity API
-            // For instance in your jsp file you can have:
-            // <script src="//questions.learnosity.com"></script>
-            // var questionsApp = LearnosityApp.init(questionJson);
-
-            System.out.println(questionJson);
-        }catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+``` Java
+public String initOptions(String domain) {
+    Map<String, String> security = createSecurityObject(domain);
+    Map<String, String> request = createRequestObject();
+    String secret = config.getProperty("consumerSecret");
+    try {
+        Init init = new Init("items", security, secret, request);
+        return init.generate();
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "";
     }
 }
 ```
 
-Raw JSON initialisation snippet:
+There is some additional code in `App.java`.
 
-```java
-import learnositysdk.request.Init;
+[(Back to top)](#table-of-contents)
 
-import java.util.HashMap;
-import java.util.Map;
-import org.json.JSONArray;
-import org.json.JSONObject;
+### **Web page content**
+We've got our set of signed configuration parameters, so now we can set up our page content for output. The page can be as simple or as complex as needed, using your own HTML, JavaScript and your frameworks of choice to render the desired product experience.
 
-public class Questions {
-    public static void main (String[] args) throws Exception
-    {
-        try {
-            Init init;
-            String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
+This example uses plain HTML in a JSP template, served by the servlet container.
 
-            String secString = "{\"consumer_key\":\"yis0TYCu7U9V4o7M\","
-                    +    "\"domain\": \"assess.vg.learnosity.com\","
-                    +    "\"user_id\": \"$ANONYMIZED_USER_ID\"}";
+The following example HTML/JSP code can be found near the bottom of the `index.jsp` file.
 
-            String reqString = "{\"state\":\"initial\","
-                    +  "\"type\":\"local_practice\","
-                    +  "\"response_id\":\"60005\","
-                    +  "\"questions\":"
-                    +   "[{\"stimulus_list\":"
-                    +     "[\"London\","
-                    +        "\"Dublin\","
-                    +        "\"Paris\","
-                    +      "\"Sydney\"],"
-                    + "\"stimulus\":\"Match the cities to the parent nation\","
-                    +   "\"type\":\"association\","
-                    +   "\"possible_responses\":"
-                    +   "[\"Australia\","
-                    +     "\"France\","
-                    +     "\"Ireland\","
-                    +       "\"England\"],"
-                    +   "\"validation\":"
-                    +   "{\"valid_responses\":"
-                    +       "[\"England\","
-                    +             "\"Ireland\","
-                    +       "\"France\","
-                    +       "\"Australia\"]}}]}";
-            init = new Init("questions", secString, consumerSecret, new JSONObject(reqString));
-            String questionJson = init.generate();
-            System.out.println(questionJson);
+``` JSP
+<html>
+    <head><link rel="stylesheet" type="text/css" href="../css/style.css"></head>
+    <body>
+        <h1>Standalone Assessment Example</h1>
 
-            // Now you can pass questionJson to the initialisation of Questions API
-            // For instance on jsp you might have
-            // <script src="//questions.learnosity.com"></script>
-            // var questionsApp = LearnosityApp.init(questionJson);
-        }catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-}
+        <!-- Items API will render the assessment app into this div. -->
+        <div id="learnosity_assess"></div>
+
+        <!-- Load the Items API library. -->
+        <script src="https://items.learnosity.com/?v2021.2.LTS"></script>
+
+        <!-- Initiate Items API assessment rendering, using the JSON blob of signed params. -->
+        <script>
+            var itemsApp = LearnosityItems.init(
+                <%= app.initOptions(request.getServerName()) %>
+            );
+        </script>
+    </body>
+</html>
 ```
 
-#### Arguments
-**service**<br>
-A string representing the Learnosity service (API) you want to integrate with. Valid options are:
+The important parts to be aware of in this HTML are:
 
-* assess
-* author
-* data
-* items
-* questions
-* reports
+* A div with `id="learnosity_assess"`. This is where the Learnosity assessment player will be rendered to deliver the assessment.
+* The `<script src="https://items.learnosity.com/?v2021.2.LTS"></script>` tag, which includes Learnosity's Items API on the page and makes the global `LearnosityItems` object available. The version specified as `v2021.2.LTS` will retrieve that specific [Long Term Support (LTS) version](https://help.learnosity.com/hc/en-us/articles/360001268538-Release-Cadence-and-Version-Lifecycle). In production, you should always pin to a specific LTS version to ensure version compatibility.
+* The call to `LearnosityItems.init()`, which initiates Items API to inject the assessment player into the page.
+* The line `<%= app.initOptions(request.getServerName()) %>` dynamically sends the contents of our init options to JavaScript, so it can be passed to `init()`.
 
-**security**<br>
-An Object that includes your *consumer_key* but does not include your *secret*. The SDK sets defaults for you, but valid options are:
+The call to `init()` returns an instance of the ItemsApp, which we can use to programmatically drive the assessment using its methods. We pull in our Learnosity configuration in the line `<%= app.initOptions(request.getServerName()) %>`. 
 
-* consumer_key
-* domain (optional)
-* timestamp (optional)
-* user_id (optional)
+There is some additional code in `index.jsp`.
 
-^Note – the SDK accepts all Objects which can be parsed into a org.json.JSONObject (e.g. a map, a JSONString, JSONOBject or a Java bean).
+Our web app is configured to start in this block in `web.xml`:
 
-**secret**<br>
-Your secret key, as provided by Learnosity.
-
-**request**<br>
-An optional associative Object of data relevant to the API being used. This will be any data minus the security details that you would normally use to initialise an API.
-
-^Note – the SDK accepts all Objects which can be parsed into a org.json.JSONObject (e.g. a map, a JSONString, JSONOBject or a Java bean).
-
-
-**action**<br>
-An optional string used only if integrating with the Data API. Valid options are:
-
-* get
-* set
-* update
-* delete
-
-<hr>
-
-### Remote
-
-The Remote class is used to make server side, cross domain requests. Think of it as a cURL wrapper.
-
-You'll call either get() or post() with the following arguments:
-
-* [String] URL
-* [Map<String,Object>]  Data payload
-
-```java
-// Instantiate the SDK Remote class:
-Remote remote = new Remote();
-
-// Instantiate the SDK Remote class with a RequestConfig - https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/client/config/RequestConfig.html:
-RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(1000).build();
-
-Remote remote = new Remote(requestConfig);
-// Call get() or post() with a URL:
-remote.get("http://schemas.learnosity.com/stable/questions/templates");
-
-// getBody() gives you to body of the request
-String body = response.getBody();
+``` XML
+<welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+</welcome-file-list>
 ```
 
-#### Arguments
+This marks the end of the quick start guide. From here, try modifying the example files yourself, you are welcome to use this code as a basis for your own projects.
 
-**URL**<br>
-A string URL, including schema and path. Eg:
+Take a look at some more in-depth options and tutorials on using Learnosity assessment functionality below.
 
-```
-https://schemas.learnosity.com/stable/questions/templates
-```
+[(Back to top)](#table-of-contents)
 
-**Data**<br>
-An optional array of data to be sent as a payload. For GET it will be a URL encoded query string.
+## Next steps: additional documentation
 
-### Remote methods
-The following methods are available after making a `get()` or `post()`.
+### **SDK reference**
+See a more detailed breakdown of all the SDK features, and examples of how to use more advanced or specialised features on the [SDK reference page](REFERENCE.md).
 
-**getBody()**<br>
-Returns the body of the response payload.
+### **Additional quick start guides**
+There are more quick start guides, going beyond the initial quick start topic of loading an assessment, these further tutorials show how to set up authoring and analytics:
+* [Authoring Items quick start guide](https://help.learnosity.com/hc/en-us/articles/360000754958-Getting-Started-With-the-Author-API) (Author API) - create and edit new Questions and Items for your Item bank, then group your assessment Items into Activities, and
+* [Analytics / student reporting quick start guide](https://help.learnosity.com/hc/en-us/articles/360000755838-Getting-Started-With-the-Reports-API) (Reports API) - view the results and scores from an assessment Activity. 
 
-**getHeader()**<br>
-Currently only returns the *content_type* header of the response.
+### **Learnosity demos repository**
+On our [demo site](https://demos.learnosity.com/), browse through many examples of Learnosity API integration. You can also download the entire demo site source code, the code for any single demo, or browse the codebase directly on GitHub.
 
-**getStatusCode()**<br>
-Returns the HTTP status code of the response.
+### **Learnosity reference documentation**
+See full documentation for Learnosity API init options, methods and events in the [Learnosity reference site](https://reference.learnosity.com/).
 
-<hr>
+### **Technical use-cases documentation**
+Find guidance on how to select a development pattern and arrange the architecture of your application with Learnosity, in the [Technical Use-Cases Overview](https://help.learnosity.com/hc/en-us/articles/360000757777-Technical-Use-Cases-Overview).
 
-### DataApi
+### **Deciding what to build or integrate**
+Get help deciding what application functionality to build yourself, or integrate off-the-shelf with the [Learnosity "Golden Path" documentation](https://help.learnosity.com/hc/en-us/articles/360000754578-Recommended-Deployment-Patterns-Golden-Path-).
 
-This is a helper class for use with the Data API. It creates the initialisation packet and sends a request to the Data API, returning a JSONObject with the response data. There is also a requestRecursive function which can be called with a class implementing RequestCallback.java. The execute() function will be called for each response.
+### **Key Learnosity concepts**
+Want more general information about how apps on Learnosity actually work? Take a look at our [Key Learnosity Concepts page](https://help.learnosity.com/hc/en-us/articles/360000754638-Key-Learnosity-Concepts).
 
-The DataApi Constructor can handle either 3 arguments;
-* url
-* securityPacket
-* secret
+### **Glossary**
+Need an explanation for the unique Learnosity meanings for Item, Activity and Item bank? See our [Glossary of Learnosity-specific terms](https://help.learnosity.com/hc/en-us/articles/360000754838-Glossary-of-Learnosity-and-Industry-Terms).
 
-or 4 arguments:
-* url
-* securityPacket
-* secret
-* action
+[(Back to top)](#table-of-contents)
 
-or 5 arguments:
-* url
-* securityPacket
-* secret
-* requestPacket
-* action
+## Contributing to this project
 
-```java
-Map<String,String> sec = new HashMap<String, String>();
-sec.put("consumer_key", "yis0TYCu7U9V4o7M");
-sec.put("domain","localhost");
+### Adding new features or fixing bugs
+Contributions are welcome. See the [contributing instructions](CONTRIBUTING.md) page for more information. You can also get in touch via our support team.
 
-reqData = new HashMap<String,String>();
-reqData.put("limit", "10");
+[(Back to top)](#table-of-contents)
 
-DataApi dataApi = new DataApi("https://data.learnosity.com/latest/itembank/items", sec, consumerSecret, reqData, "get");
+## License
+The Learnosity Java SDK is licensed under an Apache 2.0 license. [Read more](LICENSE.md).
 
-// you can also configure the Data API with a requestConfig as above
-RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(1000).build();
+[(Back to top)](#table-of-contents)
 
-dataApi.setRequestConfig(requestConfig);
-
-
-JSONObject response = dataApi.requestJSONObject();
-JSONObject res = new JSONObject(response.getString("body"));
-
-// You can also get a Remote object like this:
-Remote remote = dataApi.request();
-String body = remote.getBody();
-```
-
-## Troubleshooting
-
-We recommend that you use the Java JSON implementation which comes packaged in the sdk. In the past, we had several issues which were due to incompatible JSON implementations.
-
-
-## Creating jar files (using Eclipse Luna Release 4.4.0)
-
-The 'light' jar:
-
-In eclipse right click the java sdk project and select 'Export'. Under 'Java', select 'JAR file'. In the following screen only select the packages in the src (excluding the library folder) and click 'Finish'.
-
-The 'all' jar:
-
-In eclipse right click the java sdk project and select 'Export'. Under 'Java', select 'Runnable JAR file', click 'Next' and then 'Finish'. There are warnings that some libararies are included. This can be disregarded as the libraries are publicly available.
-
-## Building with Maven
-
-Run ```mvn package``` in your root directory (where pom.xml is located). This will put the light and all jar in the correct folders.
-
-## Using with a maven file based repository
-
-1.) Download the 'light' jar and the learnosity project pom file (pom.xml) into a temporary directory (say /home/temp)
-
-2.) Add a directory to your maven project to build the file-based repository into (e.g. ./learnosity-sdk-repo)
-
-3.) Install the learnosity SDK with maven into that directory by running the following (modify locations as appropriate):
-```bash
-mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dversion=0.16.3 -Durl=file:./learnosity-sdk-repo/ -DrepositoryId=learnosity-sdk-repo -DupdateReleaseInfo=true -Dfile=/home/temp/learnositysdk-0.16.3.jar -DpomFile=/home/temp/pom.xml
-```
-
-4.) Add the directory as a file based repository in your project pom.xml:
-```xml
-<repositories>
-    <repository>
-        <id>learnosity-sdk-repo</id>
-        <url>file://${project.basedir}/learnosity-sdk-repo</url>
-    </repository>
-</repositories>
-```
-
-5.) Don't forget to commit your file-based repository
-
-## Tracking
-In version v0.16.0 we introduced code to track the following information by adding it to the request being signed:
+## Usage tracking
+Our SDKs include code to track the following information by adding it to the request being signed:
 - SDK version
 - SDK language
 - SDK language version
 - Host platform (OS)
 - Platform version
 
-We use this data to enable better support and feature planning. All subsequent versions of the SDK shall include this usage tracking.
+We use this data to enable better support and feature planning.
+
+[(Back to top)](#table-of-contents)
+
+## Further reading
+Thanks for reading to the end! Find more information about developing an app with Learnosity on our documentation sites:
+
+* [help.learnosity.com](http://help.learnosity.com/hc/en-us) -- general help portal and tutorials,
+* [reference.learnosity.com](http://reference.learnosity.com) -- developer reference site, and
+* [authorguide.learnosity.com](http://authorguide.learnosity.com) -- authoring documentation for content creators.
+
+[(Back to top)](#table-of-contents)
