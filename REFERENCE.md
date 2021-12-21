@@ -103,7 +103,7 @@ public class Questions {
             // var questionsApp = LearnosityApp.init(questionJson);
 
             System.out.println(questionJson);
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
