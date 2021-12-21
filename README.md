@@ -48,11 +48,11 @@ There's more features, besides. See the detailed list of SDK features on the [re
 ## Requirements
 1. Runtime libraries for Java installed. We've used Eclipse Adoptium/Temurin 11 LTS (previously known as 'AdoptOpenJDK'). ([instructions](https://projects.eclipse.org/projects/adoptium.temurin/downloads))
 
-2. Maven installed ([instructions]()). We tested on Maven 3.8.4.
+2. Maven installed ([instructions](https://maven.apache.org/download.cgi)). We tested on Maven 3.8.4.
 
 3. Docker installed (required for the example tutorial on this page). ([instructions](https://www.docker.com/get-started)). We tested on Docker version 3.x.
 
-Note: just looking for a .WAR file? Look in the [Maven target directory]().
+Note: just looking for a .WAR file? Look in the Maven target directory.
 
 Not using Java? See the [SDKs for other languages](https://help.learnosity.com/hc/en-us/sections/360000194318-Server-side-development-SDKs).
 
@@ -87,7 +87,7 @@ To start, navigate to the root folder of the project on the command line, and ru
     make quickstart-assessment
 ```
 
-This will compile and tests the project, building the .WAR file. 
+This will compile and test the project, building the .WAR file. 
 
 You will get the following advice on the command line, to either copy the .WAR file into your J2EE servlet container, or run the Docker below to boot the Jetty web server: 
 
