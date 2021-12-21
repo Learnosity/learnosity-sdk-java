@@ -127,6 +127,7 @@ The first section of code discussed (`App.java`) and is executed server-side. It
 [(Back to top)](#table-of-contents)
 
 ### **Server-side code**
+
 Starting with `App.java`, we start by including some LearnositySDK helpers - they'll make it easy to generate and sign the config options. We also include the standard UUID library for generating unique user and session IDs.
 
 ``` Java
