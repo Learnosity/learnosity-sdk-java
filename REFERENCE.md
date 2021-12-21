@@ -350,7 +350,7 @@ mvn deploy:deploy-file -DgroupId=learnositysdk -DartifactId=learnositysdk -Dvers
 
 In order to check that you've added the required code correctly, you can download src/LearnositySdk/Test and try to run the test file. If it runs successfully, all should be fine.
 
-The Test.java class also gives some examples on how to use the sdk.
+The Test.java class also gives some examples on how to use the SDK.
 
 ## Further reading
 Thanks for reading to the end! Find more information about developing an app with Learnosity on our documentation sites: 
