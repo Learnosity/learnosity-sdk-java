@@ -80,6 +80,7 @@ Download the latest version of the SDK as a self-contained ZIP file from the [Gi
 [(Back to top)](#table-of-contents)
 
 ## Quick start guide
+
 Let's take a look at a simple example of the SDK in action. In this example, we'll load an assessment into the browser.
 
 ### **Build the .WAR file**
