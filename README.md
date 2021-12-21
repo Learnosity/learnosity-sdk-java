@@ -47,6 +47,7 @@ There's more features, besides. See the detailed list of SDK features on the [re
 
 ## Requirements
 
+
 1. Runtime libraries for Java installed. We've used Eclipse Adoptium/Temurin 11 LTS (previously known as 'AdoptOpenJDK'). ([instructions](https://projects.eclipse.org/projects/adoptium.temurin/downloads))
 
 2. Maven installed ([instructions](https://maven.apache.org/download.cgi)). We tested on Maven 3.8.4.
