@@ -5,7 +5,7 @@
 An official Learnosity open-source project.</p>
 
 [![Latest Stable Version](https://badge.fury.io/gh/Learnosity%2Flearnosity-sdk-java.svg)](https://github.com/Learnosity/learnosity-sdk-java/releases)
-[![Build Status](https://travis-ci.org/Learnosity/learnosity-sdk-java.svg?branch=master)](https://app.travis-ci.com/github/Learnosity/learnosity-sdk-java)
+[![Build Status](https://app.travis-ci.com/Learnosity/learnosity-sdk-java.svg?branch=master)](https://app.travis-ci.com/Learnosity/learnosity-sdk-java)
 [![License](docs/images/apache-license.svg)](LICENSE.md)
 [![Downloads](docs/images/downloads.svg)](https://github.com/Learnosity/learnosity-sdk-java/releases)
 ---
