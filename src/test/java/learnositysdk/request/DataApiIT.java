@@ -2,11 +2,16 @@ package learnositysdk.request;
 
 import java.util.UUID;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.apache.http.client.config.RequestConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,118 +50,156 @@ public class DataApiIT {
 	}
 
 	@Test
-	public void testGetActivitites()
+	public void testSessions()
 		throws java.lang.Exception
 	{
-		String endpoint = baseUrl + "/itembank/activities";
+		String endpoint = baseUrl + "/sessions";
 		System.out.println("Testing Data API call to " + endpoint + " with SET request");
 
-		JSONArray items = new JSONArray();
-		items.put("item_2");
-		items.put("item_3");
+		Path fileName = Path.of("requestText.txt");
+		String str = Files.readString(fileName);
 
-		JSONObject data = new JSONObject();
-		data.put("items", items);
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> request = new ObjectMapper().readValue(str, HashMap.class);
 
-		JSONObject activity = new JSONObject();
-		activity.put("status","published");
-		activity.put("description","My test description Title √");
-		activity.put("data", data);
-		activity.put("reference", UUID.randomUUID().toString());
+		System.out.println("BEGIN REQUEST");
+		LinkedHashMap template = (LinkedHashMap)request.get("template");
+		ArrayList items = (ArrayList)template.get("items");
+		ArrayList questions = (ArrayList)template.get("questions");
 
-		JSONArray activities = new JSONArray();
-		activities.put(activity);
+		System.out.println("item size (original) = " + items.size());
+		System.out.println("questions size (original) = " + questions.size());
+		
+		// reduce number of items
+		for (int i=0; i < 300; i++){
+			items.remove(0);
+		}
 
-		request.put("activities", activities.toString());
+		// reduce number of questions
+		for (int i=0; i < 800; i++){
+			questions.remove(0);
+		}
+
+		System.out.println("item size (reduced) = " + ((ArrayList)((LinkedHashMap)request.get("template")).get("items")).size());
+		System.out.println("questions size (reduced) = " + ((ArrayList)((LinkedHashMap)request.get("template")).get("questions")).size());
+
 
 		assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "set");
 	}
 
-	@Test
-	public void testGetItemsEmptyRemote()
-		throws java.lang.Exception
-	{
-		String endpoint = baseUrl + "/itembank/items";
-		System.out.println("Testing Data API call to " + endpoint + " with Remote object");
+	// @Test
+	// public void testGetActivitites()
+	// 	throws java.lang.Exception
+	// {
+	// 	String endpoint = baseUrl + "/itembank/activities";
+	// 	System.out.println("Testing Data API call to " + endpoint + " with SET request");
 
-		dataApi = new DataApi(endpoint, securityMap, consumerSecret);
-		response = dataApi.requestJSONObject();
+	// 	JSONArray items = new JSONArray();
+	// 	items.put("item_2");
+	// 	items.put("item_3");
 
-		Remote remote = dataApi.request();
-		String body = remote.getBody();
-		responseJson = new JSONObject(body);
+	// 	JSONObject data = new JSONObject();
+	// 	data.put("items", items);
 
-		assertConsistentResponseRemote(remote, responseJson);
-	}
+	// 	JSONObject activity = new JSONObject();
+	// 	activity.put("status","published");
+	// 	activity.put("description","My test description Title √");
+	// 	activity.put("data", data);
+	// 	activity.put("reference", UUID.randomUUID().toString());
 
-	@Test
-	public void testGetItemsEmpty()
-		throws java.lang.Exception
-	{
-		String endpoint = baseUrl + "/itembank/items";
-		System.out.println("Testing Data API call to " + endpoint + " with empty implicit GET request");
+	// 	JSONArray activities = new JSONArray();
+	// 	activities.put(activity);
 
-		assertDataApiRequestWorks(endpoint, securityMap, consumerSecret);
-	}
+	// 	request.put("activities", activities.toString());
 
-	@Test
-	public void testExplicitGetItemsEmpty()
-		throws java.lang.Exception
-	{
-		String endpoint = baseUrl + "/itembank/items";
-		System.out.println("Testing Data API call to " + endpoint + " with empty explicit GET request");
+	// 	assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "set");
+	// }
 
-		dataApi = new DataApi(endpoint, securityMap, consumerSecret, "get");
-		response = dataApi.requestJSONObject();
-		responseJson = new JSONObject(response.getString("body"));
+	// @Test
+	// public void testGetItemsEmptyRemote()
+	// 	throws java.lang.Exception
+	// {
+	// 	String endpoint = baseUrl + "/itembank/items";
+	// 	System.out.println("Testing Data API call to " + endpoint + " with Remote object");
 
-		assertConsistentResponse(response, responseJson);
-	}
+	// 	dataApi = new DataApi(endpoint, securityMap, consumerSecret);
+	// 	response = dataApi.requestJSONObject();
 
-	@Test
-	public void testGetItemsLimit()
-		throws java.lang.Exception
-	{
-		String endpoint = baseUrl + "/itembank/items";
-		System.out.println("Testing Data API call to " + endpoint + " with limited GET request");
+	// 	Remote remote = dataApi.request();
+	// 	String body = remote.getBody();
+	// 	responseJson = new JSONObject(body);
 
-		request.put("limit", "10");
+	// 	assertConsistentResponseRemote(remote, responseJson);
+	// }
 
-		assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "get");
-	}
+	// @Test
+	// public void testGetItemsEmpty()
+	// 	throws java.lang.Exception
+	// {
+	// 	String endpoint = baseUrl + "/itembank/items";
+	// 	System.out.println("Testing Data API call to " + endpoint + " with empty implicit GET request");
 
-	@Test
-	public void testGetItemsRecursive()
-		throws java.lang.Exception
-	{
-		String endpoint = baseUrl + "/itembank/items";
-		System.out.println("Testing Data API call to " + endpoint + " with recursive GET request");
+	// 	assertDataApiRequestWorks(endpoint, securityMap, consumerSecret);
+	// }
 
-		request.put("item_pool_id", "DoNotChange_ForIntegrationTest");
-		request.put("limit", "1");
+	// @Test
+	// public void testExplicitGetItemsEmpty()
+	// 	throws java.lang.Exception
+	// {
+	// 	String endpoint = baseUrl + "/itembank/items";
+	// 	System.out.println("Testing Data API call to " + endpoint + " with empty explicit GET request");
 
-		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");
-		dataApi.requestRecursive(new DataApiITCallback());
+	// 	dataApi = new DataApi(endpoint, securityMap, consumerSecret, "get");
+	// 	response = dataApi.requestJSONObject();
+	// 	responseJson = new JSONObject(response.getString("body"));
 
-		/* Can't assert much here, expecting no exceptions... */
-	}
+	// 	assertConsistentResponse(response, responseJson);
+	// }
 
-	@Test
-	public void testGetQuestionsRecursive()
-		throws java.lang.Exception
-	{
-		String[] itemRefs = {"item_2", "item_3", "item_4"};
-		String endpoint = baseUrl + "/itembank/questions";
-		System.out.println("Testing Data API call to " + endpoint + " with recursive GET request");
+	// @Test
+	// public void testGetItemsLimit()
+	// 	throws java.lang.Exception
+	// {
+	// 	String endpoint = baseUrl + "/itembank/items";
+	// 	System.out.println("Testing Data API call to " + endpoint + " with limited GET request");
 
-		request.put("item_references", String.join(",", itemRefs));
-		request.put("limit", "1");
+	// 	request.put("limit", "10");
 
-		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");
-		dataApi.requestRecursive(new DataApiITCallback());
+	// 	assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "get");
+	// }
 
-		/* Can't assert much here, expecting no exceptions... */
-	}
+	// @Test
+	// public void testGetItemsRecursive()
+	// 	throws java.lang.Exception
+	// {
+	// 	String endpoint = baseUrl + "/itembank/items";
+	// 	System.out.println("Testing Data API call to " + endpoint + " with recursive GET request");
+
+	// 	request.put("item_pool_id", "DoNotChange_ForIntegrationTest");
+	// 	request.put("limit", "1");
+
+	// 	dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");
+	// 	dataApi.requestRecursive(new DataApiITCallback());
+
+	// 	/* Can't assert much here, expecting no exceptions... */
+	// }
+
+	// @Test
+	// public void testGetQuestionsRecursive()
+	// 	throws java.lang.Exception
+	// {
+	// 	String[] itemRefs = {"item_2", "item_3", "item_4"};
+	// 	String endpoint = baseUrl + "/itembank/questions";
+	// 	System.out.println("Testing Data API call to " + endpoint + " with recursive GET request");
+
+	// 	request.put("item_references", String.join(",", itemRefs));
+	// 	request.put("limit", "1");
+
+	// 	dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");
+	// 	dataApi.requestRecursive(new DataApiITCallback());
+
+	// 	/* Can't assert much here, expecting no exceptions... */
+	// }
 
 	private JSONObject assertDataApiRequestWorks(String endpoint, Map securityMap, String consumerSecret)
 		throws java.lang.Exception
@@ -174,9 +217,11 @@ public class DataApiIT {
 	private JSONObject assertDataApiRequestWorks(String endpoint, Map securityMap, String consumerSecret, Map request, String action)
 		throws java.lang.Exception
 	{
-		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");
+		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, action);
 		response = dataApi.requestJSONObject();
 		responseJson = new JSONObject(response.getString("body"));
+
+		// System.out.println(responseJson);
 
 		assertConsistentResponse(response, responseJson);
 

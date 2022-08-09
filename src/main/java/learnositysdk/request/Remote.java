@@ -157,13 +157,21 @@ public class Remote {
 		}
 
 		resp = this.httpclient.execute(httpRequest);
+
 		InputStream is = resp.getEntity().getContent();
+		
+		// Only for debug purpose
+		String result = new String(is.readAllBytes());
+		System.out.println("RESULT = " + result);
+		//////
+
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(is, writer, Charset.defaultCharset());
 		this.result.put("body", writer.toString());
 		this.result.put("total_time", Long.toString(System.currentTimeMillis() - startTime));
 		this.result.put("statusCode", Integer.toString(resp.getStatusLine().getStatusCode()));
 		this.headers = resp.getAllHeaders();
+
 		if (resp != null) {
 			resp.close();
 		}
