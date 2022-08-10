@@ -42,10 +42,10 @@ build:
 test: test-unit test-integration-env
 
 test-unit:
-	mvn test
+	mvn test $(MVN_OPTS)
 
 test-integration-env:
-	ENV=$(ENV) REGION=$(REGION) VER=$(VER) mvn integration-test
+	ENV=$(ENV) REGION=$(REGION) VER=$(VER) mvn integration-test $(MVN_OPTS)
 
 clean:
 	mvn clean
