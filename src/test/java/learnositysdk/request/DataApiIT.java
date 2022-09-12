@@ -4,12 +4,18 @@ import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONPointer;
 import org.apache.http.client.config.RequestConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataApiIT {
@@ -158,6 +164,23 @@ public class DataApiIT {
 		/* Can't assert much here, expecting no exceptions... */
 	}
 
+	@Disabled
+	@Test
+	public void testSessions()
+		throws java.lang.Exception
+	{
+		String endpoint = baseUrl + "/sessions";
+		System.out.println("Testing Data API call to " + endpoint + " with SET request");
+
+		Path fileName = Path.of("requestText.txt");
+		String str = Files.readString(fileName);
+		Map<String,Object> request = new ObjectMapper().readValue(str, HashMap.class);
+
+		JSONObject result = assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "set");
+		JSONPointer jp = JSONPointer.builder().append("data").append("job_reference").build();
+		assertTrue(result.query(jp) != null);
+	}
+
 	private JSONObject assertDataApiRequestWorks(String endpoint, Map securityMap, String consumerSecret)
 		throws java.lang.Exception
 	{
@@ -174,7 +197,7 @@ public class DataApiIT {
 	private JSONObject assertDataApiRequestWorks(String endpoint, Map securityMap, String consumerSecret, Map request, String action)
 		throws java.lang.Exception
 	{
-		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, "get");
+		dataApi = new DataApi(endpoint, securityMap, consumerSecret, request, action);
 		response = dataApi.requestJSONObject();
 		responseJson = new JSONObject(response.getString("body"));
 

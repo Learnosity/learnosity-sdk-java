@@ -1,18 +1,19 @@
 package learnositysdk.request;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.Header;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.Header;
-import org.apache.http.client.config.RequestConfig;
+import org.apache.http.NameValuePair;
 
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -150,7 +151,13 @@ public class Remote {
 
 		if (post) {
 			HttpPost httpPost = new HttpPost(url);
-			httpPost.setEntity(new UrlEncodedFormEntity(this.makeNameValueList(this.postData), "UTF-8"));
+			MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+			for (Map.Entry<String, Object> entry: this.postData.entrySet()) {
+				String key = entry.getKey();
+				entityBuilder.addTextBody(key, entry.getValue().toString(),
+					key.equals("action") ? ContentType.TEXT_PLAIN : ContentType.APPLICATION_JSON);
+			}
+			httpPost.setEntity(entityBuilder.build());
 			httpRequest = httpPost;
 		} else {
 			httpRequest = new HttpGet(url);
