@@ -1,15 +1,17 @@
 package learnositysdk.request;
 
+import java.io.File;
+
+import java.nio.charset.StandardCharsets;
+
 import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONPointer;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.client.config.RequestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -172,8 +174,8 @@ public class DataApiIT {
 		String endpoint = baseUrl + "/sessions";
 		System.out.println("Testing Data API call to " + endpoint + " with SET request");
 
-		Path fileName = Path.of("requestText.txt");
-		String str = Files.readString(fileName);
+		File testdata = new File("requestText.txt");
+		String str = FileUtils.readFileToString(testdata, StandardCharsets.UTF_8);
 		Map<String,Object> request = new ObjectMapper().readValue(str, HashMap.class);
 
 		JSONObject result = assertDataApiRequestWorks(endpoint, securityMap, consumerSecret, request, "set");
