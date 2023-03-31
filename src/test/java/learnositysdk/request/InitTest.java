@@ -17,7 +17,7 @@ public class InitTest {
 
 	static private String consumerKey = "yis0TYCu7U9V4o7M";
 	static private String consumerSecret = "74c5fd430cf1242a527f6223aebd42d30464be22";
-	static private String expectedSignature = "c9ae25df8be352182dc9223f7d7705a42d37745e167215724ea377133dd4032d";
+	static private String expectedSignature = "$02$dfc7ff0c50de11a52d9efb2a2cc03588610f187ccf15136ffd06a760857ef0ab";
 
 	private JSONObject securityObj;
 	private JSONObject request;
@@ -118,7 +118,7 @@ public class InitTest {
 	{
 		System.out.println("Init Items: Generate");
 
-		String expectedSignature = "36f107162a26d878ac4b33a5218cf09a518c6d98651f09b22507970c56cf604f";
+		String expectedSignature = "$02$b73940dc5d8841e20aa271323ffdbd1ec6df700eeaa7ec02928251150ab2529c";
 		String itemsString = "{\"user_id\":\"$ANONYMIZED_USER_ID\",\"rendering_type\":\"assess\",\"name\":\"Items API demo - assess activity demo\",\"state\":\"initial\",\"activity_id\":\"items_assess_demo\",\"session_id\":\"demo_session_uuid\",\"type\":\"submit_practice\",\"config\":{\"configuration\":{\"responsive_regions\":true},\"navigation\":{\"scrolling_indicator\":true},\"regions\":\"main\",\"time\":{\"show_pause\":true,\"max_time\":300},\"title\":\"ItemsAPI Assess Isolation Demo\",\"subtitle\":\"Testing Subtitle Text\"},\"items\":[\"Demo3\"]}";
 
 		request = new JSONObject(itemsString);
@@ -368,12 +368,12 @@ public class InitTest {
 			"Error in the Events API initialisation: users");
 		assertTrue(signedUsers.has("$ANONYMIZED_USER_ID_1"),
 			"Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_1");
-		assertEquals("64ccf06154cf4133624372459ebcccb8b2f8bd7458a73df681acef4e742e175c",
+		assertEquals("$02$e3d4ba09b1421b3ec5345d3dc5f68d551dd13e5d0c5c728f2a7b5034b9e8dacd",
 			signedUsers.getString("$ANONYMIZED_USER_ID_1"),
 			"Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_1");
 		assertTrue(signedUsers.has("$ANONYMIZED_USER_ID_2"),
 				"Error in the Events API initialisation, missing user: $ANONYMIZED_USER_ID_2");
-		assertEquals("7fa4d6ef8926add8b6411123fce916367250a6a99f50ab8ec39c99d768377adb",
+		assertEquals("$02$dbe6dae7dfb87669bff36107e83b814e48dbc7d1d9d80dd679efe919480df0d6",
 			signedUsers.getString("$ANONYMIZED_USER_ID_2"),
 			"Error in the Events API initialisation, invalid signature: $ANONYMIZED_USER_ID_2");
 	}
@@ -385,11 +385,11 @@ public class InitTest {
 		String[][] testCases = {
 			{
 				"get",
-				"e1eae0b86148df69173cb3b824275ea73c9c93967f7d17d6957fcdd299c8a4fe"
+				"$02$e19c8a62fba81ef6baf2731e2ab0512feaf573ca5ca5929c2ee9a77303d2e197"
 			},
 			{
 				"post",
-				"18e5416041a13f95681f747222ca7bdaaebde057f4f222083881cd0ad6282c38"
+				"$02$9d1971fb9ac51482f7e73dcf87fc029d4a3dfffa05314f71af9d89fb3c2bcf16"
 			}
 		};
 
@@ -429,7 +429,7 @@ public class InitTest {
     {
         System.out.println("Init: Test that forward slashes are not escaped");
 
-        String expectedSignature = "43fe102e08d0bb97de79ee7cbc128a24f610b730719022978380028a6198eeeb";
+        String expectedSignature = "$02$5213b43f18af4be5abe7f9457f4f73ee2f6cc82ef9573cc4e33ec898b97f8510";
         String expectedSubstring = "<h1>Items API demo</h1>";
         String itemsString = "{\"user_id\":\"$ANONYMIZED_USER_ID\",\"rendering_type\":\"assess\",\"name\":\"" + expectedSubstring + " - assess activity demo\",\"state\":\"initial\",\"activity_id\":\"items_assess_demo\",\"session_id\":\"demo_session_uuid\",\"type\":\"submit_practice\",\"items\":[\"Demo3\"]}";
 
@@ -457,7 +457,7 @@ public class InitTest {
 	{
 		System.out.println("Init: Test that unicode characters are not escaped");
 
-		String expectedEnDashSignature = "b451145040e7dc7018cad9c0eae2eec938aa8bfc16de7e95bf2a957d9ba5b8fe";
+		String expectedEnDashSignature = "$02$622fcdb64beeb4b58939b5ac31463c80aea5419e50649b5077c2730e951675f2";
 		String request = "{\"endash\":\"–\",\"slash\":\"/\",\"slash-back\":\"\\\\\"}";
 
 		securityObj.put("domain","demos.learnosity.com");

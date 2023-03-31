@@ -111,7 +111,18 @@ From this point on, we'll assume that your web server is available at this local
 
 http://localhost:9280/quickstart-1.0/
 
-The page will load. This is a basic example of an assessment loaded into a web page with Learnosity's assessment player. You can interact with this demo assessment to try out the various Question types.
+You can now access the APIs using the following URL [click here](http://localhost:9280/quickstart-1.0/)
+
+<img width="50%" height="50%" src="docs/images/image-quickstart-index.png">
+
+Following are the routes to access our APIs:
+
+* Author API: http://localhost:9280/quickstart-1.0/AuthorApi.jsp
+* Questions API: http://localhost:9280/quickstart-1.0/QuestionsApi.jsp
+* Items API: http://localhost:9280/quickstart-1.0/ItemsApi.jsp
+* Reports API: http://localhost:9280/quickstart-1.0/ReportsApi.jsp
+
+Open these pages with your web browser. These are all basic examples of Learnosity's integration. You can interact with these demo pages to try out the various APIs. The Items API example is a basic example of an assessment loaded into a web page with Learnosity's assessment player. You can interact with this demo assessment to try out the various Question types.
 
 <img width="50%" height="50%" src="docs/images/image-quickstart-examples-assessment.png">
 
@@ -119,18 +130,19 @@ The page will load. This is a basic example of an assessment loaded into a web p
 
 ### **How it works**
 Let's walk through the code for this standalone assessment example. The source files are included under the quickstart folder, in the following locations:
-
+    
     /learnosity-sdk-java/docs/quickstart/assessment/src/main/java/com/learnosity/quickstart/App.java
+    /learnosity-sdk-java/docs/quickstart/assessment/src/main/java/com/learnosity/quickstart/ItemsApp.java
     /learnosity-sdk-java/docs/quickstart/assessment/src/main/webapp/index.jsp
     /learnosity-sdk-java/docs/quickstart/assessment/src/main/resources/config.properties
 
-The first section of code discussed (`App.java`) and is executed server-side. It constructs a set of configuration options for Items API, and securely signs them using the consumer key. The second section is HTML and JavaScript in a JSP page (`index.jsp`) and is executed server-side, and what it generates is loaded in the browser. It renders and runs the assessment functionality.
+The first section of code discussed is (`ItemsApp.java`) and this is executed server-side. It constructs a set of configuration options for Items API, and securely signs them using the consumer key. The second section is HTML and JavaScript in a JSP page (`ItemsApi.jsp`) and is executed server-side, and what it generates is loaded in the browser. It renders and runs the assessment functionality.
 
 [(Back to top)](#table-of-contents)
 
 ### **Server-side code**
 
-Starting with `App.java`, we start by including some LearnositySDK helpers - they'll make it easy to generate and sign the config options. We also include the standard UUID library for generating unique user and session IDs.
+Starting with `ItemsApp.java`, we start by including some LearnositySDK helpers - they'll make it easy to generate and sign the config options. We also include the standard UUID library for generating unique user and session IDs.
 
 ``` Java
 import learnositysdk.request.Init;
@@ -161,7 +173,7 @@ private Map<String, String> createRequestObject() {
 * `rendering_type`: selects a rendering mode, `assess` mode is a "standalone" mode (loading a complete assessment player for navigation, as opposed to `inline` for embedding without).
 * `type`: selects the context for the student response storage. `submit_practice` mode means the student responses will be stored in the Learnosity cloud, allowing for grading and review.
 * `name`: human-friendly display name to be shown in reporting, via Reports API and Data API.
-* `state`: Optional. Can be set to `initial`, `resume` or `review`. `initial` is the default.
+* `state`: optional. Can be set to `initial`, `resume` or `review`. `initial` is the default.
 
 **Note**: you can submit the configuration options as a Java map as shown above, or alternatively as a JSON string, JSON object or JavaBean.
 
@@ -202,7 +214,7 @@ We've got our set of signed configuration parameters, so now we can set up our p
 
 This example uses plain HTML in a JSP template, served by the servlet container.
 
-The following example HTML/JSP code can be found near the bottom of the `index.jsp` file.
+The following example HTML/JSP code can be found near the bottom of the `ItemsApi.jsp` file.
 
 ``` JSP
 <html>
@@ -214,7 +226,7 @@ The following example HTML/JSP code can be found near the bottom of the `index.j
         <div id="learnosity_assess"></div>
 
         <!-- Load the Items API library. -->
-        <script src="https://items.learnosity.com/?v2021.2.LTS"></script>
+        <script src="https://items.learnosity.com/?latest-lts"></script>
 
         <!-- Initiate Items API assessment rendering, using the JSON blob of signed params. -->
         <script>
@@ -229,7 +241,7 @@ The following example HTML/JSP code can be found near the bottom of the `index.j
 The important parts to be aware of in this HTML are:
 
 * A div with `id="learnosity_assess"`. This is where the Learnosity assessment player will be rendered to deliver the assessment.
-* The `<script src="https://items.learnosity.com/?v2021.2.LTS"></script>` tag, which includes Learnosity's Items API on the page and makes the global `LearnosityItems` object available. The version specified as `v2021.2.LTS` will retrieve that specific [Long Term Support (LTS) version](https://help.learnosity.com/hc/en-us/articles/360001268538-Release-Cadence-and-Version-Lifecycle). In production, you should always pin to a specific LTS version to ensure version compatibility.
+* The `<script src="https://items.learnosity.com/?latest-lts"></script>` tag, which includes Learnosity's Items API on the page and makes the global `LearnosityItems` object available. The version specified as `latest-lts` will retrieve the latest version supported. To know more about switching to a specific LTS version, visit our [Long Term Support (LTS) page](https://help.learnosity.com/hc/en-us/articles/360001268538-Release-Cadence-and-Version-Lifecycle). In production, you should always pin to a specific LTS version to ensure version compatibility.
 * The call to `LearnosityItems.init()`, which initiates Items API to inject the assessment player into the page.
 * The line `<%= app.initOptions(request.getServerName()) %>` dynamically sends the contents of our init options to JavaScript, so it can be passed to `init()`.
 
