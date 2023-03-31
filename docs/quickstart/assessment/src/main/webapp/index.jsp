@@ -21,7 +21,7 @@
         <div id="learnosity_assess"></div>
 
         <!-- Load the Items API library. -->
-        <script src="https://items.learnosity.com/?v2021.2.LTS"></script>
+        <script src="https://items.learnosity.com/?latest"></script>
 
         <!-- Initiate Items API assessment rendering, using the JSON blob of signed params. -->
         <script>
