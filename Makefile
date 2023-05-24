@@ -8,6 +8,7 @@ TARGETS = build dist install \
 	version-check version-check-message \
 	quickstart-assessment quickstart-assessment-clean \
 	quickstart-authoring quickstart-authoring-clean \
+	quickstart-analytics quickstart-analytics-clean \
 	clean
 .PHONY: $(TARGETS)
 
@@ -115,5 +116,29 @@ demo-run-message:
 quickstart-authoring-clean:
 	cd docs/quickstart/authoring && mvn clean
 	rm -rf docs/quickstart/authoring/webapps
+
+# The following targets are for the Quickstart Analytics Demo
+
+quickstart-analytics: docs/quickstart/analytics/webapps/quickstart-*.war demo-run-message
+
+docs/quickstart/analytics/webapps/quickstart-%.war: docs/quickstart/analytics/target/quickstart-%.war
+	mkdir -p docs/quickstart/analytics/webapps
+	cp docs/quickstart/analytics/target/quickstart-*.war docs/quickstart/analytics/webapps
+
+docs/quickstart/analytics/target/quickstart-%.war: install
+	cd docs/quickstart/analytics && mvn package
+
+demo-run-message:
+	@echo -e '\033[0;32m** Demo package complete **\033[0m'
+	@echo Now copy docs/quickstart/analytics/webapps/quickstart*.war to the webapps
+	@echo directory of a servlet container like Jetty or Tomcat, or use Docker:
+	@echo
+	@echo 'docker container run --rm -d -v $$(pwd)/docs/quickstart/analytics/webapps:/var/lib/jetty/webapps -p 9280:8080 jetty:11.0.7-jdk11'
+	@echo
+.PHONY: demo-run-message
+
+quickstart-analytics-clean:
+	cd docs/quickstart/analytics && mvn clean
+	rm -rf docs/quickstart/analytics/webapps
 
 endif

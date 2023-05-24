@@ -16,6 +16,10 @@
     <head><link rel="stylesheet" type="text/css" href="../css/style.css"></head>
     <body>
         <h1>Standalone Authoring Example</h1>
+        <p>
+            The item list mode allows authors to browse and search the Learnosity-hosted item bank for existing items.
+            In this demo, we've enabled creation of new items, but this functionality can be disabled as needed.
+        </p>
 
         <!-- Author API will render the authoring app into this div. -->
         <div id="learnosity-author"></div>

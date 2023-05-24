@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -12,7 +13,7 @@ import java.util.Properties;
 public class App
 {
     private Properties config = new Properties();
-    private String user_id = "demos-user";
+    private String user_id = "$ANONYMIZED_USER_ID";
     private String domain;
     private String put;
 
@@ -25,7 +26,7 @@ public class App
         Map<String, Object> request = createRequestObject();
         String secret = config.getProperty("consumerSecret");
         try {
-            Init init = new Init("author", security, secret, request);
+            Init init = new Init("reports", security, secret, request);
             return init.generate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,29 +60,18 @@ public class App
         return s;
     }
 
-    // build a request object to initilize the Author API item_list view
+    // build a simple request object to render a report on a student session
     private Map<String, Object> createRequestObject() {
         var r = new HashMap();
-        r.put("mode", "item_list");
-        Map<String, Object> user = new HashMap();
-        r.put("user", user);
-        user.put("id", this.user_id);
-        user.put("firstname", "Demos");
-        user.put("lastname", "User");
-        user.put("email", "demos@learnosity.com");
-        Map<String, Object> config = new HashMap();
-        r.put("config", config);
-        Map<String, Object> item_edit = new HashMap();
-        config.put("item_edit", item_edit);
-        Map<String, Object> item = new HashMap();
-        item_edit.put("item", item);
-        Map<String, Object> reference = new HashMap();
-        item.put("reference", reference);
-        reference.put("show", true);
-        reference.put("edit", true);
-        item.put("dynamic_content", true);
-        item.put("shared_passage", true);
-        item.put("enable_audio_recording", true);       
+        ArrayList<Object> reports = new ArrayList<Object>(); 
+        r.put("reports", reports);
+        var session_detail_report = new HashMap();
+        reports.add(session_detail_report);
+        session_detail_report.put("id", "session-detail-quickstart-report");
+        session_detail_report.put("type", "session-detail-by-item");
+        session_detail_report.put("user_id", this.user_id);
+        session_detail_report.put("session_id", "8c393c87-77b6-4c14-8da7-75d39243e642");
+    
         return r;
     }
 }
