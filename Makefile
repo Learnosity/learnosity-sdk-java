@@ -6,7 +6,8 @@ IMAGE = $(JAVA_DIST)-maven:$(JAVA_VERSION)
 TARGETS = build dist install \
 	test test-unit test-integration-env \
 	version-check version-check-message \
-	quickstart-assessment quickstart-clean \
+	quickstart-assessment quickstart-assessment-clean \
+	quickstart-authoring quickstart-authoring-clean \
 	clean
 .PHONY: $(TARGETS)
 
@@ -87,8 +88,32 @@ demo-run-message:
 	@echo
 .PHONY: demo-run-message
 
-quickstart-clean:
+quickstart-assessment-clean:
 	cd docs/quickstart/assessment && mvn clean
 	rm -rf docs/quickstart/assessment/webapps
+
+# The following targets are for the Quickstart Authoring Demo
+
+quickstart-authoring: docs/quickstart/authoring/webapps/quickstart-*.war demo-run-message
+
+docs/quickstart/authoring/webapps/quickstart-%.war: docs/quickstart/authoring/target/quickstart-%.war
+	mkdir -p docs/quickstart/authoring/webapps
+	cp docs/quickstart/authoring/target/quickstart-*.war docs/quickstart/authoring/webapps
+
+docs/quickstart/authoring/target/quickstart-%.war: install
+	cd docs/quickstart/authoring && mvn package
+
+demo-run-message:
+	@echo -e '\033[0;32m** Demo package complete **\033[0m'
+	@echo Now copy docs/quickstart/authoring/webapps/quickstart*.war to the webapps
+	@echo directory of a servlet container like Jetty or Tomcat, or use Docker:
+	@echo
+	@echo 'docker container run --rm -d -v $$(pwd)/docs/quickstart/authoring/webapps:/var/lib/jetty/webapps -p 9280:8080 jetty:11.0.7-jdk11'
+	@echo
+.PHONY: demo-run-message
+
+quickstart-authoring-clean:
+	cd docs/quickstart/authoring && mvn clean
+	rm -rf docs/quickstart/authoring/webapps
 
 endif

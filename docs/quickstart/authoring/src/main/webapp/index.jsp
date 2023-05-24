@@ -15,17 +15,17 @@
 <html>
     <head><link rel="stylesheet" type="text/css" href="../css/style.css"></head>
     <body>
-        <h1>Standalone Assessment Example</h1>
+        <h1>Standalone Authoring Example</h1>
 
-        <!-- Items API will render the assessment app into this div. -->
-        <div id="learnosity_assess"></div>
+        <!-- Author API will render the authoring app into this div. -->
+        <div id="learnosity-author"></div>
 
-        <!-- Load the Items API library. -->
-        <script src="https://items.learnosity.com/?v2023.1.LTS"></script>
+        <!-- Load the Author API library. -->
+        <script src="https://authorapi.learnosity.com/?v2023.1.LTS"></script>
 
-        <!-- Initiate Items API assessment rendering, using the JSON blob of signed params. -->
+        <!-- Initiate Author API interface rendering, using the JSON blob of signed params. -->
         <script>
-            var itemsApp = LearnosityItems.init(
+            var authorApp = LearnosityAuthor.init(
                 <%= app.initOptions(request.getServerName()) %>
             );
         </script>
