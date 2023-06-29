@@ -2,3 +2,6 @@ target
 Dist
 .idea
 learnositysdk.iml
+.DS_Store
+*/.DS_Store
+docs/quickstart/assessment/webapps/
