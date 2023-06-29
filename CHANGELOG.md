@@ -6,6 +6,10 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.16.4] - 2023-06-29
+### Security
+* Upgraded signature to match the security standard.
+
 ## [v0.16.3] - 2020-04-01
 ### Fixed
 * Fixed a bug where Unicode characters in the request packet were being escaped when they should not have been, causing a signature mismatch error.
