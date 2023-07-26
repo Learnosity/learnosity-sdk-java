@@ -1,5 +1,6 @@
 package learnositysdk.request;
 
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,6 +32,9 @@ import java.util.regex.Matcher;
  */
 
 public class Init {
+    static String signaturePrefix = "$02$";
+    private HmacUtils hmacUtils;
+
     /**
      * Which Learnosity service to generate a request packet for.
      * Valid values (see also `$validServices`):
@@ -119,6 +125,8 @@ public class Init {
         // First validate and set the arguments
         this.validateRequiredArgs(service, securityPacket, secret);
 
+        this.hmacUtils = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, secret);
+
         // Set any service specific options
         this.setServiceOptions();
 
@@ -160,6 +168,8 @@ public class Init {
 
         // First validate and set the arguments
         this.validateRequiredArgs(service, securityPacket, secret);
+
+        this.hmacUtils = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, secret);
 
         this.setRequestPacket(requestPacket);
 
@@ -269,7 +279,6 @@ public class Init {
         }
 
         // Add the secret
-        signatureArray.add(this.secret);
         // Add the requestPacket if necessary
         if (this.signRequestData && !this.requestString.isEmpty()) {
             signatureArray.add(this.requestString);
@@ -305,7 +314,8 @@ public class Init {
                 valueString += "_" + entry;
             }
         }
-        return DigestUtils.sha256Hex(valueString);
+
+        return signaturePrefix + this.hmacUtils.hmacHex(valueString);
     }
 
     /**
@@ -340,7 +350,6 @@ public class Init {
                 signatureArray.add(domain);
                 signatureArray.add(this.securityPacket.getString("timestamp"));
                 signatureArray.add(this.securityPacket.getString("user_id"));
-                signatureArray.add(this.secret);
                 questionsApi.put("signature", this.hashValue(signatureArray));
             }
         } else if (this.service.equals("items")) {
@@ -351,14 +360,14 @@ public class Init {
                 this.securityPacket.put("user_id", this.requestPacket.getString("user_id"));
             }
         } else if (this.service.equals("events")) {
-        	this.signRequestData = false;
+            this.signRequestData = false;
         	JSONObject hashedUsers = new JSONObject();
         	if (this.requestPacket.has("users")) {
         		JSONArray users = this.requestPacket.getJSONArray("users");
         		for (int i = 0; i < users.length(); i++) {
         			String user = users.getString(i);
         			String stringToHash = user + this.secret;
-        			String userHash = DigestUtils.sha256Hex(stringToHash);
+                    String userHash = signaturePrefix + this.hmacUtils.hmacHex(stringToHash);
         			hashedUsers.put(user, userHash);
         			}
         		this.requestPacket.put("users", hashedUsers);
