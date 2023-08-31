@@ -103,7 +103,7 @@ public class Init {
      * Key names that are valid in the securityPacket, they are also in
      * the correct order for signature generation.
      */
-    private final String[] validSecurityKeys = new String[] {"consumer_key", "domain", "timestamp", "user_id"};
+    private final String[] validSecurityKeys = new String[] {"consumer_key", "domain", "timestamp", "expires", "user_id"};
 
     /**
      * Valid strings for service
