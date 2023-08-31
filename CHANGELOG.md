@@ -5,6 +5,8 @@ and this project now adheres to [Semantic
 Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+* Added support for expiry date in security object.
 
 ## [v0.16.4] - 2023-06-29
 ### Security
