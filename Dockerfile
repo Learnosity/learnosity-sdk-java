@@ -2,7 +2,7 @@ ARG JAVA_DIST=eclipse-temurin
 ARG JAVA_VERSION=11
 FROM ${JAVA_DIST}:${JAVA_VERSION}
 
-ENV MAVEN_VERSION=3.8.6
+ENV MAVEN_VERSION=3.8.8
 
 RUN apt-get update && apt-get install -y --no-install-recommends git make && \
     rm -rf /var/lib/apt/lists/* && \
