@@ -50,7 +50,7 @@ There's more features, besides. See the detailed list of SDK features on the [re
 
 1. Runtime libraries for Java installed. We've used Eclipse Adoptium/Temurin 11 LTS (previously known as 'AdoptOpenJDK'). ([instructions](https://projects.eclipse.org/projects/adoptium.temurin/downloads))
 
-2. Maven installed ([instructions](https://maven.apache.org/download.cgi)). We tested on Maven 3.8.4.
+2. Maven installed ([instructions](https://maven.apache.org/download.cgi)). We tested on Maven 3.8.8.
 
 3. Docker installed (required for the example tutorial on this page). ([instructions](https://www.docker.com/get-started)). We tested on Docker version 3.x.
 
