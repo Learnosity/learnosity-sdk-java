@@ -27,7 +27,7 @@
     <dependency>
       <groupId>learnositysdk</groupId>
       <artifactId>learnositysdk</artifactId>
-      <version>0.16.5</version>
+      <version>0.17.0</version>
     </dependency>
   </dependencies>
 
