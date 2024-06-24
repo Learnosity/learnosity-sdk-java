@@ -1,0 +1,29 @@
+<!-- jetty-web.xml -->
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_10_0.dtd">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+    <Get id="oldHandler" name="handler"/>
+    <Set name="handler">
+        <New id="CORS" class="org.eclipse.jetty.servlets.CrossOriginFilter">
+            <Set name="allowedOrigins">
+                <Array type="java.lang.String">
+                    <Item>http://localhost</Item>
+                </Array>
+            </Set>
+            <Set name="allowedMethods">
+                <Array type="java.lang.String">
+                    <Item>GET</Item>
+                    <Item>POST</Item>
+                    <Item>OPTIONS</Item>
+                </Array>
+            </Set>
+            <Set name="allowedHeaders">
+                <Array type="java.lang.String">
+                    <Item>Content-Type</Item>
+                    <Item>Authorization</Item>
+                </Array>
+            </Set>
+        </New>
+        <Ref refid="oldHandler"/>
+    </Set>
+</Configure>
