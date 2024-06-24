@@ -108,7 +108,7 @@ public class Init {
     /**
      * Valid strings for service
      */
-    private String[] validServices = new String[] {"assess", "author", "data", "items", "questions", "reports", "events"};
+    private String[] validServices = new String[] {"assess", "author", "data", "items", "questions", "reports", "events", "authoraide"};
 
     /**
      * Instantiate this class with all security and request data. It
@@ -207,7 +207,8 @@ public class Init {
             this.service.equals("author") ||
             this.service.equals("data") ||
             this.service.equals("items") ||
-            this.service.equals("reports")) {
+            this.service.equals("reports") ||
+            this.service.equals("authoraide")) {
 
             // Add the security packet (with signature) to the output
             output.put("security", this.securityPacket);
