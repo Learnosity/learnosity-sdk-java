@@ -6,6 +6,10 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.17.0] - 2024-07-04
+### Added
+* Added support for authoraide API.
+
 ## [v0.16.5] - 2023-09-05
 ### Fixed
 * Added support for expiry date in security object.

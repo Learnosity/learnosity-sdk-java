@@ -11,6 +11,7 @@
             <li><a href="QuestionsApi.jsp">Questions API</a></li>
             <li><a href="AuthorApi.jsp">Author API</a></li>
             <li><a href="ReportsApi.jsp">Reports API</a></li>
+            <li><a href="AuthoraideApi.jsp">Authoraide API</a></li>
         </ul>
     </body>
 </html>
