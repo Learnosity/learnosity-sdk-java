@@ -1,6 +1,7 @@
 target
 Dist
 .idea
+.vscode
 learnositysdk.iml
 .DS_Store
 */.DS_Store
