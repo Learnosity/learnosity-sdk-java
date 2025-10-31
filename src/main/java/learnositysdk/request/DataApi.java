@@ -152,6 +152,10 @@ public class DataApi
 		}
 
 		this.options.put("security", this.secJson.toString());
+
+		// Set metadata on the remote object
+		this.setMetadataOnRemote();
+
 		this.remote.post(this.url, this.options);
 		return remote;
 	}
@@ -230,5 +234,22 @@ public class DataApi
 		}
 
 		return meta.has("next") && dataLength > 0;
+	}
+
+	/**
+	 * Set metadata on the remote object for inclusion in request headers
+	 */
+	private void setMetadataOnRemote()
+	{
+		// Extract consumer from security packet
+		String consumer = MetadataProvider.extractConsumer(this.securityPacket);
+		if (!consumer.isEmpty()) {
+			this.remote.setConsumer(consumer);
+		}
+
+		// Set action if available
+		if (!this.action.isEmpty()) {
+			this.remote.setAction(this.action);
+		}
 	}
 }
