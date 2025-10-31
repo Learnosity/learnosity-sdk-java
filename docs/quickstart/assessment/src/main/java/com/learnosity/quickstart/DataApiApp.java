@@ -176,7 +176,7 @@ public class DataApiApp extends App
     private Map<String, Object> createSecurityObjectWithTimestamp(String domain) {
         var security = new HashMap<String, Object>();
         security.put("consumer_key", config.getProperty("consumer"));
-        security.put("domain", "localhost");
+        security.put("domain", domain.isEmpty() ? "localhost" : domain);
 
         return security;
     }
