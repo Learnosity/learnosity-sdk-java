@@ -26,12 +26,13 @@ public class DataApiApp extends App
 
         try {
             // Create a DataApi instance to retrieve items
-            // Note: Pass the full action format (method_endpoint) for metadata headers
-            DataApi dataApi = new DataApi(endpoint, security, secret, "get_/itembank/items");
+            // Note: Pass only the HTTP method (get, post, etc.)
+            // The SDK will automatically derive the endpoint path from the URL
+            DataApi dataApi = new DataApi(endpoint, security, secret, "get");
 
             // Make the request - this will include metadata headers:
             // X-Learnosity-Consumer: <consumer_key>
-            // X-Learnosity-Action: get_/itembank/items
+            // X-Learnosity-Action: get_/itembank/items (derived from URL + method)
             // X-Learnosity-SDK: Java:0.17.0
             Remote remote = dataApi.request();
 

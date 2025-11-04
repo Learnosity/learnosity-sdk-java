@@ -247,7 +247,9 @@ public class DataApi
 			this.remote.setConsumer(consumer);
 		}
 
-		// Set action if available
+		// Note: setAction() is called for backward compatibility, but the action
+		// is always derived from the URL and HTTP method for metadata headers.
+		// The action parameter is ignored by addMetadataHeaders().
 		if (!this.action.isEmpty()) {
 			this.remote.setAction(this.action);
 		}

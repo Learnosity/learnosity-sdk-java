@@ -73,8 +73,10 @@ public class Remote {
 	private String consumer = "";
 
 	/**
-	 * Action for metadata
+	 * Action for metadata (deprecated - kept for backward compatibility)
+	 * The action is now always derived from the URL and HTTP method
 	 */
+	@Deprecated
 	private String action = "";
 
 	/**
@@ -108,9 +110,13 @@ public class Remote {
 	}
 
 	/**
-	 * Set the action for metadata
-	 * @param action The action being performed
+	 * Set the action for metadata (deprecated)
+	 * The action is now always derived from the URL and HTTP method.
+	 * This method is kept for backward compatibility but is ignored for metadata headers.
+	 * @param action The action being performed (ignored)
+	 * @deprecated The action is now always derived from the URL and HTTP method
 	 */
+	@Deprecated
 	public void setAction(String action)
 	{
 		this.action = action != null ? action : "";
@@ -338,11 +344,8 @@ public class Remote {
 			httpRequest.addHeader("X-Learnosity-Consumer", this.consumer);
 		}
 
-		// Add action header - either from setter or derived from URL/method
-		String actionHeader = this.action;
-		if (actionHeader.isEmpty()) {
-			actionHeader = MetadataProvider.deriveAction(url, method);
-		}
+		// Add action header - always derived from URL and HTTP method
+		String actionHeader = MetadataProvider.deriveAction(url, method);
 		if (!actionHeader.isEmpty()) {
 			httpRequest.addHeader("X-Learnosity-Action", actionHeader);
 		}
