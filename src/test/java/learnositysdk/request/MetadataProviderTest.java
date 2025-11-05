@@ -213,5 +213,23 @@ public class MetadataProviderTest {
         String consumer = MetadataProvider.extractConsumer("invalid json");
         assertEquals("", consumer, "Empty string should be returned for invalid JSON");
     }
+
+    @Test
+    public void testDeriveActionWithNonVersionedEndpointVerify() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/verify/items", "GET");
+        assertEquals("get_/verify/items", action, "Non-versioned /verify endpoint should not be treated as version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithNonVersionedEndpointValidate() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/validate/data", "POST");
+        assertEquals("set_/validate/data", action, "Non-versioned /validate endpoint should not be treated as version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithNonVersionedEndpointVendor() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/vendor/settings", "GET");
+        assertEquals("get_/vendor/settings", action, "Non-versioned /vendor endpoint should not be treated as version prefix");
+    }
 }
 

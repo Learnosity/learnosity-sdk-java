@@ -135,12 +135,23 @@ public class MetadataProvider {
                 }
 
                 // Check for versioned prefixes like /v1/, /v2/, /v1.0/, /v1.85.0/, /v2025.2.LTS/, etc.
-                // Pattern: /v<anything>/ where <anything> contains digits and dots/letters
-                if (pathPart.startsWith("/v")) {
-                    int nextSlash = pathPart.indexOf('/', 2); // Find the next / after /v
-                    if (nextSlash > 0) {
-                        // Extract everything after the version prefix
-                        return pathPart.substring(nextSlash);
+                // Valid: v0, v1, v2, v1.22, v1.84, v2024.3.LTS, v2025.1.LTS, v2022.3.preview1
+                // Invalid: validateItembanks, verify
+                // Pattern: /v<digit>... where the character after 'v' must be a digit
+                if (pathPart.startsWith("/v") || pathPart.startsWith("/V")) {
+                    // Must be at least 3 characters (/v + digit) to safely access charAt(2)
+                    if (pathPart.length() < 3) {
+                        return pathPart;
+                    }
+
+                    // The character after '/v' must be a digit
+                    char secondChar = pathPart.charAt(2);
+                    if (Character.isDigit(secondChar)) {
+                        int nextSlash = pathPart.indexOf('/', 2); // Find the next / after /v
+                        if (nextSlash > 0) {
+                            // Extract everything after the version prefix
+                            return pathPart.substring(nextSlash);
+                        }
                     }
                 }
 
