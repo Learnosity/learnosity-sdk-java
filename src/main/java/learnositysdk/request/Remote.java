@@ -73,13 +73,6 @@ public class Remote {
 	private String consumer = "";
 
 	/**
-	 * Action for metadata (deprecated - kept for backward compatibility)
-	 * The action is now always derived from the URL and HTTP method
-	 */
-	@Deprecated
-	private String action = "";
-
-	/**
 	 * Constructor
 	 */
 	public Remote()
@@ -119,7 +112,8 @@ public class Remote {
 	@Deprecated
 	public void setAction(String action)
 	{
-		this.action = action != null ? action : "";
+		// This method is kept for backward compatibility but does nothing.
+		// The action is always derived from the URL and HTTP method.
 	}
 
 	/**
