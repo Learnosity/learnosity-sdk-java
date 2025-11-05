@@ -76,6 +76,72 @@ public class MetadataProviderTest {
     }
 
     @Test
+    public void testDeriveActionWithV1Version() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/v1/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip v1 version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithV2Version() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/v2/sessions", "POST");
+        assertEquals("set_/sessions", action, "Action should strip v2 version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithStableVersion() {
+        String action = MetadataProvider.deriveAction("https://schemas.learnosity.com/stable/questions/templates", "GET");
+        assertEquals("get_/questions/templates", action, "Action should strip stable version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithVersionedPath() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/v1.0/itembank/activities", "PUT");
+        assertEquals("set_/itembank/activities", action, "Action should strip v1.0 version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithV10Version() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/v10/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip v10 version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithLatestVersion() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/latest/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip latest version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithDeveloperVersion() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/developer/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip developer version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithLTSVersion() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/v2025.2.LTS/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip LTS version prefix (v2025.2.LTS)");
+    }
+
+    @Test
+    public void testDeriveActionWithConcreteVersion() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/v1.85.0/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip concrete version prefix (v1.85.0)");
+    }
+
+    @Test
+    public void testDeriveActionWithV1OnlyVersion() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/v1/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip v1 version prefix");
+    }
+
+    @Test
+    public void testDeriveActionWithLatestLTSVersion() {
+        String action = MetadataProvider.deriveAction("https://data.learnosity.com/latest-lts/itembank/items", "GET");
+        assertEquals("get_/itembank/items", action, "Action should strip latest-lts version prefix");
+    }
+
+    @Test
     public void testDeriveActionWithEmptyUrl() {
         String action = MetadataProvider.deriveAction("", "GET");
         assertEquals("", action, "Empty URL should return empty action");

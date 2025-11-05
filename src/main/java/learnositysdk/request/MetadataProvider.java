@@ -96,6 +96,13 @@ public class MetadataProvider {
      * Extract the path from a full URL
      * Examples:
      *   https://data.learnosity.com/latest/itembank/items -> /itembank/items
+     *   https://data.learnosity.com/v1/itembank/items -> /itembank/items
+     *   https://data.learnosity.com/v2/sessions -> /sessions
+     *   https://data.learnosity.com/v1.85.0/itembank/items -> /itembank/items
+     *   https://data.learnosity.com/v2025.2.LTS/itembank/items -> /itembank/items
+     *   https://data.learnosity.com/developer/itembank/items -> /itembank/items
+     *   https://data.learnosity.com/latest-lts/itembank/items -> /itembank/items
+     *   https://schemas.learnosity.com/stable/questions/templates -> /questions/templates
      *   /itembank/items -> /itembank/items
      *
      * @param url The full URL or path
@@ -107,12 +114,36 @@ public class MetadataProvider {
             // Find the path after the domain
             int pathStart = url.indexOf('/', 8); // Skip "https://"
             if (pathStart > 0) {
-                // Find the path after /latest/ or similar version prefix
                 String pathPart = url.substring(pathStart);
-                // Remove version prefix like /latest/
-                if (pathPart.contains("/latest/")) {
-                    return pathPart.substring(pathPart.indexOf("/latest/") + 7); // +7 to skip "/latest"
+
+                // Remove version prefix
+                // Supported formats:
+                // - /latest/, /stable/, /developer/
+                // - /latest-lts/
+                // - /v<number>/ (e.g., /v1/, /v2/)
+                // - /v<number>.<number>/ (e.g., /v1.0/, /v1.85/)
+                // - /v<number>.<number>.<number>/ (e.g., /v1.85.0/)
+                // - /v<year>.<number>.LTS/ (e.g., /v2025.2.LTS/)
+
+                String[] explicitPrefixes = {"/latest/", "/stable/", "/developer/", "/latest-lts/"};
+
+                // Check for explicit version prefixes first
+                for (String prefix : explicitPrefixes) {
+                    if (pathPart.startsWith(prefix)) {
+                        return pathPart.substring(prefix.length() - 1); // -1 to keep the leading /
+                    }
                 }
+
+                // Check for versioned prefixes like /v1/, /v2/, /v1.0/, /v1.85.0/, /v2025.2.LTS/, etc.
+                // Pattern: /v<anything>/ where <anything> contains digits and dots/letters
+                if (pathPart.startsWith("/v")) {
+                    int nextSlash = pathPart.indexOf('/', 2); // Find the next / after /v
+                    if (nextSlash > 0) {
+                        // Extract everything after the version prefix
+                        return pathPart.substring(nextSlash);
+                    }
+                }
+
                 return pathPart;
             }
         }
