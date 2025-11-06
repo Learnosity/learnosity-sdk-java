@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.InputStream;
 import java.io.StringWriter;
+import org.apache.http.message.BasicHeader;
 
 
 /**
@@ -57,9 +58,19 @@ public class Remote {
 	private CloseableHttpClient httpclient;
 
 	/**
-	 * Array to store header information
+	 * Array to store response header information
 	 */
 	private Header[] headers;
+
+	/**
+	 * Array to store request header information
+	 */
+	private Header[] requestHeaders;
+
+	/**
+	 * Consumer identifier for metadata
+	 */
+	private String consumer = "";
 
 	/**
 	 * Constructor
@@ -80,6 +91,29 @@ public class Remote {
 		result = new HashMap<String,String>();
 		sb = new StringBuilder();
 		httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+	}
+
+	/**
+	 * Set the consumer identifier for metadata
+	 * @param consumer The consumer key/identifier
+	 */
+	public void setConsumer(String consumer)
+	{
+		this.consumer = consumer != null ? consumer : "";
+	}
+
+	/**
+	 * Set the action for metadata (deprecated)
+	 * The action is now always derived from the URL and HTTP method.
+	 * This method is kept for backward compatibility but is ignored for metadata headers.
+	 * @param action The action being performed (ignored)
+	 * @deprecated The action is now always derived from the URL and HTTP method
+	 */
+	@Deprecated
+	public void setAction(String action)
+	{
+		// This method is kept for backward compatibility but does nothing.
+		// The action is always derived from the URL and HTTP method.
 	}
 
 	/**
@@ -163,6 +197,9 @@ public class Remote {
 			httpRequest = new HttpGet(url);
 		}
 
+		// Add metadata headers
+		this.addMetadataHeaders(httpRequest, url, post ? "POST" : "GET");
+
 		resp = this.httpclient.execute(httpRequest);
 		InputStream is = resp.getEntity().getContent();
 		StringWriter writer = new StringWriter();
@@ -207,6 +244,16 @@ public class Remote {
 			}
 		}
 		return "";
+	}
+
+	/**
+	 * Returns all request headers that were sent
+	 *
+	 * @return Array of request headers
+	 */
+	public Header[] getRequestHeaders()
+	{
+		return this.requestHeaders;
 	}
 
 	/**
@@ -274,5 +321,36 @@ public class Remote {
 			parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
 		}
 		return parameters;
+	}
+
+	/**
+	 * Add metadata headers to the HTTP request
+	 * Includes consumer, action, and SDK language:version
+	 *
+	 * @param httpRequest The HTTP request to add headers to
+	 * @param url The request URL
+	 * @param method The HTTP method (GET, POST, etc.)
+	 */
+	private void addMetadataHeaders(HttpUriRequest httpRequest, String url, String method)
+	{
+		// Add consumer header if available
+		if (!this.consumer.isEmpty()) {
+			httpRequest.addHeader("X-Learnosity-Consumer", this.consumer);
+		}
+
+		// Add action header - always derived from URL and HTTP method
+		String actionHeader = MetadataProvider.deriveAction(url, method);
+		if (!actionHeader.isEmpty()) {
+			httpRequest.addHeader("X-Learnosity-Action", actionHeader);
+		}
+
+		// Add SDK language and version header
+		String sdkVersion = MetadataProvider.getSdkLanguageVersion();
+		if (!sdkVersion.isEmpty()) {
+			httpRequest.addHeader("X-Learnosity-SDK", sdkVersion);
+		}
+
+		// Store request headers for later retrieval
+		this.requestHeaders = httpRequest.getAllHeaders();
 	}
 }

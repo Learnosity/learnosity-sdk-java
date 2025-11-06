@@ -12,6 +12,7 @@
             <li><a href="AuthorApi.jsp">Author API</a></li>
             <li><a href="ReportsApi.jsp">Reports API</a></li>
             <li><a href="AuthoraideApi.jsp">Authoraide API</a></li>
+            <li><a href="DataApi.jsp">Data API (with Metadata Headers)</a></li>
         </ul>
     </body>
 </html>
