@@ -1,18 +1,18 @@
 package com.learnosity.quickstart;
 
 import learnositysdk.request.Init;
+import learnositysdk.request.Uuid;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 import org.json.JSONObject;
 
 public abstract class App
 {
     Properties config = new Properties();
-    UUID user_id = UUID.randomUUID();
-    UUID session_id = UUID.randomUUID();
+    String user_id = Uuid.generate();
+    String session_id = Uuid.generate();
     String domain;
     String put;
 
