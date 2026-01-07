@@ -142,11 +142,11 @@ The first section of code discussed is (`ItemsApp.java`) and this is executed se
 
 ### **Server-side code**
 
-Starting with `ItemsApp.java`, we start by including some LearnositySDK helpers - they'll make it easy to generate and sign the config options. We also include the standard UUID library for generating unique user and session IDs.
+Starting with `ItemsApp.java`, we start by including some LearnositySDK helpers - they'll make it easy to generate and sign the config options, and to generate unique user and session IDs.
 
 ``` Java
 import learnositysdk.request.Init;
-import java.util.UUID;
+import learnositysdk.request.Uuid;
 ```
 
 Now we'll declare the configuration options for Items API. These specify which assessment content should be rendered, how it should be displayed, which user is taking this assessment and how their responses should be stored. 
@@ -168,7 +168,7 @@ private Map<String, String> createRequestObject() {
 
 * `user_id`: unique student identifier. Note: we never send or save student's names or other personally identifiable information in these requests. The unique identifier should be used to look up the entry in a database of students accessible within your system only. [Learn more](https://help.learnosity.com/hc/en-us/articles/360002309578-Student-Privacy-and-Personally-Identifiable-Information-PII-).
 * `activity_template_id`: reference of the Activity to retrieve from the Item bank. The Activity defines which Items will be served in this assessment.
-* `session_id`: uniquely identifies this specific assessment attempt for save/resume, data retrieval and reporting purposes. Here, we're using the `UUID` library to auto-generate a unique session id.
+* `session_id`: uniquely identifies this specific assessment attempt for save/resume, data retrieval and reporting purposes. Here, we're using the `Uuid.generate()` utility to auto-generate a unique session id.
 * `activity_id`: a string you define, used solely for analytics to allow you run reporting and compare results of users submitting the same assessment.
 * `rendering_type`: selects a rendering mode, `assess` mode is a "standalone" mode (loading a complete assessment player for navigation, as opposed to `inline` for embedding without).
 * `type`: selects the context for the student response storage. `submit_practice` mode means the student responses will be stored in the Learnosity cloud, allowing for grading and review.

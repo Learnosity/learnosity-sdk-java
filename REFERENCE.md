@@ -203,6 +203,34 @@ An optional string used only if integrating with the Data API. Valid options are
 
 <hr>
 
+### Uuid
+
+The Uuid utility class provides a simple way to generate UUIDv4 identifiers, commonly used for `user_id` and `session_id` in Learnosity API requests.
+
+This utility provides a consistent API across Learnosity SDKs, allowing developers to use the same patterns regardless of language.
+
+```java
+import learnositysdk.request.Uuid;
+
+// Generate a unique user ID
+String userId = Uuid.generate();
+
+// Generate a unique session ID
+String sessionId = Uuid.generate();
+```
+
+#### Methods
+
+**generate()**<br>
+Returns a UUIDv4 string in the format `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`.
+
+```java
+String uuid = Uuid.generate();
+// Example output: "550e8400-e29b-41d4-a716-446655440000"
+```
+
+<hr>
+
 ### Remote
 
 The Remote class is used to make server side, cross domain requests. Think of it as a cURL wrapper.

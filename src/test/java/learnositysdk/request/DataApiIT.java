@@ -4,7 +4,6 @@ import java.io.File;
 
 import java.nio.charset.StandardCharsets;
 
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +69,7 @@ public class DataApiIT {
 		activity.put("status","published");
 		activity.put("description","My test description Title √");
 		activity.put("data", data);
-		activity.put("reference", UUID.randomUUID().toString());
+		activity.put("reference", Uuid.generate());
 
 		JSONArray activities = new JSONArray();
 		activities.put(activity);
