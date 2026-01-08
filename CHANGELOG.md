@@ -9,10 +9,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 ## [v0.18.0] - 2026-01-08
 ### Added
 * Added UUID utility helper for generating UUIDs.
+* Added request header metadata provider for SDK telemetry and API version tracking.
 
 ### Changed
-* Updated metadata provider to handle API endpoints starting with "v".
-* Upgraded dependencies: commons-codec to 1.15, commons-lang3 to 3.17.0, org.json to 20240303, jackson-databind to 2.18.0, commons-io to 2.14.0.
 * Updated OWASP dependency-check-maven plugin to 12.1.8.
 
 ### Fixed
