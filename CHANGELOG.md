@@ -6,6 +6,17 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.18.0] - 2026-01-08
+### Added
+* Added UUID utility helper for generating UUIDs.
+* Added request header metadata provider for SDK telemetry and API version tracking.
+
+### Changed
+* Updated OWASP dependency-check-maven plugin to 12.1.8.
+
+### Fixed
+* Fixed broken Maven download link in Dockerfile.
+
 ## [v0.17.0] - 2024-07-04
 ### Added
 * Added support for authoraide API.
