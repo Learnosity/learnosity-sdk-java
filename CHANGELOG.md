@@ -5,6 +5,8 @@ and this project now adheres to [Semantic
 Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Removed
+* Removed Travis CI configuration and references.
 
 ## [v0.18.0] - 2026-01-08
 ### Added
